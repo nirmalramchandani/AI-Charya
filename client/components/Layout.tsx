@@ -126,7 +126,7 @@ export default function Layout({ children }: LayoutProps) {
       </aside>
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col min-h-screen lg:ml-0">
+      <div className="flex-1 flex flex-col min-h-screen lg:ml-64">
         {/* Mobile header */}
         <header className="lg:hidden sticky top-0 z-30 bg-white shadow-material border-b border-material-gray-200">
           <div className="flex h-16 items-center justify-between px-4">
