@@ -13,7 +13,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-material-gray-900 text-white">
+    <footer className="bg-white border-t border-material-gray-200">
       {/* PWA Install Banner */}
       {showInstallPrompt && (
         <div className="bg-material-blue px-4 py-3">
