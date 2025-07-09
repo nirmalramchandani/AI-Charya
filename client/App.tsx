@@ -40,14 +40,8 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/curriculum" element={<CurriculumUpload />} />
-            <Route
-              path="/lectures"
-              element={<PlaceholderPage title="Lecture Generator" />}
-            />
-            <Route
-              path="/students"
-              element={<PlaceholderPage title="Student Context Builder" />}
-            />
+            <Route path="/lectures" element={<LecturePlateGenerator />} />
+            <Route path="/students" element={<StudentContextBuilder />} />
             <Route
               path="/dashboard"
               element={<PlaceholderPage title="Teacher Dashboard" />}
