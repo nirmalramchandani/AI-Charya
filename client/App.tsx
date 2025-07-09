@@ -44,14 +44,8 @@ const App = () => (
             <Route path="/curriculum" element={<CurriculumUpload />} />
             <Route path="/lectures" element={<LecturePlateGenerator />} />
             <Route path="/students" element={<StudentContextBuilder />} />
-            <Route
-              path="/dashboard"
-              element={<PlaceholderPage title="Teacher Dashboard" />}
-            />
-            <Route
-              path="/reports"
-              element={<PlaceholderPage title="Reports" />}
-            />
+            <Route path="/dashboard" element={<TeacherDashboard />} />
+            <Route path="/reports" element={<ReportsAnalytics />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
