@@ -126,7 +126,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="#"
-                    className="hover:text-white transition-colors flex items-center"
+                    className="hover:text-material-blue transition-colors flex items-center"
                   >
                     About
                     <ExternalLink className="h-3 w-3 ml-1" />
@@ -135,7 +135,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="#"
-                    className="hover:text-white transition-colors flex items-center"
+                    className="hover:text-material-blue transition-colors flex items-center"
                   >
                     Contact
                     <ExternalLink className="h-3 w-3 ml-1" />
@@ -144,7 +144,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="#"
-                    className="hover:text-white transition-colors flex items-center"
+                    className="hover:text-material-blue transition-colors flex items-center"
                   >
                     Terms of Service
                     <ExternalLink className="h-3 w-3 ml-1" />
@@ -153,7 +153,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="#"
-                    className="hover:text-white transition-colors flex items-center"
+                    className="hover:text-material-blue transition-colors flex items-center"
                   >
                     Privacy Policy
                     <ExternalLink className="h-3 w-3 ml-1" />
@@ -162,7 +162,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="#"
-                    className="hover:text-white transition-colors flex items-center"
+                    className="hover:text-material-blue transition-colors flex items-center"
                   >
                     Help Center
                     <ExternalLink className="h-3 w-3 ml-1" />
