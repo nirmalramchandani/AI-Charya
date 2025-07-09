@@ -70,17 +70,22 @@ export default function Footer() {
 
             {/* Quick Links */}
             <div>
-              <h3 className="font-semibold mb-4">Platform</h3>
-              <ul className="space-y-2 text-sm text-material-gray-300">
+              <h3 className="font-semibold mb-4 text-material-gray-900">
+                Platform
+              </h3>
+              <ul className="space-y-2 text-sm text-material-gray-600">
                 <li>
-                  <a href="/" className="hover:text-white transition-colors">
+                  <a
+                    href="/"
+                    className="hover:text-material-blue transition-colors"
+                  >
                     Home
                   </a>
                 </li>
                 <li>
                   <a
                     href="/curriculum"
-                    className="hover:text-white transition-colors"
+                    className="hover:text-material-blue transition-colors"
                   >
                     Curriculum Upload
                   </a>
@@ -88,7 +93,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="/lectures"
-                    className="hover:text-white transition-colors"
+                    className="hover:text-material-blue transition-colors"
                   >
                     Lecture Generator
                   </a>
@@ -96,7 +101,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="/dashboard"
-                    className="hover:text-white transition-colors"
+                    className="hover:text-material-blue transition-colors"
                   >
                     Dashboard
                   </a>
@@ -104,7 +109,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="/reports"
-                    className="hover:text-white transition-colors"
+                    className="hover:text-material-blue transition-colors"
                   >
                     Reports
                   </a>
@@ -114,8 +119,10 @@ export default function Footer() {
 
             {/* Support Links */}
             <div>
-              <h3 className="font-semibold mb-4">Support</h3>
-              <ul className="space-y-2 text-sm text-material-gray-300">
+              <h3 className="font-semibold mb-4 text-material-gray-900">
+                Support
+              </h3>
+              <ul className="space-y-2 text-sm text-material-gray-600">
                 <li>
                   <a
                     href="#"
