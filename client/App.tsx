@@ -9,9 +9,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import Index from "./pages/Index";
 import CurriculumUpload from "./pages/CurriculumUpload";
+import LecturePlateGenerator from "./pages/LecturePlateGenerator";
+import StudentContextBuilder from "./pages/StudentContextBuilder";
 import NotFound from "./pages/NotFound";
 
-// Placeholder components for other routes
+// Placeholder components for remaining routes
 const PlaceholderPage = ({ title }: { title: string }) => (
   <div className="p-8">
     <div className="material-card max-w-2xl mx-auto p-8 text-center">
