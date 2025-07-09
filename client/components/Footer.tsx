@@ -16,24 +16,24 @@ export default function Footer() {
     <footer className="bg-white border-t border-material-gray-200">
       {/* PWA Install Banner */}
       {showInstallPrompt && (
-        <div className="bg-material-blue px-4 py-3">
+        <div className="bg-material-blue-50 border-b border-material-blue-200 px-4 py-3">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="flex items-center">
-              <Download className="h-5 w-5 mr-2" />
-              <span className="text-sm font-medium">
+              <Download className="h-5 w-5 mr-2 text-material-blue" />
+              <span className="text-sm font-medium text-material-blue-800">
                 Install EduPlatform for offline access and better performance
               </span>
             </div>
             <div className="flex items-center gap-3">
               <button
                 onClick={handleInstallPWA}
-                className="bg-white text-material-blue px-4 py-1 rounded-lg text-sm font-medium hover:bg-material-gray-100 transition-colors"
+                className="bg-material-blue text-white px-4 py-1 rounded-lg text-sm font-medium hover:bg-material-blue-600 transition-colors"
               >
                 Install App
               </button>
               <button
                 onClick={() => setShowInstallPrompt(false)}
-                className="text-material-blue-100 hover:text-white text-sm"
+                className="text-material-blue-600 hover:text-material-blue-800 text-sm"
               >
                 Dismiss
               </button>
