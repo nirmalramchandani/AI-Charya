@@ -48,7 +48,7 @@ export default function Layout({ children }: LayoutProps) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-material-gray-50">
+    <div className="min-h-screen flex">
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
@@ -60,7 +60,7 @@ export default function Layout({ children }: LayoutProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-material-lg transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
+          "fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-material-lg transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:flex lg:flex-col lg:w-64",
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
@@ -74,7 +74,7 @@ export default function Layout({ children }: LayoutProps) {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-6 py-6">
+          <nav className="flex-1 px-6 py-6 overflow-y-auto">
             <ul className="space-y-1">
               {navigation.map((item) => {
                 const isActive = location.pathname === item.href;
@@ -105,50 +105,71 @@ export default function Layout({ children }: LayoutProps) {
               })}
             </ul>
           </nav>
+
+          {/* Sidebar Footer - User Info */}
+          <div className="shrink-0 border-t border-material-gray-200 p-4">
+            <div className="flex items-center">
+              <div className="h-8 w-8 rounded-full bg-material-blue flex items-center justify-center">
+                <span className="text-sm font-medium text-white">U</span>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm font-medium text-material-gray-900">
+                  Teacher
+                </p>
+                <p className="text-xs text-material-gray-500">
+                  teacher@edu.com
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </aside>
 
-      {/* Main content */}
-      <div className="lg:pl-64">
-        {/* Top navigation */}
-        <header className="sticky top-0 z-40 bg-white shadow-material border-b border-material-gray-200">
-          <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col min-h-screen lg:ml-0">
+        {/* Mobile header */}
+        <header className="lg:hidden sticky top-0 z-30 bg-white shadow-material border-b border-material-gray-200">
+          <div className="flex h-16 items-center justify-between px-4">
             {/* Mobile menu button */}
             <button
               type="button"
-              className="lg:hidden material-button-secondary p-2"
+              className="material-button-secondary p-2"
               onClick={() => setSidebarOpen(true)}
             >
               <Menu className="h-5 w-5" />
               <span className="sr-only">Open sidebar</span>
             </button>
 
-            {/* Page title */}
-            <div className="flex-1 lg:pl-0">
+            {/* Mobile page title */}
+            <div className="flex-1 text-center">
               <h1 className="text-lg font-semibold text-material-gray-900">
                 {navigation.find((item) => item.href === location.pathname)
                   ?.name || "Educational Platform"}
               </h1>
             </div>
 
-            {/* User menu */}
-            <div className="flex items-center space-x-4">
-              <div className="hidden sm:block">
-                <div className="flex items-center space-x-2">
-                  <div className="h-8 w-8 rounded-full bg-material-blue flex items-center justify-center">
-                    <span className="text-sm font-medium text-white">U</span>
-                  </div>
-                  <span className="text-sm font-medium text-material-gray-700">
-                    User
-                  </span>
-                </div>
-              </div>
+            {/* Mobile user menu */}
+            <div className="h-8 w-8 rounded-full bg-material-blue flex items-center justify-center">
+              <span className="text-sm font-medium text-white">U</span>
             </div>
           </div>
         </header>
 
+        {/* Desktop page title */}
+        <div className="hidden lg:block bg-white border-b border-material-gray-200 px-6 py-4">
+          <h1 className="text-2xl font-bold text-material-gray-900">
+            {navigation.find((item) => item.href === location.pathname)?.name ||
+              "Educational Platform"}
+          </h1>
+          <p className="text-sm text-material-gray-600 mt-1">
+            Welcome to your educational platform dashboard
+          </p>
+        </div>
+
         {/* Page content */}
-        <main className="min-h-[calc(100vh-4rem)] pb-8">{children}</main>
+        <main className="flex-1 bg-material-gray-50">
+          <div className="h-full">{children}</div>
+        </main>
 
         {/* Footer */}
         <Footer />
