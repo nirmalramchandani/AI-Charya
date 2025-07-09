@@ -52,15 +52,17 @@ export default function Footer() {
                 <div className="h-8 w-8 bg-material-blue rounded-lg flex items-center justify-center mr-3">
                   <span className="text-white font-bold text-lg">E</span>
                 </div>
-                <span className="text-xl font-semibold">EduPlatform</span>
+                <span className="text-xl font-semibold text-material-gray-900">
+                  EduPlatform
+                </span>
               </div>
-              <p className="text-material-gray-300 text-sm mb-4 max-w-md">
+              <p className="text-material-gray-600 text-sm mb-4 max-w-md">
                 Streamline curriculum management, generate dynamic lectures, and
                 track student progress with our comprehensive educational
                 platform.
               </p>
               <div className="flex items-center space-x-4">
-                <span className="text-sm text-material-gray-400">
+                <span className="text-sm text-material-gray-500">
                   Built with ❤️ for educators
                 </span>
               </div>
