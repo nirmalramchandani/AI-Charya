@@ -173,20 +173,20 @@ export default function Footer() {
           </div>
 
           {/* Bottom Bar */}
-          <div className="border-t border-material-gray-700 mt-8 pt-6">
+          <div className="border-t border-material-gray-200 mt-8 pt-6">
             <div className="flex flex-col md:flex-row items-center justify-between">
-              <div className="text-sm text-material-gray-400 mb-4 md:mb-0">
+              <div className="text-sm text-material-gray-500 mb-4 md:mb-0">
                 © 2024 EduPlatform. All rights reserved. | Made for modern
                 education.
               </div>
               <div className="flex items-center space-x-4">
-                <span className="text-xs text-material-gray-500">
+                <span className="text-xs text-material-gray-400">
                   Version 2.1.0
                 </span>
-                <div className="h-4 border-l border-material-gray-600"></div>
+                <div className="h-4 border-l border-material-gray-300"></div>
                 <button
                   onClick={handleInstallPWA}
-                  className="text-xs text-material-blue-400 hover:text-material-blue-300 transition-colors flex items-center"
+                  className="text-xs text-material-blue hover:text-material-blue-600 transition-colors flex items-center"
                 >
                   <Download className="h-3 w-3 mr-1" />
                   Install App
