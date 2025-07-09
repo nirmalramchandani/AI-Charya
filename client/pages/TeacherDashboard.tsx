@@ -4,7 +4,7 @@ import {
   Calendar,
   FileText,
   Users,
-  Brain,
+  BarChart3,
   Edit,
   Download,
   CheckCircle,
@@ -14,6 +14,10 @@ import {
   Sparkles,
   Upload,
   ExternalLink,
+  Menu,
+  X,
+  GraduationCap,
+  Brain,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -53,19 +57,12 @@ interface Student {
   level: string;
 }
 
-interface VisualAid {
-  id: string;
-  prompt: string;
-  image: string;
-  createdAt: string;
-}
-
-const tabs = [
+const navigationItems = [
   { id: "syllabus", name: "My Syllabus", icon: BookOpen },
   { id: "joint-lessons", name: "Joint Lessons", icon: Calendar },
-  { id: "lecture-plates", name: "My Lecture Plates", icon: FileText },
+  { id: "lecture-plates", name: "Lecture Plates", icon: FileText },
   { id: "student-profiles", name: "Student Profiles", icon: Users },
-  { id: "visual-aids", name: "Visual Aids", icon: Brain },
+  { id: "reports", name: "Reports", icon: BarChart3 },
 ];
 
 const dummySyllabus: SyllabusItem[] = [
@@ -176,27 +173,10 @@ const dummyStudents: Student[] = [
   },
 ];
 
-const dummyVisualAids: VisualAid[] = [
-  {
-    id: "1",
-    prompt: "Draw water cycle using river and clouds",
-    image:
-      "https://placehold.co/400x300/4285F4/FFFFFF?text=Water+Cycle+Diagram",
-    createdAt: "2024-01-15",
-  },
-  {
-    id: "2",
-    prompt: "Show plant parts with roots and leaves",
-    image: "https://placehold.co/400x300/34A853/FFFFFF?text=Plant+Diagram",
-    createdAt: "2024-01-12",
-  },
-];
-
 export default function TeacherDashboard() {
-  const [activeTab, setActiveTab] = useState("syllabus");
+  const [activeSection, setActiveSection] = useState("syllabus");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState("All");
-  const [visualPrompt, setVisualPrompt] = useState("");
-  const [generatingVisual, setGeneratingVisual] = useState(false);
 
   const classes = ["All", "1", "2", "3", "4", "5"];
 
@@ -205,39 +185,26 @@ export default function TeacherDashboard() {
       ? dummyStudents
       : dummyStudents.filter((student) => student.class === selectedClass);
 
-  const generateVisualAid = () => {
-    if (!visualPrompt.trim()) return;
-
-    setGeneratingVisual(true);
-    // Simulate API call
-    setTimeout(() => {
-      setGeneratingVisual(false);
-      setVisualPrompt("");
-      // In real app, would add to visual aids list
-    }, 2000);
-  };
-
-  const renderSyllabusTab = () => (
+  const renderSyllabusContent = () => (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-material-gray-900">
-          📚 My Syllabus
-        </h3>
-        <button className="material-button-primary">
+        <h2 className="text-xl font-semibold text-gray-900">My Syllabus</h2>
+        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
           <Upload className="h-4 w-4 mr-2" />
           Upload New
         </button>
       </div>
 
-      <div className="space-y-4">
+      <div className="grid gap-4">
         {dummySyllabus.map((item) => (
-          <div key={item.id} className="material-card p-4">
+          <div
+            key={item.id}
+            className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm"
+          >
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <h4 className="font-medium text-material-gray-900">
-                  {item.title}
-                </h4>
-                <div className="flex items-center gap-4 mt-1 text-sm text-material-gray-600">
+                <h3 className="font-medium text-gray-900">{item.title}</h3>
+                <div className="flex items-center gap-4 mt-1 text-sm text-gray-600">
                   <span>Class {item.class}</span>
                   <span>•</span>
                   <span>{item.subject}</span>
@@ -250,12 +217,12 @@ export default function TeacherDashboard() {
                   href={item.pdfUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="material-button-secondary text-sm px-3 py-1"
+                  className="bg-gray-100 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-200 flex items-center"
                 >
                   <ExternalLink className="h-3 w-3 mr-1" />
                   View PDF
                 </a>
-                <button className="material-button-secondary text-sm px-3 py-1">
+                <button className="bg-gray-100 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-200 flex items-center">
                   <Edit className="h-3 w-3 mr-1" />
                   Edit
                 </button>
@@ -267,36 +234,41 @@ export default function TeacherDashboard() {
     </div>
   );
 
-  const renderJointLessonsTab = () => (
+  const renderJointLessonsContent = () => (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-material-gray-900">
-        📅 Joint Lessons
-      </h3>
+      <h2 className="text-xl font-semibold text-gray-900">Joint Lessons</h2>
 
-      <div className="space-y-4">
+      <div className="grid gap-4">
         {dummyJointLessons.map((lesson) => (
-          <div key={lesson.id} className="material-card p-4">
+          <div
+            key={lesson.id}
+            className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm"
+          >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center">
-                <h4 className="font-medium text-material-gray-900 mr-3">
+                <h3 className="font-medium text-gray-900 mr-3">
                   {lesson.topic}
-                </h4>
+                </h3>
                 {lesson.completed && (
-                  <span className="bg-material-green text-white px-2 py-1 rounded-full text-xs">
+                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
                     Completed
                   </span>
                 )}
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  className={`material-button-${lesson.completed ? "secondary" : "primary"} text-sm px-3 py-1`}
+                  className={`px-3 py-1 rounded text-sm flex items-center ${
+                    lesson.completed
+                      ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      : "bg-blue-600 text-white hover:bg-blue-700"
+                  }`}
                 >
                   <CheckCircle className="h-3 w-3 mr-1" />
                   {lesson.completed ? "Completed" : "Mark Complete"}
                 </button>
                 <a
                   href={lesson.planUrl}
-                  className="material-button-secondary text-sm px-3 py-1"
+                  className="bg-gray-100 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-200 flex items-center"
                 >
                   <Download className="h-3 w-3 mr-1" />
                   Export Plan
@@ -304,7 +276,7 @@ export default function TeacherDashboard() {
               </div>
             </div>
 
-            <div className="flex items-center gap-4 text-sm text-material-gray-600">
+            <div className="flex items-center gap-4 text-sm text-gray-600">
               <span>Classes: {lesson.classes.join(", ")}</span>
               <span>•</span>
               <span>Timeline: {lesson.timeline}</span>
@@ -315,42 +287,39 @@ export default function TeacherDashboard() {
     </div>
   );
 
-  const renderLecturePlatesTab = () => (
+  const renderLecturePlatesContent = () => (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-material-gray-900">
-        📋 My Lecture Plates
-      </h3>
+      <h2 className="text-xl font-semibold text-gray-900">Lecture Plates</h2>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {dummyLecturePlates.map((plate) => (
-          <div key={plate.id} className="material-card p-4">
+          <div
+            key={plate.id}
+            className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm"
+          >
             <img
               src={plate.image}
               alt={plate.topic}
               className="w-full h-32 object-cover rounded-lg mb-3"
             />
 
-            <h4 className="font-medium text-material-gray-900 mb-2">
-              {plate.topic}
-            </h4>
-            <p className="text-sm text-material-gray-600 mb-3 line-clamp-2">
+            <h3 className="font-medium text-gray-900 mb-2">{plate.topic}</h3>
+            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
               {plate.story.substring(0, 100)}...
             </p>
 
             <div className="flex items-center justify-between">
-              <span className="text-xs text-material-gray-500">
-                {plate.createdAt}
-              </span>
+              <span className="text-xs text-gray-500">{plate.createdAt}</span>
               <div className="flex gap-2">
-                <button className="material-button-secondary text-xs px-2 py-1">
+                <button className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs hover:bg-gray-200 flex items-center">
                   <Edit className="h-3 w-3 mr-1" />
                   Edit
                 </button>
-                <button className="material-button-secondary text-xs px-2 py-1">
+                <button className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs hover:bg-gray-200 flex items-center">
                   <RotateCcw className="h-3 w-3 mr-1" />
                   Regenerate
                 </button>
-                <button className="text-red-600 hover:bg-red-50 px-2 py-1 rounded text-xs">
+                <button className="text-red-600 hover:bg-red-50 px-2 py-1 rounded text-xs flex items-center">
                   <Trash2 className="h-3 w-3" />
                 </button>
               </div>
@@ -361,59 +330,58 @@ export default function TeacherDashboard() {
     </div>
   );
 
-  const renderStudentProfilesTab = () => (
+  const renderStudentProfilesContent = () => (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-material-gray-900">
-          👥 Student Profiles
-        </h3>
-        <div className="flex items-center gap-3">
-          <select
-            value={selectedClass}
-            onChange={(e) => setSelectedClass(e.target.value)}
-            className="material-input w-auto"
-          >
-            {classes.map((cls) => (
-              <option key={cls} value={cls}>
-                {cls === "All" ? "All Classes" : `Class ${cls}`}
-              </option>
-            ))}
-          </select>
-        </div>
+        <h2 className="text-xl font-semibold text-gray-900">
+          Student Profiles
+        </h2>
+        <select
+          value={selectedClass}
+          onChange={(e) => setSelectedClass(e.target.value)}
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+        >
+          {classes.map((cls) => (
+            <option key={cls} value={cls}>
+              {cls === "All" ? "All Classes" : `Class ${cls}`}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredStudents.map((student) => (
-          <div key={student.id} className="material-card p-4">
+          <div
+            key={student.id}
+            className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm"
+          >
             <div className="flex items-center justify-between mb-3">
               <div>
-                <h4 className="font-medium text-material-gray-900">
-                  {student.name}
-                </h4>
-                <div className="text-sm text-material-gray-600">
+                <h3 className="font-medium text-gray-900">{student.name}</h3>
+                <div className="text-sm text-gray-600">
                   Age {student.age} • Class {student.class}
                 </div>
               </div>
               <span
                 className={`px-2 py-1 rounded-full text-xs ${
                   student.level === "Advanced"
-                    ? "bg-material-green text-white"
+                    ? "bg-green-100 text-green-800"
                     : student.level === "Average"
-                      ? "bg-material-yellow text-material-gray-900"
-                      : "bg-material-orange text-white"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-orange-100 text-orange-800"
                 }`}
               >
                 {student.level}
               </span>
             </div>
 
-            <div className="text-sm text-material-gray-600 mb-3">
+            <div className="text-sm text-gray-600 mb-3">
               Language: {student.language}
             </div>
 
-            <button className="material-button-primary w-full text-sm">
+            <button className="bg-blue-600 text-white w-full py-2 rounded-lg text-sm hover:bg-blue-700 flex items-center justify-center">
               <Sparkles className="h-4 w-4 mr-2" />
-              Generate Personalized Content
+              Generate Content
             </button>
           </div>
         ))}
@@ -421,159 +389,183 @@ export default function TeacherDashboard() {
     </div>
   );
 
-  const renderVisualAidsTab = () => (
-    <div className="space-y-6">
-      <h3 className="text-lg font-semibold text-material-gray-900">
-        🧠 Visual Aids
-      </h3>
+  const renderReportsContent = () => (
+    <div className="space-y-4">
+      <h2 className="text-xl font-semibold text-gray-900">
+        Reports & Analytics
+      </h2>
 
-      {/* Input Section */}
-      <div className="material-card p-6">
-        <h4 className="font-medium text-material-gray-900 mb-4">
-          Generate New Visual Aid
-        </h4>
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-material-gray-700 mb-2">
-              Diagram Prompt
-            </label>
-            <input
-              type="text"
-              value={visualPrompt}
-              onChange={(e) => setVisualPrompt(e.target.value)}
-              placeholder="e.g., Draw water cycle using river and clouds"
-              className="material-input"
-            />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+          <h3 className="font-medium text-gray-900 mb-4">
+            Performance Overview
+          </h3>
+          <div className="space-y-3">
+            {["Math", "Science", "English", "EVS"].map((subject, index) => {
+              const scores = [75, 68, 82, 71];
+              return (
+                <div key={subject} className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700">
+                      {subject}
+                    </span>
+                    <span className="text-sm text-gray-600">
+                      {scores[index]}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-blue-600 h-2 rounded-full"
+                      style={{ width: `${scores[index]}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          <button
-            onClick={generateVisualAid}
-            disabled={!visualPrompt.trim() || generatingVisual}
-            className="material-button-primary"
-          >
-            {generatingVisual ? (
-              <div className="flex items-center">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Generating...
-              </div>
-            ) : (
-              <div className="flex items-center">
-                <Brain className="h-4 w-4 mr-2" />
-                Generate Visual Aid
-              </div>
-            )}
-          </button>
         </div>
-      </div>
 
-      {/* Generated Visual Aids */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {dummyVisualAids.map((aid) => (
-          <div key={aid.id} className="material-card p-4">
-            <div className="mb-3">
-              <img
-                src={aid.image}
-                alt={aid.prompt}
-                className="w-full h-48 object-cover rounded-lg"
-              />
-            </div>
-
-            <h4 className="font-medium text-material-gray-900 mb-2">
-              "{aid.prompt}"
-            </h4>
-
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-material-gray-500">
-                {aid.createdAt}
+        <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+          <h3 className="font-medium text-gray-900 mb-4">Recent Activity</h3>
+          <div className="space-y-3">
+            <div className="flex items-center">
+              <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+              <span className="text-sm text-gray-700">
+                5 assignments graded today
               </span>
-              <div className="flex gap-2">
-                <button className="material-button-secondary text-xs px-2 py-1">
-                  <Download className="h-3 w-3 mr-1" />
-                  Download
-                </button>
-                <button className="material-button-secondary text-xs px-2 py-1">
-                  <Edit className="h-3 w-3 mr-1" />
-                  Edit Prompt
-                </button>
-              </div>
+            </div>
+            <div className="flex items-center">
+              <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+              <span className="text-sm text-gray-700">
+                3 new lecture plates created
+              </span>
+            </div>
+            <div className="flex items-center">
+              <div className="w-2 h-2 bg-orange-500 rounded-full mr-3"></div>
+              <span className="text-sm text-gray-700">
+                2 joint lessons planned
+              </span>
             </div>
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );
 
-  const renderTabContent = () => {
-    switch (activeTab) {
+  const renderContent = () => {
+    switch (activeSection) {
       case "syllabus":
-        return renderSyllabusTab();
+        return renderSyllabusContent();
       case "joint-lessons":
-        return renderJointLessonsTab();
+        return renderJointLessonsContent();
       case "lecture-plates":
-        return renderLecturePlatesTab();
+        return renderLecturePlatesContent();
       case "student-profiles":
-        return renderStudentProfilesTab();
-      case "visual-aids":
-        return renderVisualAidsTab();
+        return renderStudentProfilesContent();
+      case "reports":
+        return renderReportsContent();
       default:
-        return renderSyllabusTab();
+        return renderSyllabusContent();
     }
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)]">
-      <div className="flex h-full">
-        {/* Vertical Tabs Sidebar */}
-        <div className="w-64 bg-white border-r border-material-gray-200 p-4 hidden lg:block">
-          <h2 className="text-xl font-semibold text-material-gray-900 mb-6">
-            Teacher Dashboard
-          </h2>
+    <div className="min-h-screen flex flex-row">
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
 
-          <nav className="space-y-2">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={cn(
-                  "w-full flex items-center px-3 py-3 text-left rounded-lg transition-colors",
-                  activeTab === tab.id
-                    ? "bg-material-blue text-white shadow-material"
-                    : "text-material-gray-700 hover:bg-material-gray-100",
-                )}
-              >
-                <tab.icon
-                  className={cn(
-                    "h-5 w-5 mr-3",
-                    activeTab === tab.id
-                      ? "text-white"
-                      : "text-material-gray-500",
-                  )}
-                />
-                <span className="font-medium">{tab.name}</span>
-              </button>
-            ))}
-          </nav>
-        </div>
-
-        {/* Mobile Tab Selector */}
-        <div className="lg:hidden w-full">
-          <div className="bg-white border-b border-material-gray-200 p-4">
-            <select
-              value={activeTab}
-              onChange={(e) => setActiveTab(e.target.value)}
-              className="material-input w-full"
+      {/* Mobile Header */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 bg-white border-b border-gray-200 px-4 py-3 z-30">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="p-2 rounded-lg hover:bg-gray-100"
             >
-              {tabs.map((tab) => (
-                <option key={tab.id} value={tab.id}>
-                  {tab.name}
-                </option>
-              ))}
-            </select>
+              <Menu className="h-5 w-5" />
+            </button>
+            <h1 className="ml-3 text-lg font-semibold text-gray-900">
+              Teacher Dashboard
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      {/* Sidebar */}
+      <div
+        className={cn(
+          "bg-gray-50 w-1/5 min-h-screen overflow-y-auto border-r border-gray-200 fixed lg:static z-50 transform transition-transform",
+          mobileMenuOpen
+            ? "translate-x-0"
+            : "-translate-x-full lg:translate-x-0",
+        )}
+      >
+        {/* Logo */}
+        <div className="p-4 border-b border-gray-200">
+          <div className="flex items-center lg:hidden mb-4">
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-2 rounded-lg hover:bg-gray-100"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="flex items-center">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+              <GraduationCap className="h-5 w-5 text-white" />
+            </div>
+            <div className="ml-3">
+              <h2 className="text-sm font-semibold text-gray-900">
+                EduPlatform
+              </h2>
+              <p className="text-xs text-gray-600">Teacher Portal</p>
+            </div>
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
-          {renderTabContent()}
+        {/* Navigation */}
+        <nav className="p-4">
+          <div className="space-y-1">
+            {navigationItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setActiveSection(item.id);
+                  setMobileMenuOpen(false);
+                }}
+                className={cn(
+                  "w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors text-left",
+                  activeSection === item.id
+                    ? "bg-blue-100 text-blue-700"
+                    : "text-gray-700 hover:bg-gray-100",
+                )}
+              >
+                <item.icon className="h-5 w-5 mr-3" />
+                {item.name}
+              </button>
+            ))}
+          </div>
+        </nav>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 lg:w-4/5 pt-16 lg:pt-0">
+        <div className="p-6">
+          <div className="mb-6 hidden lg:block">
+            <h1 className="text-2xl font-bold text-gray-900">
+              Teacher Dashboard
+            </h1>
+            <p className="text-gray-600">
+              Manage your curriculum, students, and teaching materials
+            </p>
+          </div>
+
+          {renderContent()}
         </div>
       </div>
     </div>
