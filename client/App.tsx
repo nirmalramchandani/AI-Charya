@@ -11,6 +11,8 @@ import Index from "./pages/Index";
 import CurriculumUpload from "./pages/CurriculumUpload";
 import LecturePlateGenerator from "./pages/LecturePlateGenerator";
 import StudentContextBuilder from "./pages/StudentContextBuilder";
+import TeacherDashboard from "./pages/TeacherDashboard";
+import ReportsAnalytics from "./pages/ReportsAnalytics";
 import NotFound from "./pages/NotFound";
 
 // Placeholder components for remaining routes
