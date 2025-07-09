@@ -1,0 +1,192 @@
+import { useState } from "react";
+import { Download, ExternalLink } from "lucide-react";
+
+export default function Footer() {
+  const [showInstallPrompt, setShowInstallPrompt] = useState(true);
+
+  const handleInstallPWA = () => {
+    // In a real PWA, this would trigger the beforeinstallprompt event
+    alert(
+      "PWA installation would be triggered here. The app can be installed on your device for offline access.",
+    );
+    setShowInstallPrompt(false);
+  };
+
+  return (
+    <footer className="bg-material-gray-900 text-white">
+      {/* PWA Install Banner */}
+      {showInstallPrompt && (
+        <div className="bg-material-blue px-4 py-3">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="flex items-center">
+              <Download className="h-5 w-5 mr-2" />
+              <span className="text-sm font-medium">
+                Install EduPlatform for offline access and better performance
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleInstallPWA}
+                className="bg-white text-material-blue px-4 py-1 rounded-lg text-sm font-medium hover:bg-material-gray-100 transition-colors"
+              >
+                Install App
+              </button>
+              <button
+                onClick={() => setShowInstallPrompt(false)}
+                className="text-material-blue-100 hover:text-white text-sm"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Footer Content */}
+      <div className="px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {/* Brand Section */}
+            <div className="col-span-1 md:col-span-2">
+              <div className="flex items-center mb-4">
+                <div className="h-8 w-8 bg-material-blue rounded-lg flex items-center justify-center mr-3">
+                  <span className="text-white font-bold text-lg">E</span>
+                </div>
+                <span className="text-xl font-semibold">EduPlatform</span>
+              </div>
+              <p className="text-material-gray-300 text-sm mb-4 max-w-md">
+                Streamline curriculum management, generate dynamic lectures, and
+                track student progress with our comprehensive educational
+                platform.
+              </p>
+              <div className="flex items-center space-x-4">
+                <span className="text-sm text-material-gray-400">
+                  Built with ❤️ for educators
+                </span>
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h3 className="font-semibold mb-4">Platform</h3>
+              <ul className="space-y-2 text-sm text-material-gray-300">
+                <li>
+                  <a href="/" className="hover:text-white transition-colors">
+                    Home
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/curriculum"
+                    className="hover:text-white transition-colors"
+                  >
+                    Curriculum Upload
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/lectures"
+                    className="hover:text-white transition-colors"
+                  >
+                    Lecture Generator
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/dashboard"
+                    className="hover:text-white transition-colors"
+                  >
+                    Dashboard
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/reports"
+                    className="hover:text-white transition-colors"
+                  >
+                    Reports
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Support Links */}
+            <div>
+              <h3 className="font-semibold mb-4">Support</h3>
+              <ul className="space-y-2 text-sm text-material-gray-300">
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-white transition-colors flex items-center"
+                  >
+                    About
+                    <ExternalLink className="h-3 w-3 ml-1" />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-white transition-colors flex items-center"
+                  >
+                    Contact
+                    <ExternalLink className="h-3 w-3 ml-1" />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-white transition-colors flex items-center"
+                  >
+                    Terms of Service
+                    <ExternalLink className="h-3 w-3 ml-1" />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-white transition-colors flex items-center"
+                  >
+                    Privacy Policy
+                    <ExternalLink className="h-3 w-3 ml-1" />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-white transition-colors flex items-center"
+                  >
+                    Help Center
+                    <ExternalLink className="h-3 w-3 ml-1" />
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="border-t border-material-gray-700 mt-8 pt-6">
+            <div className="flex flex-col md:flex-row items-center justify-between">
+              <div className="text-sm text-material-gray-400 mb-4 md:mb-0">
+                © 2024 EduPlatform. All rights reserved. | Made for modern
+                education.
+              </div>
+              <div className="flex items-center space-x-4">
+                <span className="text-xs text-material-gray-500">
+                  Version 2.1.0
+                </span>
+                <div className="h-4 border-l border-material-gray-600"></div>
+                <button
+                  onClick={handleInstallPWA}
+                  className="text-xs text-material-blue-400 hover:text-material-blue-300 transition-colors flex items-center"
+                >
+                  <Download className="h-3 w-3 mr-1" />
+                  Install App
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
