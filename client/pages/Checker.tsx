@@ -117,7 +117,7 @@ export default function Checker() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="relative bg-material-gray-100 rounded-lg h-48 mb-4 flex items-center justify-center overflow-hidden">
+              <div className="relative bg-material-gray-100 rounded-lg h-64 mb-4 flex items-center justify-center overflow-hidden">
                 {isRecording ? (
                   <div className="absolute inset-0 bg-gradient-to-br from-material-blue-50 to-material-blue-100 flex items-center justify-center">
                     <div className="text-center">
