@@ -231,7 +231,7 @@ export default function Checker() {
                 Student Details
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="h-full flex flex-col space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="subject">Subject</Label>
                 <Input
@@ -262,9 +262,19 @@ export default function Checker() {
                 />
               </div>
 
-              <div className="mt-6 p-4 bg-material-gray-50 rounded-lg">
+              <div className="space-y-2">
+                <Label htmlFor="studentName">Student Name</Label>
+                <Input id="studentName" placeholder="Enter student name" />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="grade">Grade</Label>
+                <Input id="grade" placeholder="e.g., 8th Grade" />
+              </div>
+
+              <div className="flex-1 p-4 bg-material-gray-50 rounded-lg flex flex-col justify-center">
                 <h4 className="font-medium text-material-gray-900 mb-2">
-                  To get started:
+                  Quick Setup:
                 </h4>
                 <ul className="text-sm text-material-gray-600 space-y-1">
                   <li>• Fill in student details</li>
