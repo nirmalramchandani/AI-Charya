@@ -293,9 +293,9 @@ export default function Checker() {
                 Analysis Results
               </CardTitle>
             </CardHeader>
-            <CardContent className="h-full flex flex-col">
+            <CardContent className="p-4 overflow-y-auto max-h-[500px]">
               {analysis ? (
-                <div className="space-y-4 flex-1">
+                <div className="space-y-3">
                   {/* Header */}
                   <div className="border-b border-material-gray-200 pb-3">
                     <h3 className="text-lg font-semibold text-material-gray-900 mb-2">
