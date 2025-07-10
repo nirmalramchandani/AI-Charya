@@ -204,13 +204,26 @@ export default function ClassMaterial() {
                     <div className="lg:col-span-3">
                       <div className="space-y-2">
                         {chapter.hasPlate ? (
-                          <Button className="w-full bg-material-yellow hover:bg-material-yellow-600 text-material-gray-900 hover:text-white rounded-xl font-semibold transition-all duration-200">
+                          <Button
+                            onClick={() =>
+                              handleViewPlate(chapter.title, chapter.name)
+                            }
+                            className="w-full bg-material-yellow hover:bg-material-yellow-600 text-material-gray-900 hover:text-white rounded-xl font-semibold transition-all duration-200"
+                          >
                             <BookOpen className="h-4 w-4 mr-2" />
                             View Plate
                           </Button>
                         ) : (
                           <>
-                            <Button className="w-full bg-material-blue hover:bg-material-blue-600 text-white rounded-xl font-semibold transition-all duration-200">
+                            <Button
+                              onClick={() =>
+                                handleCreateLecturePlate(
+                                  chapter.title,
+                                  chapter.name,
+                                )
+                              }
+                              className="w-full bg-material-blue hover:bg-material-blue-600 text-white rounded-xl font-semibold transition-all duration-200"
+                            >
                               <BookOpen className="h-4 w-4 mr-2" />
                               Create Lecture Plate
                             </Button>
