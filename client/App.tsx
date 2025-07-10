@@ -56,12 +56,15 @@ const App = () => (
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/curriculum" element={<CurriculumUpload />} />
+                  <Route path="/knowledge-base" element={<KnowledgeBase />} />
                   <Route path="/lectures" element={<LecturePlateGenerator />} />
                   <Route
                     path="/lecture-plate-generator"
                     element={<LecturePlateGenerator />}
                   />
                   <Route path="/students" element={<StudentContextBuilder />} />
+                  <Route path="/student-profile" element={<StudentProfile />} />
+                  <Route path="/smart-match" element={<SmartMatchSyllabus />} />
                   <Route path="/dashboard" element={<TeacherDashboard />} />
                   <Route path="/reports" element={<ReportsAnalytics />} />
                   <Route path="/class-material" element={<ClassMaterial />} />
