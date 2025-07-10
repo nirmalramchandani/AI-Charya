@@ -207,7 +207,7 @@ export default function Checker() {
                 ))}
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-2 mt-4">
                 <Input
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
