@@ -58,6 +58,36 @@ export default function ClassMaterial() {
     console.log("Filters applied:", { selectedClass, selectedSubject });
   };
 
+  const handleCreateLecturePlate = (
+    chapterTitle: string,
+    chapterName: string,
+  ) => {
+    navigate(
+      `/lecture-plate-generator?chapter=${encodeURIComponent(chapterTitle)}&name=${encodeURIComponent(chapterName)}`,
+    );
+  };
+
+  const handleViewPlate = (chapterTitle: string, chapterName: string) => {
+    // Show dummy data alert for now
+    alert(
+      `Viewing lecture plate for ${chapterTitle}: ${chapterName}\n\nDummy Content:\n- Introduction to ${chapterName}\n- Key Learning Points\n- Activities and Exercises\n- Assessment Questions`,
+    );
+  };
+
+  const handleTakeTest = (chapterTitle: string, chapterName: string) => {
+    navigate(
+      `/quiz?chapter=${encodeURIComponent(chapterTitle)}&name=${encodeURIComponent(chapterName)}`,
+    );
+  };
+
+  const handleCheckExercise = () => {
+    navigate("/checker");
+  };
+
+  const handleSeeResult = () => {
+    navigate("/checker");
+  };
+
   return (
     <div className="min-h-screen bg-material-gray-50">
       {/* Page Header - Full Width */}
