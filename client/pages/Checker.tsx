@@ -3,34 +3,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Camera,
-  Upload,
-  Send,
-  User,
-  Bot,
-  Scan,
-  X,
-  MessageCircle,
-} from "lucide-react";
+import { Camera, Upload, User, Scan } from "lucide-react";
 
 export default function Checker() {
   const [isRecording, setIsRecording] = useState(false);
-  const [isAssistantOpen, setIsAssistantOpen] = useState(false);
   const [studentDetails, setStudentDetails] = useState({
     subject: "",
     testType: "",
     studentName: "",
     grade: "",
   });
-  const [chatMessages, setChatMessages] = useState([
-    {
-      type: "assistant",
-      content:
-        "Hello! I'm your AI assistant. Upload homework using the camera to get started with analysis.",
-    },
-  ]);
-  const [newMessage, setNewMessage] = useState("");
   const [analysis, setAnalysis] = useState({
     subject: "Mathematics – Algebra",
     submittedOn: "July 9, 2025, 5:32 PM",
@@ -78,21 +60,6 @@ export default function Checker() {
     }
   };
 
-  const handleSendMessage = () => {
-    if (newMessage.trim()) {
-      setChatMessages([
-        ...chatMessages,
-        { type: "user", content: newMessage },
-        {
-          type: "assistant",
-          content:
-            "I'm analyzing your request. Please upload the homework image for detailed feedback.",
-        },
-      ]);
-      setNewMessage("");
-    }
-  };
-
   const handleStudentDetailChange = (field: string, value: string) => {
     setStudentDetails((prev) => ({
       ...prev,
@@ -101,61 +68,74 @@ export default function Checker() {
   };
 
   return (
-    <div className="p-6 min-h-screen bg-material-gray-50 relative">
+    <div className="p-6 min-h-screen bg-material-gray-50">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-6">
+        <div className="mb-8">
           <h1 className="text-3xl font-bold text-material-gray-900 mb-2">
             Homework Checker
           </h1>
-          <p className="text-material-gray-600">
+          <p className="text-lg text-material-gray-600">
             Upload homework using the camera and get AI-powered analysis and
             feedback
           </p>
         </div>
 
-        {/* 3-Section Grid Layout (without AI Assistant) */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Top Section - Camera and Student Details */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Camera Section */}
-          <Card className="material-card bg-material-blue-50 border-material-blue-200">
+          <Card className="material-card bg-gradient-to-br from-material-blue-50 to-material-blue-100 border-material-blue-200 shadow-material-md">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Camera className="h-5 w-5 text-material-blue" />
-                Camera Section
+              <CardTitle className="flex items-center gap-3">
+                <div className="p-2 bg-material-blue rounded-lg">
+                  <Camera className="h-6 w-6 text-white" />
+                </div>
+                <span className="text-xl">Camera Section</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="relative bg-material-gray-100 rounded-lg h-80 mb-4 overflow-hidden">
+              <div className="relative bg-white rounded-xl h-80 mb-6 overflow-hidden shadow-inner">
                 {isRecording ? (
-                  <div className="absolute inset-0 bg-gradient-to-br from-material-blue-50 to-material-blue-100 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center">
                     <div className="text-center">
-                      <div className="w-16 h-16 bg-red-500 rounded-full mx-auto mb-2 animate-pulse"></div>
-                      <p className="text-material-gray-700 font-medium">
+                      <div className="w-20 h-20 bg-red-500 rounded-full mx-auto mb-4 animate-pulse flex items-center justify-center">
+                        <div className="w-4 h-4 bg-white rounded-full"></div>
+                      </div>
+                      <p className="text-red-700 font-semibold text-lg">
                         Recording...
                       </p>
-                      <p className="text-sm text-material-gray-600">
-                        Students on camera
-                      </p>
+                      <p className="text-red-600">Point camera at homework</p>
                     </div>
                   </div>
                 ) : (
                   <img
                     src="https://cdn.builder.io/api/v1/image/assets%2Fcd5b7d8780cb43cba84933df3ba96784%2Fc0f7c8c0eec848afaebf8041f5431f93?format=webp&width=800"
                     alt="Student holding homework"
-                    className="w-full h-full object-cover rounded-lg"
+                    className="w-full h-full object-cover"
                   />
                 )}
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <Button
                   onClick={handleCameraToggle}
-                  className={`w-full ${
+                  className={cn(
+                    "w-full py-3 text-lg font-semibold rounded-xl transition-all duration-300 transform hover:scale-105",
                     isRecording
-                      ? "bg-red-500 hover:bg-red-600 text-white"
-                      : "bg-material-blue hover:bg-material-blue-600 text-white"
-                  }`}
+                      ? "bg-red-500 hover:bg-red-600 text-white shadow-lg"
+                      : "bg-material-blue hover:bg-material-blue-600 text-white shadow-lg",
+                  )}
                 >
-                  {isRecording ? "Stop Camera" : "Start Camera"}
+                  {isRecording ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+                      Stop Recording
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center gap-2">
+                      <Camera className="h-5 w-5" />
+                      Start Camera
+                    </div>
+                  )}
                 </Button>
 
                 <input
@@ -168,9 +148,9 @@ export default function Checker() {
                 <Button
                   onClick={() => fileInputRef.current?.click()}
                   variant="outline"
-                  className="w-full border-material-gray-300 hover:bg-material-gray-50"
+                  className="w-full py-3 text-lg font-semibold rounded-xl border-2 border-material-blue text-material-blue hover:bg-material-blue hover:text-white transition-all duration-300 transform hover:scale-105"
                 >
-                  <Upload className="h-4 w-4 mr-2" />
+                  <Upload className="h-5 w-5 mr-2" />
                   Upload Homework
                 </Button>
               </div>
@@ -178,309 +158,262 @@ export default function Checker() {
           </Card>
 
           {/* Student Details */}
-          <Card className="material-card bg-material-orange-50 border-material-orange-200">
+          <Card className="material-card bg-gradient-to-br from-material-orange-50 to-material-orange-100 border-material-orange-200 shadow-material-md">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5 text-material-orange" />
-                Student Details
+              <CardTitle className="flex items-center gap-3">
+                <div className="p-2 bg-material-orange rounded-lg">
+                  <User className="h-6 w-6 text-white" />
+                </div>
+                <span className="text-xl">Student Details</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="subject">Subject</Label>
-                <Input
-                  id="subject"
-                  value={studentDetails.subject}
-                  onChange={(e) =>
-                    handleStudentDetailChange("subject", e.target.value)
-                  }
-                  placeholder="e.g., Mathematics"
-                  className="border-material-gray-300 focus:border-material-orange focus:ring-material-orange"
-                />
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="subject"
+                    className="text-material-gray-700 font-medium"
+                  >
+                    Subject
+                  </Label>
+                  <Input
+                    id="subject"
+                    value={studentDetails.subject}
+                    onChange={(e) =>
+                      handleStudentDetailChange("subject", e.target.value)
+                    }
+                    placeholder="e.g., Mathematics"
+                    className="border-2 border-material-gray-300 focus:border-material-orange focus:ring-material-orange rounded-lg"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="testType"
+                    className="text-material-gray-700 font-medium"
+                  >
+                    Test Type
+                  </Label>
+                  <Input
+                    id="testType"
+                    value={studentDetails.testType}
+                    onChange={(e) =>
+                      handleStudentDetailChange("testType", e.target.value)
+                    }
+                    placeholder="e.g., Quiz, Assignment, Exam"
+                    className="border-2 border-material-gray-300 focus:border-material-orange focus:ring-material-orange rounded-lg"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="studentName"
+                    className="text-material-gray-700 font-medium"
+                  >
+                    Student Name
+                  </Label>
+                  <Input
+                    id="studentName"
+                    value={studentDetails.studentName}
+                    onChange={(e) =>
+                      handleStudentDetailChange("studentName", e.target.value)
+                    }
+                    placeholder="Enter student name"
+                    className="border-2 border-material-gray-300 focus:border-material-orange focus:ring-material-orange rounded-lg"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="grade"
+                    className="text-material-gray-700 font-medium"
+                  >
+                    Grade
+                  </Label>
+                  <Input
+                    id="grade"
+                    value={studentDetails.grade}
+                    onChange={(e) =>
+                      handleStudentDetailChange("grade", e.target.value)
+                    }
+                    placeholder="e.g., 8th Grade"
+                    className="border-2 border-material-gray-300 focus:border-material-orange focus:ring-material-orange rounded-lg"
+                  />
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="testType">Test Type</Label>
-                <Input
-                  id="testType"
-                  value={studentDetails.testType}
-                  onChange={(e) =>
-                    handleStudentDetailChange("testType", e.target.value)
-                  }
-                  placeholder="e.g., Quiz, Assignment, Exam"
-                  className="border-material-gray-300 focus:border-material-orange focus:ring-material-orange"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="studentName">Student Name</Label>
-                <Input
-                  id="studentName"
-                  value={studentDetails.studentName}
-                  onChange={(e) =>
-                    handleStudentDetailChange("studentName", e.target.value)
-                  }
-                  placeholder="Enter student name"
-                  className="border-material-gray-300 focus:border-material-orange focus:ring-material-orange"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="grade">Grade</Label>
-                <Input
-                  id="grade"
-                  value={studentDetails.grade}
-                  onChange={(e) =>
-                    handleStudentDetailChange("grade", e.target.value)
-                  }
-                  placeholder="e.g., 8th Grade"
-                  className="border-material-gray-300 focus:border-material-orange focus:ring-material-orange"
-                />
-              </div>
-
-              <div className="p-3 bg-material-gray-50 rounded-lg">
-                <h4 className="font-medium text-material-gray-900 mb-2">
-                  Quick Setup:
+              <div className="p-4 bg-white rounded-xl border border-material-orange-200 shadow-sm">
+                <h4 className="font-semibold text-material-gray-900 mb-3 flex items-center gap-2">
+                  <div className="w-2 h-2 bg-material-orange rounded-full"></div>
+                  Quick Setup Guide:
                 </h4>
-                <ul className="text-sm text-material-gray-600 space-y-1">
-                  <li>• Fill in student details</li>
-                  <li>• Use camera or upload homework</li>
-                  <li>• Get instant AI analysis</li>
+                <ul className="text-sm text-material-gray-700 space-y-2">
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-material-blue rounded-full"></span>
+                    Fill in student details above
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-material-green rounded-full"></span>
+                    Use camera or upload homework
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-material-yellow rounded-full"></span>
+                    Get instant AI analysis below
+                  </li>
                 </ul>
               </div>
             </CardContent>
           </Card>
+        </div>
 
-          {/* Analysis Results */}
-          <Card className="material-card bg-material-yellow-50 border-material-yellow-200">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Scan className="h-5 w-5 text-material-yellow-600" />
-                Analysis Results
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="overflow-y-auto max-h-[500px]">
-              {analysis ? (
-                <div className="space-y-4">
-                  {/* Header */}
-                  <div className="border-b border-material-gray-200 pb-3">
-                    <h3 className="text-lg font-semibold text-material-gray-900 mb-1">
-                      📄 Homework Analysis
+        {/* Analysis Results Section - Moved Down */}
+        <Card className="material-card bg-gradient-to-br from-material-yellow-50 to-material-green-50 border-material-yellow-200 shadow-material-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-r from-material-yellow to-material-green rounded-lg">
+                <Scan className="h-6 w-6 text-white" />
+              </div>
+              <span className="text-2xl">📊 Analysis Results</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            {analysis ? (
+              <div className="space-y-6">
+                {/* Header */}
+                <div className="bg-white rounded-xl p-4 border border-material-gray-200 shadow-sm">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-xl font-bold text-material-gray-900">
+                      📄 {analysis.subject}
                     </h3>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-material-gray-600">
-                        {analysis.subject}
-                      </span>
-                      <span className="text-material-blue font-bold text-lg">
-                        {analysis.score}
-                      </span>
+                    <div className="text-3xl font-bold text-material-blue">
+                      {analysis.score}
                     </div>
-                    <div className="text-xs text-material-gray-500 mt-1">
-                      Submitted: {analysis.submittedOn} • Status:{" "}
+                  </div>
+                  <div className="flex items-center justify-between text-sm text-material-gray-600">
+                    <span>Submitted: {analysis.submittedOn}</span>
+                    <span className="bg-material-green-100 text-material-green-800 px-3 py-1 rounded-full font-medium">
                       {analysis.status}
-                    </div>
+                    </span>
                   </div>
+                </div>
 
-                  {/* Performance Bar */}
-                  <div className="bg-material-gray-50 rounded-lg p-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium">Performance</span>
-                      <span className="text-sm text-material-gray-600">
-                        80%
-                      </span>
-                    </div>
-                    <div className="w-full bg-material-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-material-green h-2 rounded-full transition-all duration-500"
-                        style={{ width: "80%" }}
-                      ></div>
-                    </div>
+                {/* Performance Bar */}
+                <div className="bg-white rounded-xl p-4 border border-material-gray-200 shadow-sm">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-lg font-semibold text-material-gray-900">
+                      Overall Performance
+                    </span>
+                    <span className="text-lg font-bold text-material-green-600">
+                      80%
+                    </span>
                   </div>
+                  <div className="w-full bg-material-gray-200 rounded-full h-4">
+                    <div
+                      className="bg-gradient-to-r from-material-green to-material-blue h-4 rounded-full transition-all duration-1000 ease-out"
+                      style={{ width: "80%" }}
+                    ></div>
+                  </div>
+                </div>
 
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {/* What Went Right */}
-                  <div>
-                    <h4 className="font-medium text-material-green-600 mb-2 text-sm">
-                      ✅ What Went Right:
+                  <div className="bg-white rounded-xl p-5 border border-material-green-200 shadow-sm">
+                    <h4 className="font-bold text-material-green-700 mb-4 text-lg flex items-center gap-2">
+                      <div className="w-3 h-3 bg-material-green rounded-full"></div>
+                      ✅ Correct Answers
                     </h4>
-                    <ul className="space-y-1">
+                    <ul className="space-y-3">
                       {analysis.correct.map((item, index) => (
                         <li
                           key={index}
-                          className="text-xs text-material-gray-700 pl-3"
+                          className="text-sm text-material-gray-700 pl-4 border-l-2 border-material-green-200"
                         >
-                          • {item}
+                          {item}
                         </li>
                       ))}
                     </ul>
                   </div>
 
                   {/* What Went Wrong */}
-                  <div>
-                    <h4 className="font-medium text-red-600 mb-2 text-sm">
-                      ❌ What Went Wrong:
+                  <div className="bg-white rounded-xl p-5 border border-red-200 shadow-sm">
+                    <h4 className="font-bold text-red-700 mb-4 text-lg flex items-center gap-2">
+                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>❌
+                      Areas to Fix
                     </h4>
-                    <ul className="space-y-1">
+                    <ul className="space-y-3">
                       {analysis.incorrect.map((item, index) => (
                         <li
                           key={index}
-                          className="text-xs text-material-gray-700 pl-3"
+                          className="text-sm text-material-gray-700 pl-4 border-l-2 border-red-200"
                         >
-                          • {item}
+                          {item}
                         </li>
                       ))}
                     </ul>
                   </div>
 
                   {/* Improvements */}
-                  <div>
-                    <h4 className="font-medium text-material-orange mb-2 text-sm">
-                      🔁 Suggested Improvements:
+                  <div className="bg-white rounded-xl p-5 border border-material-orange-200 shadow-sm">
+                    <h4 className="font-bold text-material-orange-700 mb-4 text-lg flex items-center gap-2">
+                      <div className="w-3 h-3 bg-material-orange rounded-full"></div>
+                      🔁 Suggestions
                     </h4>
-                    <ul className="space-y-1">
+                    <ul className="space-y-3">
                       {analysis.improvements.map((item, index) => (
                         <li
                           key={index}
-                          className="text-xs text-material-gray-700 pl-3"
+                          className="text-sm text-material-gray-700 pl-4 border-l-2 border-material-orange-200"
                         >
-                          • {item}
+                          {item}
                         </li>
                       ))}
                     </ul>
                   </div>
+                </div>
 
-                  {/* Quick Stats */}
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="text-center p-2 bg-material-green-50 rounded">
-                      <div className="text-lg font-bold text-material-green-600">
-                        6
-                      </div>
-                      <div className="text-xs text-material-gray-600">
-                        Correct
-                      </div>
+                {/* Quick Stats */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-white rounded-xl border border-material-green-200 shadow-sm">
+                    <div className="text-3xl font-bold text-material-green-600 mb-1">
+                      6
                     </div>
-                    <div className="text-center p-2 bg-red-50 rounded">
-                      <div className="text-lg font-bold text-red-600">2</div>
-                      <div className="text-xs text-material-gray-600">
-                        Wrong
-                      </div>
+                    <div className="text-sm font-medium text-material-gray-600">
+                      Correct
                     </div>
-                    <div className="text-center p-2 bg-material-orange-50 rounded">
-                      <div className="text-lg font-bold text-material-orange-600">
-                        2
-                      </div>
-                      <div className="text-xs text-material-gray-600">
-                        Skipped
-                      </div>
+                  </div>
+                  <div className="text-center p-4 bg-white rounded-xl border border-red-200 shadow-sm">
+                    <div className="text-3xl font-bold text-red-600 mb-1">
+                      2
+                    </div>
+                    <div className="text-sm font-medium text-material-gray-600">
+                      Wrong
+                    </div>
+                  </div>
+                  <div className="text-center p-4 bg-white rounded-xl border border-material-orange-200 shadow-sm">
+                    <div className="text-3xl font-bold text-material-orange-600 mb-1">
+                      2
+                    </div>
+                    <div className="text-sm font-medium text-material-gray-600">
+                      Skipped
                     </div>
                   </div>
                 </div>
-              ) : (
-                <div className="text-center py-8 flex flex-col justify-center">
-                  <Scan className="h-12 w-12 text-material-gray-400 mx-auto mb-4" />
-                  <p className="text-material-gray-600 mb-2">No analysis yet</p>
-                  <p className="text-sm text-material-gray-500">
-                    Upload homework to see detailed analysis and feedback
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {/* Floating AI Assistant Button */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button
-          onClick={() => setIsAssistantOpen(!isAssistantOpen)}
-          className="w-16 h-16 rounded-full shadow-lg bg-material-blue hover:bg-material-blue-600 text-white flex items-center justify-center p-0"
-        >
-          <img
-            src="https://cdn.builder.io/api/v1/image/assets%2F51a4707e6cb3452bb5e8ffef0fab69d7%2F4e7bfb36cd894a0d96cca31a023e813b?format=webp&width=800"
-            alt="AI Assistant"
-            className="w-10 h-10 rounded-full"
-          />
-        </Button>
-      </div>
-
-      {/* Floating AI Assistant Chat */}
-      {isAssistantOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-80 bg-white rounded-lg shadow-xl border border-material-gray-200">
-          <div className="flex items-center justify-between p-4 border-b border-material-gray-200 bg-material-green-50 rounded-t-lg">
-            <div className="flex items-center gap-2">
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets%2F51a4707e6cb3452bb5e8ffef0fab69d7%2F4e7bfb36cd894a0d96cca31a023e813b?format=webp&width=800"
-                alt="AI Assistant"
-                className="w-6 h-6 rounded-full"
-              />
-              <span className="font-medium text-material-gray-900">
-                AI Assistant
-              </span>
-            </div>
-            <Button
-              onClick={() => setIsAssistantOpen(false)}
-              variant="ghost"
-              size="sm"
-              className="p-1 h-8 w-8"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-
-          <div className="flex flex-col h-80">
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
-              {chatMessages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`flex ${
-                    message.type === "user" ? "justify-end" : "justify-start"
-                  }`}
-                >
-                  <div
-                    className={`max-w-[80%] p-3 rounded-lg ${
-                      message.type === "user"
-                        ? "bg-material-blue text-white"
-                        : "bg-material-gray-100 text-material-gray-900"
-                    }`}
-                  >
-                    <div className="flex items-start gap-2">
-                      {message.type === "assistant" && (
-                        <img
-                          src="https://cdn.builder.io/api/v1/image/assets%2F51a4707e6cb3452bb5e8ffef0fab69d7%2F4e7bfb36cd894a0d96cca31a023e813b?format=webp&width=800"
-                          alt="AI"
-                          className="w-4 h-4 rounded-full mt-0.5"
-                        />
-                      )}
-                      {message.type === "user" && (
-                        <User className="h-4 w-4 mt-0.5" />
-                      )}
-                      <p className="text-sm">{message.content}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="border-t border-material-gray-200 p-4">
-              <div className="flex gap-2">
-                <Input
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Type your message..."
-                  onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-                  className="flex-1"
-                />
-                <Button
-                  onClick={handleSendMessage}
-                  size="sm"
-                  className="bg-material-green hover:bg-material-green-600 text-white"
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
+            ) : (
+              <div className="text-center py-12 bg-white rounded-xl border border-material-gray-200">
+                <Scan className="h-16 w-16 text-material-gray-400 mx-auto mb-4" />
+                <p className="text-xl text-material-gray-600 mb-2">
+                  No analysis yet
+                </p>
+                <p className="text-material-gray-500">
+                  Upload homework using the camera or file upload to see
+                  detailed analysis and feedback
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
