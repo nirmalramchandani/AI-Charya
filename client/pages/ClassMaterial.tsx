@@ -240,22 +240,36 @@ export default function ClassMaterial() {
                     {/* Right Column - Action Buttons */}
                     <div className="lg:col-span-6">
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                        <Button className="bg-material-blue hover:bg-material-blue-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm">
+                        <Button
+                          onClick={() =>
+                            handleTakeTest(chapter.title, chapter.name)
+                          }
+                          className="bg-material-blue hover:bg-material-blue-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm"
+                        >
                           <FlaskConical className="h-4 w-4 mr-2" />
                           <span className="text-sm">🧪 Take a Test</span>
                         </Button>
 
-                        <Button className="bg-material-green hover:bg-material-green-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm">
+                        <Button
+                          onClick={handleSeeResult}
+                          className="bg-material-green hover:bg-material-green-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm"
+                        >
                           <BarChart3 className="h-4 w-4 mr-2" />
                           <span className="text-sm">📊 View Result</span>
                         </Button>
 
-                        <Button className="bg-purple-500 hover:bg-purple-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm">
+                        <Button
+                          onClick={handleCheckExercise}
+                          className="bg-purple-500 hover:bg-purple-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm"
+                        >
                           <Camera className="h-4 w-4 mr-2" />
                           <span className="text-sm">📷 Check Exercise</span>
                         </Button>
 
-                        <Button className="bg-material-gray-500 hover:bg-material-gray-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm">
+                        <Button
+                          onClick={handleSeeResult}
+                          className="bg-material-gray-500 hover:bg-material-gray-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm"
+                        >
                           <FileText className="h-4 w-4 mr-2" />
                           <span className="text-sm">📄 See Result</span>
                         </Button>
