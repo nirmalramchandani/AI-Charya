@@ -44,7 +44,7 @@ export default function Index() {
   return (
     <div className="min-h-[calc(100vh-4rem)]">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-material-blue-50 to-material-green-50 py-20 px-4 sm:px-6 lg:px-8">
+      <section className="bg-gradient-to-br from-material-blue-50 to-material-green-50 min-h-screen flex items-center py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
             <div className="flex justify-center mb-8">
