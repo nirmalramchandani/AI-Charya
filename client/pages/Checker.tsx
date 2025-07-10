@@ -297,53 +297,108 @@ export default function Checker() {
               {analysis ? (
                 <div className="space-y-3">
                   {/* Header */}
-                  <div className="border-b border-material-gray-200 pb-3">
-                    <h3 className="text-lg font-semibold text-material-gray-900 mb-2">
-                      📄 Analysis Results
+                  <div className="border-b border-material-gray-200 pb-2">
+                    <h3 className="text-lg font-semibold text-material-gray-900 mb-1">
+                      📄 Homework Analysis
                     </h3>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-material-gray-600">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-material-gray-600">
                         {analysis.subject}
                       </span>
-                      <span className="text-material-blue font-bold text-xl">
+                      <span className="text-material-blue font-bold text-lg">
                         {analysis.score}
                       </span>
                     </div>
+                    <div className="text-xs text-material-gray-500 mt-1">
+                      Submitted: {analysis.submittedOn} • Status:{" "}
+                      {analysis.status}
+                    </div>
                   </div>
 
-                  {/* Score Visualization */}
-                  <div className="bg-material-gray-50 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
+                  {/* Performance Bar */}
+                  <div className="bg-material-gray-50 rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-medium">Performance</span>
                       <span className="text-sm text-material-gray-600">
                         80%
                       </span>
                     </div>
-                    <div className="w-full bg-material-gray-200 rounded-full h-3">
+                    <div className="w-full bg-material-gray-200 rounded-full h-2">
                       <div
-                        className="bg-material-green h-3 rounded-full"
+                        className="bg-material-green h-2 rounded-full"
                         style={{ width: "80%" }}
                       ></div>
                     </div>
                   </div>
 
+                  {/* What Went Right */}
+                  <div>
+                    <h4 className="font-medium text-material-green-600 mb-1 text-sm">
+                      ✅ What Went Right:
+                    </h4>
+                    <ul className="space-y-1">
+                      {analysis.correct.map((item, index) => (
+                        <li
+                          key={index}
+                          className="text-xs text-material-gray-700 pl-3"
+                        >
+                          • {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* What Went Wrong */}
+                  <div>
+                    <h4 className="font-medium text-red-600 mb-1 text-sm">
+                      ❌ What Went Wrong:
+                    </h4>
+                    <ul className="space-y-1">
+                      {analysis.incorrect.map((item, index) => (
+                        <li
+                          key={index}
+                          className="text-xs text-material-gray-700 pl-3"
+                        >
+                          • {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Improvements */}
+                  <div>
+                    <h4 className="font-medium text-material-orange mb-1 text-sm">
+                      🔁 Suggested Improvements:
+                    </h4>
+                    <ul className="space-y-1">
+                      {analysis.improvements.map((item, index) => (
+                        <li
+                          key={index}
+                          className="text-xs text-material-gray-700 pl-3"
+                        >
+                          • {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
                   {/* Quick Stats */}
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="text-center p-3 bg-material-green-50 rounded-lg">
-                      <div className="text-2xl font-bold text-material-green-600">
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="text-center p-2 bg-material-green-50 rounded">
+                      <div className="text-lg font-bold text-material-green-600">
                         6
                       </div>
                       <div className="text-xs text-material-gray-600">
                         Correct
                       </div>
                     </div>
-                    <div className="text-center p-3 bg-red-50 rounded-lg">
-                      <div className="text-2xl font-bold text-red-600">2</div>
+                    <div className="text-center p-2 bg-red-50 rounded">
+                      <div className="text-lg font-bold text-red-600">2</div>
                       <div className="text-xs text-material-gray-600">
                         Wrong
                       </div>
                     </div>
-                    <div className="text-center p-3 bg-material-orange-50 rounded-lg">
+                    <div className="text-center p-2 bg-material-orange-50 rounded">
                       <div className="text-2xl font-bold text-material-orange-600">
                         2
                       </div>
