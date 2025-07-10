@@ -81,21 +81,21 @@ export default function Index() {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center">
             <div className="flex justify-center mb-8">
-              <div className="p-4 bg-white rounded-2xl shadow-material-md">
+              <div className="p-6 bg-white rounded-3xl shadow-material-lg border-4 border-opacity-20 border-material-blue">
                 <img
                   src="https://cdn.builder.io/api/v1/image/assets%2F51a4707e6cb3452bb5e8ffef0fab69d7%2F4e7bfb36cd894a0d96cca31a023e813b?format=webp&width=800"
                   alt="AI-Charya Logo"
-                  className="h-24 w-24"
+                  className="h-32 w-32"
                 />
               </div>
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 drop-shadow-lg">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-material-gray-900 mb-6">
               Welcome to
               <span
                 className="block"
                 style={{
                   background:
-                    "linear-gradient(45deg, #fff 0%, #f1f1f1 50%, #fff 100%)",
+                    "linear-gradient(45deg, #4285f4 0%, #fbbc05 50%, #34a853 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
@@ -104,7 +104,7 @@ export default function Index() {
                 AI-Charya
               </span>
             </h1>
-            <p className="text-xl text-white mb-8 max-w-3xl mx-auto drop-shadow-md">
+            <p className="text-xl text-material-gray-700 mb-8 max-w-3xl mx-auto font-medium">
               Revolutionize education with AI-powered curriculum management,
               intelligent lecture generation, and comprehensive student progress
               tracking. Build the next generation of intelligent educational
