@@ -14,6 +14,7 @@ import StudentContextBuilder from "./pages/StudentContextBuilder";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import ReportsAnalytics from "./pages/ReportsAnalytics";
 import Checker from "./pages/Checker";
+import ClassMaterial from "./pages/ClassMaterial";
 import NotFound from "./pages/NotFound";
 
 // Placeholder components for remaining routes
