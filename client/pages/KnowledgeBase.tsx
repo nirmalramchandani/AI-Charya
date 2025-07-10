@@ -110,8 +110,8 @@ export default function KnowledgeBase() {
   const [chapterTitle, setChapterTitle] = useState("");
   const [uploadedFiles, setUploadedFiles] =
     useState<UploadedFile[]>(dummyFiles);
-  const [filterClass, setFilterClass] = useState("");
-  const [filterSubject, setFilterSubject] = useState("");
+  const [filterClass, setFilterClass] = useState("all-classes");
+  const [filterSubject, setFilterSubject] = useState("all-subjects");
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleFileUpload = () => {
