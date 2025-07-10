@@ -21,11 +21,22 @@ export default function Footer() {
             {/* Brand Section */}
             <div className="col-span-1 md:col-span-2">
               <div className="flex items-center mb-4">
-                <div className="h-8 w-8 bg-material-blue rounded-lg flex items-center justify-center mr-3">
-                  <span className="text-white font-bold text-lg">E</span>
-                </div>
-                <span className="text-xl font-semibold text-material-gray-900">
-                  EduPlatform
+                <img
+                  src="https://cdn.builder.io/api/v1/image/assets%2F51a4707e6cb3452bb5e8ffef0fab69d7%2F4e7bfb36cd894a0d96cca31a023e813b?format=webp&width=800"
+                  alt="AI-Charya Logo"
+                  className="h-8 w-8 mr-3"
+                />
+                <span
+                  className="text-xl font-semibold"
+                  style={{
+                    background:
+                      "linear-gradient(45deg, #4285f4 0%, #fbbc05 50%, #34a853 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
+                  Adroit's AI-Charya
                 </span>
               </div>
               <p className="text-material-gray-600 text-sm mb-4 max-w-md">
