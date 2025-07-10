@@ -63,13 +63,11 @@ const App = () => (
 
 // Properly manage React root to avoid multiple createRoot calls
 const container = document.getElementById("root")!;
-let root: any;
 
-if (!container._reactRoot) {
-  root = createRoot(container);
-  container._reactRoot = root;
-} else {
-  root = container._reactRoot;
+// Clear any existing content and create a fresh root
+if (container.hasChildNodes()) {
+  container.innerHTML = "";
 }
 
+const root = createRoot(container);
 root.render(<App />);
