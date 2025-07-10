@@ -22,6 +22,7 @@ import {
 interface Chapter {
   id: number;
   title: string;
+  name: string;
   hasPlate: boolean;
 }
 
