@@ -219,58 +219,6 @@ export default function ClassMaterial() {
           </div>
         </div>
       </div>
-
-      {/* Developer Notes - Full Width */}
-      <div className="w-full bg-gradient-to-r from-material-orange-50 to-material-yellow-50 border-t border-material-gray-200">
-        <div className="px-8 lg:px-12 py-8">
-          <Card className="bg-white/80 backdrop-blur-sm border border-material-orange-200 shadow-lg">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-material-orange rounded-lg">
-                  <Settings className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-material-gray-900">
-                  Developer Notes
-                </h3>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-start gap-3 p-3 bg-material-blue-50 rounded-lg border border-material-blue-200">
-                  <AlertCircle className="h-5 w-5 text-material-blue mt-0.5" />
-                  <p className="text-material-blue-800">
-                    <strong>🔧 Note:</strong> Some components are visual/UI-only
-                    in this prototype.
-                  </p>
-                </div>
-
-                <div className="flex items-start gap-3 p-3 bg-material-yellow-50 rounded-lg border border-material-yellow-200">
-                  <AlertCircle className="h-5 w-5 text-material-yellow-600 mt-0.5" />
-                  <p className="text-material-yellow-800">
-                    <strong>��️ Warning:</strong> Class and Subject filters do
-                    not apply real-time logic.
-                  </p>
-                </div>
-
-                <div className="flex items-start gap-3 p-3 bg-material-orange-50 rounded-lg border border-material-orange-200">
-                  <AlertCircle className="h-5 w-5 text-material-orange-600 mt-0.5" />
-                  <p className="text-material-orange-800">
-                    <strong>⚠️ Limitation:</strong> 'View Plate' buttons may
-                    open modal but cannot be closed (demo limitation).
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-4 p-3 bg-material-green-50 rounded-lg border border-material-green-200">
-                <p className="text-material-green-800 text-sm">
-                  <strong>💡 Tip:</strong> This page demonstrates responsive
-                  design patterns with full-width sections and proper mobile
-                  adaptations.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
     </div>
   );
 }
