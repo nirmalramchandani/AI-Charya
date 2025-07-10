@@ -158,7 +158,7 @@ export default function Footer() {
           {/* Bottom Bar */}
           <div className="border-t border-material-gray-200 mt-8 pt-6">
             <div className="text-sm text-material-gray-500">
-              © 2024 EduPlatform. All rights reserved. | Made for modern
+              © 2024 Adroit's AI-Charya. All rights reserved. | Made for modern
               education.
             </div>
           </div>
