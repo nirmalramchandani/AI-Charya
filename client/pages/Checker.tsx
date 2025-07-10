@@ -272,7 +272,7 @@ export default function Checker() {
                 <Input id="grade" placeholder="e.g., 8th Grade" />
               </div>
 
-              <div className="flex-1 p-4 bg-material-gray-50 rounded-lg flex flex-col justify-center">
+              <div className="p-3 bg-material-gray-50 rounded-lg">
                 <h4 className="font-medium text-material-gray-900 mb-2">
                   Quick Setup:
                 </h4>
