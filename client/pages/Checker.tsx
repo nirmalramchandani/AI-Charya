@@ -117,7 +117,7 @@ export default function Checker() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="relative bg-material-gray-100 rounded-lg h-64 mb-4 flex items-center justify-center overflow-hidden">
+              <div className="relative bg-material-gray-100 rounded-lg h-80 mb-4 overflow-hidden">
                 {isRecording ? (
                   <div className="absolute inset-0 bg-gradient-to-br from-material-blue-50 to-material-blue-100 flex items-center justify-center">
                     <div className="text-center">
@@ -134,7 +134,7 @@ export default function Checker() {
                   <img
                     src="https://cdn.builder.io/api/v1/image/assets%2Fcd5b7d8780cb43cba84933df3ba96784%2Fc0f7c8c0eec848afaebf8041f5431f93?format=webp&width=800"
                     alt="Student holding homework"
-                    className="w-full h-full object-contain rounded-lg"
+                    className="w-full h-full object-cover rounded-lg"
                   />
                 )}
               </div>
