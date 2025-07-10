@@ -150,7 +150,7 @@ export default function SmartMatchSyllabus() {
 
     // Filter topics that appear in the selected classes
     const filteredTopics = dummyMatchedTopics.filter((topic) => {
-      if (selectedClass2) {
+      if (selectedClass2 && selectedClass2 !== "no-comparison") {
         return (
           topic.appearsIn.includes(selectedClass1) ||
           topic.appearsIn.includes(selectedClass2)
