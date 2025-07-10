@@ -295,25 +295,26 @@ export default function ReportsAnalytics() {
                   </div>
 
                   {/* Subject Progress Bars */}
-                  <div className="space-y-3">
+                  <div className="flex items-end justify-center space-x-4 mt-4">
                     {Object.entries(student.scores).map(([subject, score]) => (
-                      <div key={subject} className="flex flex-col space-y-1">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-medium text-material-gray-600">
-                            {subject}
-                          </span>
-                          <span
-                            className={`text-xs font-medium ${getScoreColor(score)}`}
-                          >
-                            {score}%
-                          </span>
-                        </div>
-                        <div className="w-full bg-material-gray-200 rounded-full h-2">
+                      <div
+                        key={subject}
+                        className="flex flex-col items-center space-y-2"
+                      >
+                        <span
+                          className={`text-xs font-medium ${getScoreColor(score)}`}
+                        >
+                          {score}%
+                        </span>
+                        <div className="w-8 bg-material-gray-200 rounded-full h-24 flex items-end">
                           <div
-                            className={`h-2 rounded-full ${getScoreBarColor(score)}`}
-                            style={{ width: `${score}%` }}
+                            className={`w-8 rounded-full ${getScoreBarColor(score)}`}
+                            style={{ height: `${score}%` }}
                           />
                         </div>
+                        <span className="text-xs font-medium text-material-gray-600 text-center">
+                          {subject}
+                        </span>
                       </div>
                     ))}
                   </div>
