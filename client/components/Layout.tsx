@@ -24,9 +24,9 @@ interface LayoutProps {
 
 const navigation = [
   { name: "Home", href: "/", icon: GraduationCap },
-  { name: "Curriculum Upload", href: "/curriculum", icon: Upload },
-  { name: "Lecture Generator", href: "/lectures", icon: FileText },
-  { name: "Student Context", href: "/students", icon: Users },
+  { name: "Knowledge Base", href: "/knowledge-base", icon: Upload },
+  { name: "Smart Match", href: "/smart-match", icon: FileText },
+  { name: "Student Profile", href: "/student-profile", icon: Users },
   { name: "Teacher Dashboard", href: "/dashboard", icon: UserCheck },
   { name: "Reports", href: "/reports", icon: BarChart3 },
   { name: "Checker", href: "/checker", icon: CheckSquare },
