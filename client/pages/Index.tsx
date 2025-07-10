@@ -72,9 +72,9 @@ export default function Index() {
               </span>
             </h1>
             <p className="text-xl text-material-gray-600 mb-8 max-w-3xl mx-auto">
-              Streamline curriculum management, generate dynamic lectures, and
-              track student progress with our comprehensive educational
-              platform.
+              Revolutionize education with AI-powered curriculum management,
+              intelligent lecture generation, and comprehensive student progress
+              tracking.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
