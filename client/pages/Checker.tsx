@@ -88,7 +88,7 @@ export default function Checker() {
         </div>
 
         {/* 4-Section Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-200px)]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 auto-rows-fr min-h-[600px]">
           {/* Top Left - Camera Section */}
           <Card className="material-card">
             <CardHeader>
