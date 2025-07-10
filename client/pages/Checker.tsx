@@ -75,7 +75,7 @@ export default function Checker() {
   };
 
   return (
-    <div className="p-6 h-full min-h-screen bg-material-gray-50">
+    <div className="p-6 min-h-screen bg-material-gray-50">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-material-gray-900 mb-2">
