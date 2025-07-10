@@ -1,11 +1,9 @@
 import { useState } from "react";
 import {
   BarChart3,
-  Upload,
   Download,
   AlertTriangle,
   TrendingUp,
-  FileText,
   Users,
   Target,
   BookOpen,
@@ -164,17 +162,9 @@ const generateRecommendations = (student: StudentScore) => {
 };
 
 export default function ReportsAnalytics() {
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<StudentScore | null>(
     null,
   );
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file && file.type === "text/csv") {
-      setUploadedFile(file);
-    }
-  };
 
   const exportReportCard = (student: StudentScore) => {
     // In a real app, this would generate and download a PDF
@@ -193,8 +183,7 @@ export default function ReportsAnalytics() {
             </h1>
           </div>
           <p className="text-material-gray-600">
-            Upload test results, analyze student performance, and generate
-            detailed reports
+            Analyze student performance and generate detailed reports
           </p>
         </div>
 
