@@ -157,17 +157,6 @@ export default function Layout({ children }: LayoutProps) {
           </div>
         </header>
 
-        {/* Desktop page title */}
-        <div className="hidden lg:block bg-white border-b border-material-gray-200 px-6 py-4">
-          <h1 className="text-2xl font-bold text-material-gray-900">
-            {navigation.find((item) => item.href === location.pathname)?.name ||
-              "Educational Platform"}
-          </h1>
-          <p className="text-sm text-material-gray-600 mt-1">
-            Welcome to your educational platform dashboard
-          </p>
-        </div>
-
         {/* Page content */}
         <main className="flex-1 bg-material-gray-50">
           <div className="h-full">{children}</div>

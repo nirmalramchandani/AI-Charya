@@ -14,34 +14,6 @@ export default function Footer() {
 
   return (
     <footer className="bg-white border-t border-material-gray-200">
-      {/* PWA Install Banner */}
-      {showInstallPrompt && (
-        <div className="bg-material-blue-50 border-b border-material-blue-200 px-4 py-3">
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
-            <div className="flex items-center">
-              <Download className="h-5 w-5 mr-2 text-material-blue" />
-              <span className="text-sm font-medium text-material-blue-800">
-                Install EduPlatform for offline access and better performance
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={handleInstallPWA}
-                className="bg-material-blue text-white px-4 py-1 rounded-lg text-sm font-medium hover:bg-material-blue-600 transition-colors"
-              >
-                Install App
-              </button>
-              <button
-                onClick={() => setShowInstallPrompt(false)}
-                className="text-material-blue-600 hover:text-material-blue-800 text-sm"
-              >
-                Dismiss
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Main Footer Content */}
       <div className="px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-7xl mx-auto">
@@ -174,24 +146,9 @@ export default function Footer() {
 
           {/* Bottom Bar */}
           <div className="border-t border-material-gray-200 mt-8 pt-6">
-            <div className="flex flex-col md:flex-row items-center justify-between">
-              <div className="text-sm text-material-gray-500 mb-4 md:mb-0">
-                © 2024 EduPlatform. All rights reserved. | Made for modern
-                education.
-              </div>
-              <div className="flex items-center space-x-4">
-                <span className="text-xs text-material-gray-400">
-                  Version 2.1.0
-                </span>
-                <div className="h-4 border-l border-material-gray-300"></div>
-                <button
-                  onClick={handleInstallPWA}
-                  className="text-xs text-material-blue hover:text-material-blue-600 transition-colors flex items-center"
-                >
-                  <Download className="h-3 w-3 mr-1" />
-                  Install App
-                </button>
-              </div>
+            <div className="text-sm text-material-gray-500">
+              © 2024 EduPlatform. All rights reserved. | Made for modern
+              education.
             </div>
           </div>
         </div>
