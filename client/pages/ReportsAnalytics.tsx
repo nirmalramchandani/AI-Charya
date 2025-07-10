@@ -1,11 +1,9 @@
 import { useState } from "react";
 import {
   BarChart3,
-  Upload,
   Download,
   AlertTriangle,
   TrendingUp,
-  FileText,
   Users,
   Target,
   BookOpen,
@@ -164,17 +162,9 @@ const generateRecommendations = (student: StudentScore) => {
 };
 
 export default function ReportsAnalytics() {
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<StudentScore | null>(
     null,
   );
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file && file.type === "text/csv") {
-      setUploadedFile(file);
-    }
-  };
 
   const exportReportCard = (student: StudentScore) => {
     // In a real app, this would generate and download a PDF
@@ -193,206 +183,157 @@ export default function ReportsAnalytics() {
             </h1>
           </div>
           <p className="text-material-gray-600">
-            Upload test results, analyze student performance, and generate
-            detailed reports
+            Analyze student performance and generate detailed reports
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Left Panel - Upload & Detection */}
-          <div className="space-y-6">
-            <div className="material-card-elevated p-6">
-              <div className="flex items-center mb-6">
-                <Upload className="h-6 w-6 text-material-green mr-3" />
-                <h2 className="text-xl font-semibold text-material-gray-900">
-                  📈 Upload Test Results
-                </h2>
-              </div>
+        <div className="space-y-8 mb-8">
+          {/* Subject Overview */}
+          <div className="material-card-elevated p-6">
+            <h3 className="text-lg font-semibold text-material-gray-900 mb-4">
+              Subject Performance Overview
+            </h3>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-material-gray-700 mb-2">
-                    Upload CSV File
-                  </label>
-                  <input
-                    type="file"
-                    accept=".csv"
-                    onChange={handleFileUpload}
-                    className="material-input"
-                  />
-                  <p className="text-xs text-material-gray-500 mt-1">
-                    CSV format: Student Name, Math, Science, EVS, English, Hindi
-                  </p>
-                </div>
-
-                {uploadedFile && (
-                  <div className="bg-material-green-50 p-3 rounded-lg">
-                    <div className="flex items-center">
-                      <FileText className="h-4 w-4 text-material-green mr-2" />
-                      <span className="text-sm text-material-green-700">
-                        File uploaded: {uploadedFile.name}
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                <button className="material-button-primary w-full">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Process Results
-                </button>
-              </div>
-            </div>
-
-            {/* Subject Overview */}
-            <div className="material-card-elevated p-6">
-              <h3 className="text-lg font-semibold text-material-gray-900 mb-4">
-                Subject Performance Overview
-              </h3>
-
-              <div className="space-y-4">
-                {subjectData.map((subject) => (
-                  <div key={subject.name} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium text-material-gray-800">
-                        {subject.name}
-                      </span>
-                      <div className="text-right">
-                        <div className="text-sm font-medium">
-                          Avg: {subject.averageScore}%
-                        </div>
-                        <div className="text-xs text-material-gray-600">
-                          Pass: {subject.passRate}%
-                        </div>
+            <div className="space-y-4">
+              {subjectData.map((subject) => (
+                <div key={subject.name} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-material-gray-800">
+                      {subject.name}
+                    </span>
+                    <div className="text-right">
+                      <div className="text-sm font-medium">
+                        Avg: {subject.averageScore}%
+                      </div>
+                      <div className="text-xs text-material-gray-600">
+                        Pass: {subject.passRate}%
                       </div>
                     </div>
-                    <div className="w-full bg-material-gray-200 rounded-full h-2">
-                      <div
-                        className={`h-2 rounded-full ${subject.color}`}
-                        style={{ width: `${subject.averageScore}%` }}
-                      />
-                    </div>
                   </div>
-                ))}
-              </div>
+                  <div className="w-full bg-material-gray-200 rounded-full h-2">
+                    <div
+                      className={`h-2 rounded-full ${subject.color}`}
+                      style={{ width: `${subject.averageScore}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Weak Areas Detection */}
+          <div className="material-card-elevated p-6">
+            <div className="flex items-center mb-4">
+              <AlertTriangle className="h-5 w-5 text-material-orange mr-2" />
+              <h3 className="text-lg font-semibold text-material-gray-900">
+                Detected Weak Areas
+              </h3>
             </div>
 
-            {/* Weak Areas Detection */}
-            <div className="material-card-elevated p-6">
-              <div className="flex items-center mb-4">
-                <AlertTriangle className="h-5 w-5 text-material-orange mr-2" />
-                <h3 className="text-lg font-semibold text-material-gray-900">
-                  Detected Weak Areas
-                </h3>
+            <div className="space-y-3">
+              <div className="bg-red-50 border border-red-200 p-3 rounded-lg">
+                <div className="flex items-center">
+                  <AlertTriangle className="h-4 w-4 text-red-600 mr-2" />
+                  <span className="font-medium text-red-800">Science</span>
+                </div>
+                <p className="text-sm text-red-700 mt-1">
+                  40% of students scoring below 60%
+                </p>
               </div>
 
-              <div className="space-y-3">
-                <div className="bg-red-50 border border-red-200 p-3 rounded-lg">
-                  <div className="flex items-center">
-                    <AlertTriangle className="h-4 w-4 text-red-600 mr-2" />
-                    <span className="font-medium text-red-800">Science</span>
-                  </div>
-                  <p className="text-sm text-red-700 mt-1">
-                    40% of students scoring below 60%
-                  </p>
+              <div className="bg-orange-50 border border-orange-200 p-3 rounded-lg">
+                <div className="flex items-center">
+                  <AlertTriangle className="h-4 w-4 text-orange-600 mr-2" />
+                  <span className="font-medium text-orange-800">
+                    Mathematics
+                  </span>
                 </div>
-
-                <div className="bg-orange-50 border border-orange-200 p-3 rounded-lg">
-                  <div className="flex items-center">
-                    <AlertTriangle className="h-4 w-4 text-orange-600 mr-2" />
-                    <span className="font-medium text-orange-800">
-                      Mathematics
-                    </span>
-                  </div>
-                  <p className="text-sm text-orange-700 mt-1">
-                    Basic operations need reinforcement
-                  </p>
-                </div>
+                <p className="text-sm text-orange-700 mt-1">
+                  Basic operations need reinforcement
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Right Panel - Individual Student Cards */}
-          <div className="space-y-6">
-            <div className="material-card-elevated p-6">
-              <div className="flex items-center mb-6">
-                <Users className="h-6 w-6 text-material-blue mr-3" />
-                <h2 className="text-xl font-semibold text-material-gray-900">
-                  📊 Individual Student Performance
-                </h2>
-              </div>
+          {/* Individual Student Performance */}
+          <div className="material-card-elevated p-6">
+            <div className="flex items-center mb-6">
+              <Users className="h-6 w-6 text-material-blue mr-3" />
+              <h2 className="text-xl font-semibold text-material-gray-900">
+                📊 Individual Student Performance
+              </h2>
+            </div>
 
-              <div className="space-y-4 max-h-96 overflow-y-auto">
-                {dummyStudentData.map((student) => (
-                  <div
-                    key={student.name}
-                    className="material-card p-4 cursor-pointer hover:shadow-material-md transition-shadow"
-                    onClick={() => setSelectedStudent(student)}
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center">
-                        <h4 className="font-medium text-material-gray-900 mr-3">
-                          {student.name}
-                        </h4>
+            <div className="space-y-4">
+              {dummyStudentData.map((student) => (
+                <div
+                  key={student.name}
+                  className="material-card p-4 cursor-pointer hover:shadow-material-md transition-shadow"
+                  onClick={() => setSelectedStudent(student)}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center">
+                      <h4 className="font-medium text-material-gray-900 mr-3">
+                        {student.name}
+                      </h4>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          student.overallGrade === "A+"
+                            ? "bg-material-green text-white"
+                            : student.overallGrade === "A"
+                              ? "bg-material-blue text-white"
+                              : student.overallGrade === "B"
+                                ? "bg-material-yellow text-material-gray-900"
+                                : student.overallGrade === "C"
+                                  ? "bg-material-orange text-white"
+                                  : "bg-red-500 text-white"
+                        }`}
+                      >
+                        Grade {student.overallGrade}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Subject Progress Bars */}
+                  <div className="flex items-end justify-center space-x-4 mt-4">
+                    {Object.entries(student.scores).map(([subject, score]) => (
+                      <div
+                        key={subject}
+                        className="flex flex-col items-center space-y-2"
+                      >
                         <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            student.overallGrade === "A+"
-                              ? "bg-material-green text-white"
-                              : student.overallGrade === "A"
-                                ? "bg-material-blue text-white"
-                                : student.overallGrade === "B"
-                                  ? "bg-material-yellow text-material-gray-900"
-                                  : student.overallGrade === "C"
-                                    ? "bg-material-orange text-white"
-                                    : "bg-red-500 text-white"
-                          }`}
+                          className={`text-xs font-medium ${getScoreColor(score)}`}
                         >
-                          Grade {student.overallGrade}
+                          {score}%
+                        </span>
+                        <div className="w-8 bg-material-gray-200 rounded-full h-24 flex items-end">
+                          <div
+                            className={`w-8 rounded-full ${getScoreBarColor(score)}`}
+                            style={{ height: `${score}%` }}
+                          />
+                        </div>
+                        <span className="text-xs font-medium text-material-gray-600 text-center">
+                          {subject}
                         </span>
                       </div>
-                    </div>
-
-                    {/* Subject Progress Bars */}
-                    <div className="space-y-2">
-                      {Object.entries(student.scores).map(
-                        ([subject, score]) => (
-                          <div key={subject} className="flex items-center">
-                            <span className="text-xs font-medium text-material-gray-600 w-16">
-                              {subject}
-                            </span>
-                            <div className="flex-1 mx-2">
-                              <div className="w-full bg-material-gray-200 rounded-full h-1.5">
-                                <div
-                                  className={`h-1.5 rounded-full ${getScoreBarColor(score)}`}
-                                  style={{ width: `${score}%` }}
-                                />
-                              </div>
-                            </div>
-                            <span
-                              className={`text-xs font-medium ${getScoreColor(score)}`}
-                            >
-                              {score}%
-                            </span>
-                          </div>
-                        ),
-                      )}
-                    </div>
-
-                    {/* Weak Subjects Tags */}
-                    {student.weakSubjects.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-1">
-                        {student.weakSubjects.map((subject) => (
-                          <span
-                            key={subject}
-                            className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs"
-                          >
-                            Weak: {subject}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    ))}
                   </div>
-                ))}
-              </div>
+
+                  {/* Weak Subjects Tags */}
+                  {student.weakSubjects.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-1">
+                      {student.weakSubjects.map((subject) => (
+                        <span
+                          key={subject}
+                          className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs"
+                        >
+                          Weak: {subject}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </div>
