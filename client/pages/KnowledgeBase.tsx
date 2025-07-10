@@ -367,7 +367,7 @@ export default function KnowledgeBase() {
                       <SelectValue placeholder="Filter by subject" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Subjects</SelectItem>
+                      <SelectItem value="all-subjects">All Subjects</SelectItem>
                       {subjects.map((subject) => (
                         <SelectItem key={subject} value={subject}>
                           {subject}
