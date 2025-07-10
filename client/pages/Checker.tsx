@@ -283,89 +283,112 @@ export default function Checker() {
                 Analysis Results
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="h-full flex flex-col">
               {analysis ? (
-                <div className="space-y-4">
+                <div className="space-y-4 flex-1">
                   {/* Header */}
                   <div className="border-b border-material-gray-200 pb-3">
                     <h3 className="text-lg font-semibold text-material-gray-900 mb-2">
-                      📄 Homework Submission Analysis
+                      📄 Analysis Results
                     </h3>
-                    <div className="space-y-1 text-sm text-material-gray-600">
-                      <p>
-                        <strong>Subject:</strong> {analysis.subject}
-                      </p>
-                      <p>
-                        <strong>Submitted On:</strong> {analysis.submittedOn}
-                      </p>
-                      <p>
-                        <strong>Status:</strong>{" "}
-                        <span className="text-material-green-600 font-medium">
-                          {analysis.status}
-                        </span>
-                      </p>
-                      <p>
-                        <strong>Score:</strong>{" "}
-                        <span className="text-material-blue font-bold text-lg">
-                          {analysis.score}
-                        </span>
-                      </p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-material-gray-600">
+                        {analysis.subject}
+                      </span>
+                      <span className="text-material-blue font-bold text-xl">
+                        {analysis.score}
+                      </span>
                     </div>
                   </div>
 
-                  {/* What Went Right */}
-                  <div>
-                    <h4 className="font-medium text-material-green-600 mb-2">
-                      ✅ What Went Right:
-                    </h4>
-                    <ul className="space-y-1">
-                      {analysis.correct.map((item, index) => (
-                        <li
-                          key={index}
-                          className="text-sm text-material-gray-700 pl-4"
-                        >
-                          • {item}
-                        </li>
-                      ))}
-                    </ul>
+                  {/* Score Visualization */}
+                  <div className="bg-material-gray-50 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">Performance</span>
+                      <span className="text-sm text-material-gray-600">
+                        80%
+                      </span>
+                    </div>
+                    <div className="w-full bg-material-gray-200 rounded-full h-3">
+                      <div
+                        className="bg-material-green h-3 rounded-full"
+                        style={{ width: "80%" }}
+                      ></div>
+                    </div>
                   </div>
 
-                  {/* What Went Wrong */}
-                  <div>
-                    <h4 className="font-medium text-red-600 mb-2">
-                      ❌ What Went Wrong:
-                    </h4>
-                    <ul className="space-y-1">
-                      {analysis.incorrect.map((item, index) => (
-                        <li
-                          key={index}
-                          className="text-sm text-material-gray-700 pl-4"
-                        >
-                          • {item}
-                        </li>
-                      ))}
-                    </ul>
+                  {/* Quick Stats */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="text-center p-3 bg-material-green-50 rounded-lg">
+                      <div className="text-2xl font-bold text-material-green-600">
+                        6
+                      </div>
+                      <div className="text-xs text-material-gray-600">
+                        Correct
+                      </div>
+                    </div>
+                    <div className="text-center p-3 bg-red-50 rounded-lg">
+                      <div className="text-2xl font-bold text-red-600">2</div>
+                      <div className="text-xs text-material-gray-600">
+                        Wrong
+                      </div>
+                    </div>
+                    <div className="text-center p-3 bg-material-orange-50 rounded-lg">
+                      <div className="text-2xl font-bold text-material-orange-600">
+                        2
+                      </div>
+                      <div className="text-xs text-material-gray-600">
+                        Skipped
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Suggested Improvements */}
-                  <div>
-                    <h4 className="font-medium text-material-orange mb-2">
-                      🔁 Suggested Improvements:
-                    </h4>
-                    <ul className="space-y-1">
-                      {analysis.improvements.map((item, index) => (
-                        <li
-                          key={index}
-                          className="text-sm text-material-gray-700 pl-4"
-                        >
-                          • {item}
-                        </li>
-                      ))}
-                    </ul>
+                  {/* Key Insights */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <div className="w-2 h-2 bg-material-green rounded-full"></div>
+                      <span className="text-material-gray-700">
+                        Strong in linear equations
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                      <span className="text-material-gray-700">
+                        Review quadratic formulas
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <div className="w-2 h-2 bg-material-orange rounded-full"></div>
+                      <span className="text-material-gray-700">
+                        Show more work steps
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Chart Area */}
+                  <div className="flex-1 bg-material-gray-50 rounded-lg p-4 min-h-[120px] flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="flex items-center justify-center space-x-4 mb-2">
+                        <div className="w-8 h-8 bg-material-green rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">
+                            ✓
+                          </span>
+                        </div>
+                        <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">
+                            ✗
+                          </span>
+                        </div>
+                        <div className="w-4 h-4 bg-material-orange rounded-full"></div>
+                      </div>
+                      <p className="text-xs text-material-gray-500">
+                        Question Performance
+                      </p>
+                    </div>
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-8">
+                <div className="text-center py-8 flex-1 flex flex-col justify-center">
                   <Scan className="h-12 w-12 text-material-gray-400 mx-auto mb-4" />
                   <p className="text-material-gray-600 mb-2">No analysis yet</p>
                   <p className="text-sm text-material-gray-500">
