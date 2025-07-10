@@ -96,7 +96,7 @@ const dummyStudents: StudentData[] = [
     class: "Class 7",
     school: "Govt. School",
     profilePhoto:
-      "https://cdn.builder.io/api/v1/image/assets%2Fdf3a905663914b9689163bc99d388444%2F5921734657064f4080531cc069fa807f?format=webp&width=800",
+      "https://cdn.builder.io/api/v1/image/assets%2Fdf3a905663914b9689163bc99d388444%2F560d2d0b83ac48588e7ce0e5e03a2bcc?format=webp&width=800",
     subjects: [
       { name: "English", score: 90, strength: "Strong" },
       { name: "History", score: 88, strength: "Strong" },
@@ -326,7 +326,7 @@ export default function StudentProfile() {
 
             {/* Right Column - Detailed Information */}
             <div className="lg:col-span-8 space-y-6">
-              {/* Academic Overview */}
+              {/* Academic Overview - Table */}
               <Card className="bg-white shadow-md">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3 mb-6">
@@ -379,6 +379,126 @@ export default function StudentProfile() {
                         ))}
                       </tbody>
                     </table>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Academic Performance Graphs */}
+              <Card className="bg-white shadow-md">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-3 bg-material-green-100 rounded-lg">
+                      <BarChart3 className="h-6 w-6 text-material-green" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-material-gray-900">
+                      📊 Performance Charts
+                    </h3>
+                  </div>
+
+                  <div className="space-y-8">
+                    {/* Bar Chart */}
+                    <div>
+                      <h4 className="text-lg font-semibold text-material-gray-800 mb-4">
+                        Subject Scores
+                      </h4>
+                      <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart
+                            data={selectedStudent.subjects.map((subject) => ({
+                              ...subject,
+                              fill:
+                                subject.strength === "Strong"
+                                  ? "#34A853"
+                                  : subject.strength === "Average"
+                                    ? "#4285F4"
+                                    : "#FB7C00",
+                            }))}
+                            margin={{
+                              top: 20,
+                              right: 30,
+                              left: 20,
+                              bottom: 5,
+                            }}
+                          >
+                            <CartesianGrid
+                              strokeDasharray="3 3"
+                              stroke="#E8EAED"
+                            />
+                            <XAxis
+                              dataKey="name"
+                              stroke="#5F6368"
+                              fontSize={12}
+                              angle={-45}
+                              textAnchor="end"
+                              height={80}
+                            />
+                            <YAxis
+                              stroke="#5F6368"
+                              fontSize={12}
+                              domain={[0, 100]}
+                            />
+                            <Tooltip
+                              contentStyle={{
+                                backgroundColor: "#F8F9FA",
+                                border: "1px solid #E8EAED",
+                                borderRadius: "8px",
+                              }}
+                            />
+                            <Bar
+                              dataKey="score"
+                              radius={[4, 4, 0, 0]}
+                              fill={(entry) => entry.fill}
+                            />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+
+                    {/* Radar Chart */}
+                    <div>
+                      <h4 className="text-lg font-semibold text-material-gray-800 mb-4">
+                        Skills Radar
+                      </h4>
+                      <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <RadarChart
+                            data={selectedStudent.subjects}
+                            margin={{
+                              top: 20,
+                              right: 30,
+                              bottom: 20,
+                              left: 30,
+                            }}
+                          >
+                            <PolarGrid stroke="#E8EAED" />
+                            <PolarAngleAxis
+                              dataKey="name"
+                              tick={{ fontSize: 12, fill: "#5F6368" }}
+                            />
+                            <PolarRadiusAxis
+                              angle={90}
+                              domain={[0, 100]}
+                              tick={{ fontSize: 10, fill: "#5F6368" }}
+                            />
+                            <Radar
+                              name={selectedStudent.name}
+                              dataKey="score"
+                              stroke="#4285F4"
+                              fill="#4285F4"
+                              fillOpacity={0.3}
+                              strokeWidth={2}
+                            />
+                            <Tooltip
+                              contentStyle={{
+                                backgroundColor: "#F8F9FA",
+                                border: "1px solid #E8EAED",
+                                borderRadius: "8px",
+                              }}
+                            />
+                          </RadarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
