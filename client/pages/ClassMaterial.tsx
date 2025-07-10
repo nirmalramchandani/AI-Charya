@@ -190,6 +190,9 @@ export default function ClassMaterial() {
                           <h3 className="text-lg font-semibold text-material-gray-900">
                             {chapter.title}
                           </h3>
+                          <p className="text-material-gray-600 mb-2">
+                            {chapter.name}
+                          </p>
                           <div className="bg-material-gray-100 text-material-gray-700 px-3 py-1 rounded-full text-sm font-medium inline-block">
                             Chapter {chapter.id}
                           </div>
