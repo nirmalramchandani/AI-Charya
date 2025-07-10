@@ -224,14 +224,14 @@ export default function Checker() {
           </Card>
 
           {/* Bottom Left - Student Details */}
-          <Card className="material-card bg-material-orange-50 border-material-orange-200 h-fit">
-            <CardHeader>
+          <Card className="material-card bg-material-orange-50 border-material-orange-200 max-h-[500px] overflow-hidden">
+            <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2">
                 <User className="h-5 w-5 text-material-orange" />
                 Student Details
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 p-4">
+            <CardContent className="space-y-3 p-4 overflow-y-auto max-h-[400px]">
               <div className="space-y-2">
                 <Label htmlFor="subject">Subject</Label>
                 <Input
