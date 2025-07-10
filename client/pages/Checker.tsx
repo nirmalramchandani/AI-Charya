@@ -256,10 +256,10 @@ export default function Checker() {
           </Card>
 
           {/* Bottom Right - Analysis */}
-          <Card className="material-card">
+          <Card className="material-card bg-material-yellow-50 border-material-yellow-200">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Scan className="h-5 w-5 text-material-blue" />
+                <Scan className="h-5 w-5 text-material-yellow-600" />
                 Analysis Results
               </CardTitle>
             </CardHeader>
