@@ -49,6 +49,7 @@ const chapters: Chapter[] = [
 ];
 
 export default function ClassMaterial() {
+  const navigate = useNavigate();
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
 
