@@ -1,0 +1,276 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  FlaskConical,
+  BarChart3,
+  Camera,
+  FileText,
+  BookOpen,
+  AlertCircle,
+  Settings,
+} from "lucide-react";
+
+interface Chapter {
+  id: number;
+  title: string;
+  hasPlate: boolean;
+}
+
+const classes = [
+  "Class 1",
+  "Class 2",
+  "Class 3",
+  "Class 4",
+  "Class 5",
+  "Class 6",
+  "Class 7",
+  "Class 8",
+  "Class 9",
+  "Class 10",
+];
+
+const subjects = ["Marathi", "English", "Math", "Science", "EVS"];
+
+const chapters: Chapter[] = [
+  { id: 1, title: "Chapter 1", hasPlate: true },
+  { id: 2, title: "Chapter 2", hasPlate: false },
+  { id: 3, title: "Chapter 3", hasPlate: true },
+  { id: 4, title: "Chapter 4", hasPlate: false },
+];
+
+export default function ClassMaterial() {
+  const [selectedClass, setSelectedClass] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState("");
+
+  const handleApplyFilters = () => {
+    // UI-only functionality as requested
+    console.log("Filters applied:", { selectedClass, selectedSubject });
+  };
+
+  return (
+    <div className="min-h-screen bg-material-gray-50">
+      {/* Page Header - Full Width */}
+      <div className="w-full bg-gradient-to-r from-material-blue-50 to-material-green-50 border-b border-material-gray-200">
+        <div className="px-8 lg:px-12 py-8">
+          <h1 className="text-4xl font-bold text-material-gray-900 mb-3">
+            Study Material Dashboard
+          </h1>
+          <p className="text-lg text-material-gray-600">
+            Select class and subject to view chapters and actions
+          </p>
+        </div>
+      </div>
+
+      {/* Filter Section - Full Width */}
+      <div className="w-full bg-white shadow-sm border-b border-material-gray-200">
+        <div className="px-8 lg:px-12 py-6">
+          <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-end">
+            <div className="flex flex-col lg:flex-row gap-4 flex-1">
+              {/* Class Dropdown */}
+              <div className="flex-1 min-w-[200px]">
+                <label className="block text-sm font-medium text-material-gray-700 mb-2">
+                  Select Class
+                </label>
+                <Select value={selectedClass} onValueChange={setSelectedClass}>
+                  <SelectTrigger className="w-full h-12 bg-material-gray-50 border-2 border-material-gray-300 rounded-xl hover:border-material-blue-400 focus:border-material-blue-500 transition-colors">
+                    <SelectValue placeholder="Choose a class..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {classes.map((cls) => (
+                      <SelectItem key={cls} value={cls}>
+                        {cls}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Subject Dropdown */}
+              <div className="flex-1 min-w-[200px]">
+                <label className="block text-sm font-medium text-material-gray-700 mb-2">
+                  Select Subject
+                </label>
+                <Select
+                  value={selectedSubject}
+                  onValueChange={setSelectedSubject}
+                >
+                  <SelectTrigger className="w-full h-12 bg-material-gray-50 border-2 border-material-gray-300 rounded-xl hover:border-material-blue-400 focus:border-material-blue-500 transition-colors">
+                    <SelectValue placeholder="Choose a subject..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {subjects.map((subject) => (
+                      <SelectItem key={subject} value={subject}>
+                        {subject}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Apply Button */}
+            <Button
+              onClick={handleApplyFilters}
+              className="bg-material-blue hover:bg-material-blue-600 text-white px-8 py-3 h-12 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+            >
+              Apply Filters
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Chapter Grid Section - Full Width */}
+      <div className="w-full bg-material-gray-50">
+        <div className="px-8 lg:px-12 py-8">
+          {/* Subject Label */}
+          <div className="mb-6">
+            <div className="inline-flex items-center gap-2 bg-material-blue-100 text-material-blue-800 px-4 py-2 rounded-full font-semibold">
+              <BookOpen className="h-5 w-5" />
+              Subject: {selectedSubject || "Marathi"}
+            </div>
+          </div>
+
+          {/* Chapters Grid */}
+          <div className="space-y-6">
+            {chapters.map((chapter) => (
+              <Card
+                key={chapter.id}
+                className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-material-gray-200"
+              >
+                <CardContent className="p-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    {/* Left Column - Chapter Info */}
+                    <div className="lg:col-span-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-r from-material-blue to-material-green rounded-full flex items-center justify-center text-white font-bold">
+                          {chapter.id}
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-material-gray-900">
+                            {chapter.title}
+                          </h3>
+                          <div className="bg-material-gray-100 text-material-gray-700 px-3 py-1 rounded-full text-sm font-medium inline-block">
+                            Chapter {chapter.id}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Middle Column - Plate Status */}
+                    <div className="lg:col-span-3">
+                      <div className="space-y-2">
+                        {chapter.hasPlate ? (
+                          <Button className="w-full bg-material-yellow hover:bg-material-yellow-600 text-material-gray-900 hover:text-white rounded-xl font-semibold transition-all duration-200">
+                            <BookOpen className="h-4 w-4 mr-2" />
+                            View Plate
+                          </Button>
+                        ) : (
+                          <>
+                            <Button className="w-full bg-material-blue hover:bg-material-blue-600 text-white rounded-xl font-semibold transition-all duration-200">
+                              <BookOpen className="h-4 w-4 mr-2" />
+                              Create Lecture Plate
+                            </Button>
+                            <div className="flex items-center justify-center">
+                              <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-medium">
+                                Plate Not Created
+                              </span>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Right Column - Action Buttons */}
+                    <div className="lg:col-span-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <Button className="bg-material-blue hover:bg-material-blue-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm">
+                          <FlaskConical className="h-4 w-4 mr-2" />
+                          <span className="text-sm">🧪 Take a Test</span>
+                        </Button>
+
+                        <Button className="bg-material-green hover:bg-material-green-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm">
+                          <BarChart3 className="h-4 w-4 mr-2" />
+                          <span className="text-sm">📊 View Result</span>
+                        </Button>
+
+                        <Button className="bg-purple-500 hover:bg-purple-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm">
+                          <Camera className="h-4 w-4 mr-2" />
+                          <span className="text-sm">📷 Check Exercise</span>
+                        </Button>
+
+                        <Button className="bg-material-gray-500 hover:bg-material-gray-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm">
+                          <FileText className="h-4 w-4 mr-2" />
+                          <span className="text-sm">📄 See Result</span>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Developer Notes - Full Width */}
+      <div className="w-full bg-gradient-to-r from-material-orange-50 to-material-yellow-50 border-t border-material-gray-200">
+        <div className="px-8 lg:px-12 py-8">
+          <Card className="bg-white/80 backdrop-blur-sm border border-material-orange-200 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-material-orange rounded-lg">
+                  <Settings className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-xl font-semibold text-material-gray-900">
+                  Developer Notes
+                </h3>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 p-3 bg-material-blue-50 rounded-lg border border-material-blue-200">
+                  <AlertCircle className="h-5 w-5 text-material-blue mt-0.5" />
+                  <p className="text-material-blue-800">
+                    <strong>🔧 Note:</strong> Some components are visual/UI-only
+                    in this prototype.
+                  </p>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 bg-material-yellow-50 rounded-lg border border-material-yellow-200">
+                  <AlertCircle className="h-5 w-5 text-material-yellow-600 mt-0.5" />
+                  <p className="text-material-yellow-800">
+                    <strong>��️ Warning:</strong> Class and Subject filters do
+                    not apply real-time logic.
+                  </p>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 bg-material-orange-50 rounded-lg border border-material-orange-200">
+                  <AlertCircle className="h-5 w-5 text-material-orange-600 mt-0.5" />
+                  <p className="text-material-orange-800">
+                    <strong>⚠️ Limitation:</strong> 'View Plate' buttons may
+                    open modal but cannot be closed (demo limitation).
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-4 p-3 bg-material-green-50 rounded-lg border border-material-green-200">
+                <p className="text-material-green-800 text-sm">
+                  <strong>💡 Tip:</strong> This page demonstrates responsive
+                  design patterns with full-width sections and proper mobile
+                  adaptations.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
