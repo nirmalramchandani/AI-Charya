@@ -100,7 +100,7 @@ export default function Layout({ children }: LayoutProps) {
             <img
               src="https://cdn.builder.io/api/v1/image/assets%2F51a4707e6cb3452bb5e8ffef0fab69d7%2F4e7bfb36cd894a0d96cca31a023e813b?format=webp&width=800"
               alt="AI-Charya Logo"
-              className="h-12 w-12"
+              className="h-16 w-16"
             />
             <span
               className="ml-3 text-xl font-semibold"
