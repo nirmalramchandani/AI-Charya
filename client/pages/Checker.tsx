@@ -151,10 +151,10 @@ export default function Checker() {
           </Card>
 
           {/* Top Right - AI Assistant */}
-          <Card className="material-card">
+          <Card className="material-card bg-material-green-50 border-material-green-200">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Bot className="h-5 w-5 text-material-blue" />
+                <Bot className="h-5 w-5 text-material-green" />
                 AI Assistant
               </CardTitle>
             </CardHeader>
