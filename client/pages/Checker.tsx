@@ -285,11 +285,37 @@ export default function Checker() {
             <CardContent>
               {analysis ? (
                 <div className="space-y-4">
-                  {/* What is right */}
+                  {/* Header */}
+                  <div className="border-b border-material-gray-200 pb-3">
+                    <h3 className="text-lg font-semibold text-material-gray-900 mb-2">
+                      📄 Homework Submission Analysis
+                    </h3>
+                    <div className="space-y-1 text-sm text-material-gray-600">
+                      <p>
+                        <strong>Subject:</strong> {analysis.subject}
+                      </p>
+                      <p>
+                        <strong>Submitted On:</strong> {analysis.submittedOn}
+                      </p>
+                      <p>
+                        <strong>Status:</strong>{" "}
+                        <span className="text-material-green-600 font-medium">
+                          {analysis.status}
+                        </span>
+                      </p>
+                      <p>
+                        <strong>Score:</strong>{" "}
+                        <span className="text-material-blue font-bold text-lg">
+                          {analysis.score}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* What Went Right */}
                   <div>
-                    <h4 className="font-medium text-material-green-600 mb-2 flex items-center gap-2">
-                      <Check className="h-4 w-4" />
-                      What is right ✓
+                    <h4 className="font-medium text-material-green-600 mb-2">
+                      ✅ What Went Right:
                     </h4>
                     <ul className="space-y-1">
                       {analysis.correct.map((item, index) => (
@@ -303,11 +329,10 @@ export default function Checker() {
                     </ul>
                   </div>
 
-                  {/* What is wrong */}
+                  {/* What Went Wrong */}
                   <div>
-                    <h4 className="font-medium text-red-600 mb-2 flex items-center gap-2">
-                      <X className="h-4 w-4" />
-                      What is wrong ✗
+                    <h4 className="font-medium text-red-600 mb-2">
+                      ❌ What Went Wrong:
                     </h4>
                     <ul className="space-y-1">
                       {analysis.incorrect.map((item, index) => (
@@ -321,11 +346,10 @@ export default function Checker() {
                     </ul>
                   </div>
 
-                  {/* Corrections/Improvements */}
+                  {/* Suggested Improvements */}
                   <div>
-                    <h4 className="font-medium text-material-orange mb-2 flex items-center gap-2">
-                      <FileText className="h-4 w-4" />
-                      Corrections & Improvements
+                    <h4 className="font-medium text-material-orange mb-2">
+                      🔁 Suggested Improvements:
                     </h4>
                     <ul className="space-y-1">
                       {analysis.improvements.map((item, index) => (
@@ -337,18 +361,6 @@ export default function Checker() {
                         </li>
                       ))}
                     </ul>
-                  </div>
-
-                  {/* Total Score */}
-                  <div className="mt-4 p-3 bg-material-blue-50 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium text-material-gray-900">
-                        Total Score:
-                      </span>
-                      <Badge variant="secondary" className="text-lg font-bold">
-                        {analysis.totalScore}
-                      </Badge>
-                    </div>
                   </div>
                 </div>
               ) : (
