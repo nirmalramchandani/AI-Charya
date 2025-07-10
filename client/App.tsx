@@ -51,7 +51,7 @@ const App = () => (
               path="/class-material"
               element={<PlaceholderPage title="Class-Wise Study Material" />}
             />
-
+            <Route path="/checker" element={<Checker />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
@@ -61,4 +61,15 @@ const App = () => (
   </QueryClientProvider>
 );
 
-createRoot(document.getElementById("root")!).render(<App />);
+// Properly manage React root to avoid multiple createRoot calls
+const container = document.getElementById("root")!;
+let root: any;
+
+if (!container._reactRoot) {
+  root = createRoot(container);
+  container._reactRoot = root;
+} else {
+  root = container._reactRoot;
+}
+
+root.render(<App />);
