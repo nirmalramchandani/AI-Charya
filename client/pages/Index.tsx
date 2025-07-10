@@ -44,25 +44,40 @@ export default function Index() {
   return (
     <div className="min-h-[calc(100vh-4rem)]">
       {/* Hero Section */}
-      <section
-        className="min-h-screen flex items-center py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
-        style={{
-          background: `url("${(document.querySelector('meta[property="og:image"]') as any)?.content || "https://cdn.builder.io/api/v1/image/assets%2Fdf3a905663914b9689163bc99d388444%2F47cb04d4dd8e4ebe81671d407af61642?format=webp&width=800"}") center/cover, linear-gradient(135deg, #FBBC05 0%, #4285F4 50%, #FBBC05 100%)`,
-        }}
-      >
-        {/* Background Image */}
+      <section className="min-h-screen flex items-center py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-white">
+        {/* Yellow Patch - Top Left */}
         <div
-          className="absolute inset-0 w-full h-full"
+          className="absolute top-0 left-0 w-96 h-96 rounded-br-full opacity-90"
           style={{
-            backgroundImage: `url("https://cdn.builder.io/api/v1/image/assets%2Fdf3a905663914b9689163bc99d388444%2F47cb04d4dd8e4ebe81671d407af61642?format=webp&width=800")`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            opacity: 0.9,
+            background: "linear-gradient(135deg, #FBBC05 0%, #F9AB00 100%)",
+            transform: "translate(-40%, -40%)",
           }}
         />
-        {/* Content overlay */}
-        <div className="absolute inset-0 bg-white bg-opacity-10" />
+
+        {/* Blue Patch - Bottom Right */}
+        <div
+          className="absolute bottom-0 right-0 w-80 h-80 rounded-tl-full opacity-90"
+          style={{
+            background: "linear-gradient(135deg, #4285F4 0%, #1A73E8 100%)",
+            transform: "translate(40%, 40%)",
+          }}
+        />
+
+        {/* Additional Blue Patch - Top Right */}
+        <div
+          className="absolute top-10 right-10 w-32 h-32 rounded-full opacity-80"
+          style={{
+            background: "linear-gradient(135deg, #4285F4 0%, #1A73E8 100%)",
+          }}
+        />
+
+        {/* Additional Yellow Patch - Bottom Left */}
+        <div
+          className="absolute bottom-10 left-10 w-24 h-24 rounded-full opacity-80"
+          style={{
+            background: "linear-gradient(135deg, #FBBC05 0%, #F9AB00 100%)",
+          }}
+        />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center">
             <div className="flex justify-center mb-8">
