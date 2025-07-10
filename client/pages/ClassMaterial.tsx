@@ -246,30 +246,21 @@ export default function ClassMaterial() {
                           }
                           className="bg-material-blue hover:bg-material-blue-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm h-12 px-3"
                         >
-                          <FlaskConical className="h-4 w-4 mr-1 flex-shrink-0" />
-                          <span className="text-xs whitespace-nowrap">
-                            🧪 Take Test
-                          </span>
+                          🧪 Take Test
                         </Button>
 
                         <Button
                           onClick={handleSeeResult}
                           className="bg-material-green hover:bg-material-green-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm h-12 px-3"
                         >
-                          <BarChart3 className="h-4 w-4 mr-1 flex-shrink-0" />
-                          <span className="text-xs whitespace-nowrap">
-                            📊 View Result
-                          </span>
+                          📊 View Result
                         </Button>
 
                         <Button
                           onClick={handleCheckExercise}
                           className="bg-purple-500 hover:bg-purple-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm h-12 px-3"
                         >
-                          <Camera className="h-4 w-4 mr-1 flex-shrink-0" />
-                          <span className="text-xs whitespace-nowrap">
-                            📷 Check Exercise
-                          </span>
+                          📷 Check Exercise
                         </Button>
                       </div>
                     </div>
