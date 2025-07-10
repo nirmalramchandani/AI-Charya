@@ -348,7 +348,7 @@ export default function KnowledgeBase() {
                       <SelectValue placeholder="Filter by class" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Classes</SelectItem>
+                      <SelectItem value="all-classes">All Classes</SelectItem>
                       {classes.map((cls) => (
                         <SelectItem key={cls} value={cls}>
                           {cls}
