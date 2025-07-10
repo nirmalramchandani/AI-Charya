@@ -31,7 +31,26 @@ export default function Checker() {
     },
   ]);
   const [newMessage, setNewMessage] = useState("");
-  const [analysis, setAnalysis] = useState(null);
+  const [analysis, setAnalysis] = useState({
+    subject: "Mathematics – Algebra",
+    submittedOn: "July 9, 2025, 5:32 PM",
+    status: "Submitted",
+    score: "8/10",
+    correct: [
+      "Correctly solved all linear equation problems",
+      "Clear and organized steps for each question",
+      "Proper use of mathematical notations",
+    ],
+    incorrect: [
+      "Question 4: Used the incorrect formula for factoring quadratics",
+      "Skipped explanation for the final answer in Question 6",
+    ],
+    improvements: [
+      "Review the quadratic formula and its applications",
+      "Make sure to include reasoning or justifications for each answer",
+      "Double-check each step to avoid minor calculation errors",
+    ],
+  });
   const fileInputRef = useRef(null);
 
   const handleCameraToggle = () => {
