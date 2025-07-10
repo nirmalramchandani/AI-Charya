@@ -41,25 +41,35 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/curriculum" element={<CurriculumUpload />} />
-            <Route path="/lectures" element={<LecturePlateGenerator />} />
-            <Route
-              path="/lecture-plate-generator"
-              element={<LecturePlateGenerator />}
-            />
-            <Route path="/students" element={<StudentContextBuilder />} />
-            <Route path="/dashboard" element={<TeacherDashboard />} />
-            <Route path="/reports" element={<ReportsAnalytics />} />
-            <Route path="/class-material" element={<ClassMaterial />} />
-            <Route path="/checker" element={<Checker />} />
-            <Route path="/quiz" element={<Quiz />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Layout>
+        <Routes>
+          {/* Quiz route outside Layout for fullscreen */}
+          <Route path="/quiz" element={<Quiz />} />
+
+          {/* All other routes within Layout */}
+          <Route
+            path="/*"
+            element={
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/curriculum" element={<CurriculumUpload />} />
+                  <Route path="/lectures" element={<LecturePlateGenerator />} />
+                  <Route
+                    path="/lecture-plate-generator"
+                    element={<LecturePlateGenerator />}
+                  />
+                  <Route path="/students" element={<StudentContextBuilder />} />
+                  <Route path="/dashboard" element={<TeacherDashboard />} />
+                  <Route path="/reports" element={<ReportsAnalytics />} />
+                  <Route path="/class-material" element={<ClassMaterial />} />
+                  <Route path="/checker" element={<Checker />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Layout>
+            }
+          />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
