@@ -110,8 +110,8 @@ export default function KnowledgeBase() {
   const [chapterTitle, setChapterTitle] = useState("");
   const [uploadedFiles, setUploadedFiles] =
     useState<UploadedFile[]>(dummyFiles);
-  const [filterClass, setFilterClass] = useState("");
-  const [filterSubject, setFilterSubject] = useState("");
+  const [filterClass, setFilterClass] = useState("all-classes");
+  const [filterSubject, setFilterSubject] = useState("all-subjects");
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleFileUpload = () => {
@@ -151,8 +151,14 @@ export default function KnowledgeBase() {
   };
 
   const filteredFiles = uploadedFiles.filter((file) => {
-    const matchesClass = !filterClass || file.class === filterClass;
-    const matchesSubject = !filterSubject || file.subject === filterSubject;
+    const matchesClass =
+      !filterClass ||
+      filterClass === "all-classes" ||
+      file.class === filterClass;
+    const matchesSubject =
+      !filterSubject ||
+      filterSubject === "all-subjects" ||
+      file.subject === filterSubject;
     const matchesSearch =
       !searchTerm ||
       file.fileName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -348,7 +354,7 @@ export default function KnowledgeBase() {
                       <SelectValue placeholder="Filter by class" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Classes</SelectItem>
+                      <SelectItem value="all-classes">All Classes</SelectItem>
                       {classes.map((cls) => (
                         <SelectItem key={cls} value={cls}>
                           {cls}
@@ -367,7 +373,7 @@ export default function KnowledgeBase() {
                       <SelectValue placeholder="Filter by subject" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Subjects</SelectItem>
+                      <SelectItem value="all-subjects">All Subjects</SelectItem>
                       {subjects.map((subject) => (
                         <SelectItem key={subject} value={subject}>
                           {subject}
@@ -379,8 +385,8 @@ export default function KnowledgeBase() {
                   {/* Clear Filters */}
                   <Button
                     onClick={() => {
-                      setFilterClass("");
-                      setFilterSubject("");
+                      setFilterClass("all-classes");
+                      setFilterSubject("all-subjects");
                       setSearchTerm("");
                     }}
                     variant="outline"

@@ -44,15 +44,48 @@ export default function Index() {
   return (
     <div className="min-h-[calc(100vh-4rem)]">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-material-blue-50 to-material-green-50 min-h-screen flex items-center py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
+      <section className="min-h-screen flex items-center py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-white">
+        {/* Yellow Patch - Top Left */}
+        <div
+          className="absolute top-0 left-0 w-96 h-96 rounded-br-full opacity-90"
+          style={{
+            background: "linear-gradient(135deg, #FBBC05 0%, #F9AB00 100%)",
+            transform: "translate(-40%, -40%)",
+          }}
+        />
+
+        {/* Blue Patch - Bottom Right */}
+        <div
+          className="absolute bottom-0 right-0 w-80 h-80 rounded-tl-full opacity-90"
+          style={{
+            background: "linear-gradient(135deg, #4285F4 0%, #1A73E8 100%)",
+            transform: "translate(40%, 40%)",
+          }}
+        />
+
+        {/* Additional Blue Patch - Top Right */}
+        <div
+          className="absolute top-10 right-10 w-32 h-32 rounded-full opacity-80"
+          style={{
+            background: "linear-gradient(135deg, #4285F4 0%, #1A73E8 100%)",
+          }}
+        />
+
+        {/* Additional Yellow Patch - Bottom Left */}
+        <div
+          className="absolute bottom-10 left-10 w-24 h-24 rounded-full opacity-80"
+          style={{
+            background: "linear-gradient(135deg, #FBBC05 0%, #F9AB00 100%)",
+          }}
+        />
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center">
             <div className="flex justify-center mb-8">
-              <div className="p-4 bg-white rounded-2xl shadow-material-md">
+              <div className="p-6 bg-white rounded-3xl shadow-material-lg border-4 border-opacity-20 border-material-blue">
                 <img
                   src="https://cdn.builder.io/api/v1/image/assets%2F51a4707e6cb3452bb5e8ffef0fab69d7%2F4e7bfb36cd894a0d96cca31a023e813b?format=webp&width=800"
                   alt="AI-Charya Logo"
-                  className="h-24 w-24"
+                  className="h-32 w-32"
                 />
               </div>
             </div>
@@ -71,10 +104,14 @@ export default function Index() {
                 AI-Charya
               </span>
             </h1>
-            <p className="text-xl text-material-gray-600 mb-8 max-w-3xl mx-auto">
+            <p className="text-xl text-material-gray-700 mb-4 max-w-3xl mx-auto font-medium">
               Revolutionize education with AI-powered curriculum management,
               intelligent lecture generation, and comprehensive student progress
-              tracking.
+              tracking. Build the next generation of intelligent educational
+              agents.
+            </p>
+            <p className="text-lg text-material-gray-600 mb-8 max-w-2xl mx-auto">
+              Developed With Google Cloud Vertex AI and Firebase
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link

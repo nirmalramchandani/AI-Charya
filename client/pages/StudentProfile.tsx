@@ -13,7 +13,33 @@ import {
   BookOpen,
   Star,
   MapPin,
+  Award,
+  TrendingUp,
+  AlertTriangle,
+  Trophy,
+  BarChart3,
 } from "lucide-react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
+} from "recharts";
+
+interface Subject {
+  name: string;
+  score: number;
+  strength: "Strong" | "Average" | "Needs Work";
+}
 
 interface StudentData {
   id: string;
@@ -22,8 +48,12 @@ interface StudentData {
   gender: string;
   class: string;
   profilePhoto: string;
-  familyOccupation: string;
-  hobbies: string[];
+  school: string;
+  subjects: Subject[];
+  bestSubject: string;
+  needsFocusOn: string[];
+  summary: string;
+  activities: string[];
   motherTongue: string;
   learningLevel: "Slow" | "Average" | "Advanced";
 }
@@ -35,38 +65,57 @@ const dummyStudents: StudentData[] = [
     age: 12,
     gender: "Female",
     class: "Class 7",
+    school: "Govt. School",
     profilePhoto:
-      "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=200&h=200&fit=crop&crop=faces",
-    familyOccupation: "Father: Teacher, Mother: Nurse",
-    hobbies: ["Reading", "Drawing", "Cricket"],
-    motherTongue: "Marathi",
-    learningLevel: "Average",
+      "https://cdn.builder.io/api/v1/image/assets%2Fdf3a905663914b9689163bc99d388444%2Fa326ce4634444ae783ef9004e0f57a85?format=webp&width=800",
+    subjects: [
+      { name: "Mathematics", score: 92, strength: "Strong" },
+      { name: "Science", score: 89, strength: "Strong" },
+      { name: "English", score: 75, strength: "Average" },
+      { name: "History", score: 61, strength: "Needs Work" },
+      { name: "Geography", score: 58, strength: "Needs Work" },
+      { name: "Hindi", score: 83, strength: "Strong" },
+    ],
+    bestSubject: "Mathematics",
+    needsFocusOn: ["History", "Geography"],
+    summary:
+      "Priya is a sharp thinker, especially in Maths and Science, but needs to work on theory-based subjects.",
+    activities: [
+      "🏸 Badminton Team Captain",
+      "📖 Participated in Science Quiz",
+      "🗣️ Recitation and Storytelling Competitions",
+    ],
+    motherTongue: "Hindi",
+    learningLevel: "Advanced",
   },
   {
     id: "2",
     name: "Arjun Patel",
-    age: 10,
+    age: 12,
     gender: "Male",
-    class: "Class 5",
+    class: "Class 7",
+    school: "Govt. School",
     profilePhoto:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=faces",
-    familyOccupation: "Father: Farmer, Mother: Homemaker",
-    hobbies: ["Football", "Mathematics", "Science"],
+      "https://cdn.builder.io/api/v1/image/assets%2Fdf3a905663914b9689163bc99d388444%2F560d2d0b83ac48588e7ce0e5e03a2bcc?format=webp&width=800",
+    subjects: [
+      { name: "English", score: 90, strength: "Strong" },
+      { name: "History", score: 88, strength: "Strong" },
+      { name: "Geography", score: 85, strength: "Strong" },
+      { name: "Science", score: 72, strength: "Average" },
+      { name: "Mathematics", score: 68, strength: "Average" },
+      { name: "Hindi", score: 79, strength: "Average" },
+    ],
+    bestSubject: "English",
+    needsFocusOn: ["Mathematics"],
+    summary:
+      "Arjun is a strong reader and writer. He understands concepts well in Social Studies, but needs improvement in Maths.",
+    activities: [
+      "⚽ Football Team Goalkeeper",
+      "📝 Editor of Class Wall Magazine",
+      "🎤 Debates, Plays & Morning Assembly Speaker",
+    ],
     motherTongue: "Gujarati",
-    learningLevel: "Advanced",
-  },
-  {
-    id: "3",
-    name: "Sneha Desai",
-    age: 8,
-    gender: "Female",
-    class: "Class 3",
-    profilePhoto:
-      "https://images.unsplash.com/photo-1518871608619-455162693ba5?w=200&h=200&fit=crop&crop=faces",
-    familyOccupation: "Father: Shopkeeper, Mother: Tailor",
-    hobbies: ["Dancing", "Singing", "Playing"],
-    motherTongue: "Hindi",
-    learningLevel: "Slow",
+    learningLevel: "Average",
   },
 ];
 
@@ -89,16 +138,42 @@ export default function StudentProfile() {
     }
   };
 
+  const getSubjectStrengthColor = (strength: string) => {
+    switch (strength) {
+      case "Strong":
+        return "text-material-green-600";
+      case "Average":
+        return "text-material-blue-600";
+      case "Needs Work":
+        return "text-material-orange-600";
+      default:
+        return "text-material-gray-600";
+    }
+  };
+
+  const getSubjectIcon = (strength: string) => {
+    switch (strength) {
+      case "Strong":
+        return "✅";
+      case "Average":
+        return "☑️";
+      case "Needs Work":
+        return "⚠️";
+      default:
+        return "⭕";
+    }
+  };
+
   return (
     <div className="min-h-screen bg-material-gray-50">
       {/* Page Header */}
       <div className="w-full bg-gradient-to-r from-material-blue-50 to-material-green-50 border-b border-material-gray-200">
         <div className="px-8 lg:px-12 py-8">
           <h1 className="text-4xl font-bold text-material-gray-900 mb-3">
-            Student Profile
+            🎓 Student Profile
           </h1>
           <p className="text-lg text-material-gray-600">
-            View and manage detailed student information
+            View detailed academic overview and student information
           </p>
         </div>
       </div>
@@ -154,6 +229,9 @@ export default function StudentProfile() {
                     <h2 className="text-2xl font-bold text-material-gray-900">
                       {selectedStudent.name}
                     </h2>
+                    <p className="text-sm text-material-gray-500">
+                      {selectedStudent.school}
+                    </p>
 
                     <div className="space-y-3">
                       <div className="flex items-center justify-center gap-2 text-material-gray-600">
@@ -170,6 +248,11 @@ export default function StudentProfile() {
                         <BookOpen className="h-4 w-4" />
                         <span>{selectedStudent.class}</span>
                       </div>
+
+                      <div className="flex items-center justify-center gap-2 text-material-gray-600">
+                        <Globe className="h-4 w-4" />
+                        <span>{selectedStudent.motherTongue}</span>
+                      </div>
                     </div>
 
                     {/* Learning Level Badge */}
@@ -183,6 +266,39 @@ export default function StudentProfile() {
                         {selectedStudent.learningLevel} Learner
                       </Badge>
                     </div>
+
+                    {/* Best Subject */}
+                    <div className="pt-4 bg-material-green-50 rounded-lg p-4">
+                      <h4 className="font-semibold text-material-green-800 mb-1 flex items-center gap-2">
+                        <Trophy className="h-4 w-4" />
+                        🥇 Best Subject
+                      </h4>
+                      <p className="text-material-green-700 font-medium">
+                        {selectedStudent.bestSubject}
+                      </p>
+                    </div>
+
+                    {/* Needs Focus */}
+                    {selectedStudent.needsFocusOn.length > 0 && (
+                      <div className="bg-material-orange-50 rounded-lg p-4">
+                        <h4 className="font-semibold text-material-orange-800 mb-2 flex items-center gap-2">
+                          <AlertTriangle className="h-4 w-4" />
+                          ⚠️ Needs Focus On
+                        </h4>
+                        <div className="space-y-1">
+                          {selectedStudent.needsFocusOn.map(
+                            (subject, index) => (
+                              <p
+                                key={index}
+                                className="text-material-orange-700 text-sm"
+                              >
+                                {subject}
+                              </p>
+                            ),
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Action Buttons */}
@@ -210,98 +326,224 @@ export default function StudentProfile() {
 
             {/* Right Column - Detailed Information */}
             <div className="lg:col-span-8 space-y-6">
-              {/* Background Information */}
+              {/* Academic Overview - Table */}
               <Card className="bg-white shadow-md">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="p-3 bg-material-blue-100 rounded-lg">
-                      <Users className="h-6 w-6 text-material-blue" />
+                      <BookOpen className="h-6 w-6 text-material-blue" />
                     </div>
                     <h3 className="text-xl font-semibold text-material-gray-900">
-                      Background Information
+                      📚 Academic Overview
                     </h3>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Family Occupation */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-material-gray-700 flex items-center gap-2">
-                        <MapPin className="h-4 w-4" />
-                        Family Occupation
-                      </label>
-                      {editMode ? (
-                        <textarea
-                          defaultValue={selectedStudent.familyOccupation}
-                          className="w-full p-3 border border-material-gray-300 rounded-lg focus:ring-2 focus:ring-material-blue focus:border-transparent"
-                          rows={3}
-                        />
-                      ) : (
-                        <p className="text-material-gray-600 bg-material-gray-50 p-3 rounded-lg">
-                          {selectedStudent.familyOccupation}
-                        </p>
-                      )}
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-material-gray-200">
+                          <th className="text-left py-3 px-4 font-semibold text-material-gray-700">
+                            Subject
+                          </th>
+                          <th className="text-left py-3 px-4 font-semibold text-material-gray-700">
+                            Score
+                          </th>
+                          <th className="text-left py-3 px-4 font-semibold text-material-gray-700">
+                            Strength
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedStudent.subjects.map((subject, index) => (
+                          <tr
+                            key={index}
+                            className="border-b border-material-gray-100 hover:bg-material-gray-50"
+                          >
+                            <td className="py-3 px-4 font-medium text-material-gray-900">
+                              {subject.name}
+                            </td>
+                            <td className="py-3 px-4">
+                              <span className="font-semibold text-material-gray-800">
+                                {subject.score}%
+                              </span>
+                            </td>
+                            <td className="py-3 px-4">
+                              <span
+                                className={`flex items-center gap-2 font-medium ${getSubjectStrengthColor(subject.strength)}`}
+                              >
+                                <span>{getSubjectIcon(subject.strength)}</span>
+                                {subject.strength}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Academic Performance Graphs */}
+              <Card className="bg-white shadow-md">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-3 bg-material-green-100 rounded-lg">
+                      <BarChart3 className="h-6 w-6 text-material-green" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-material-gray-900">
+                      📊 Performance Charts
+                    </h3>
+                  </div>
+
+                  <div className="space-y-8">
+                    {/* Bar Chart */}
+                    <div>
+                      <h4 className="text-lg font-semibold text-material-gray-800 mb-4">
+                        Subject Scores
+                      </h4>
+                      <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart
+                            data={selectedStudent.subjects.map((subject) => ({
+                              ...subject,
+                              fill:
+                                subject.strength === "Strong"
+                                  ? "#34A853"
+                                  : subject.strength === "Average"
+                                    ? "#4285F4"
+                                    : "#FB7C00",
+                            }))}
+                            margin={{
+                              top: 20,
+                              right: 30,
+                              left: 20,
+                              bottom: 5,
+                            }}
+                          >
+                            <CartesianGrid
+                              strokeDasharray="3 3"
+                              stroke="#E8EAED"
+                            />
+                            <XAxis
+                              dataKey="name"
+                              stroke="#5F6368"
+                              fontSize={12}
+                              angle={-45}
+                              textAnchor="end"
+                              height={80}
+                            />
+                            <YAxis
+                              stroke="#5F6368"
+                              fontSize={12}
+                              domain={[0, 100]}
+                            />
+                            <Tooltip
+                              contentStyle={{
+                                backgroundColor: "#F8F9FA",
+                                border: "1px solid #E8EAED",
+                                borderRadius: "8px",
+                              }}
+                            />
+                            <Bar
+                              dataKey="score"
+                              radius={[4, 4, 0, 0]}
+                              fill={(entry) => entry.fill}
+                            />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
                     </div>
 
-                    {/* Mother Tongue */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-material-gray-700 flex items-center gap-2">
-                        <Globe className="h-4 w-4" />
-                        Mother Tongue
-                      </label>
-                      {editMode ? (
-                        <input
-                          type="text"
-                          defaultValue={selectedStudent.motherTongue}
-                          className="w-full p-3 border border-material-gray-300 rounded-lg focus:ring-2 focus:ring-material-blue focus:border-transparent"
-                        />
-                      ) : (
-                        <p className="text-material-gray-600 bg-material-gray-50 p-3 rounded-lg">
-                          {selectedStudent.motherTongue}
-                        </p>
-                      )}
+                    {/* Radar Chart */}
+                    <div>
+                      <h4 className="text-lg font-semibold text-material-gray-800 mb-4">
+                        Skills Radar
+                      </h4>
+                      <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <RadarChart
+                            data={selectedStudent.subjects}
+                            margin={{
+                              top: 20,
+                              right: 30,
+                              bottom: 20,
+                              left: 30,
+                            }}
+                          >
+                            <PolarGrid stroke="#E8EAED" />
+                            <PolarAngleAxis
+                              dataKey="name"
+                              tick={{ fontSize: 12, fill: "#5F6368" }}
+                            />
+                            <PolarRadiusAxis
+                              angle={90}
+                              domain={[0, 100]}
+                              tick={{ fontSize: 10, fill: "#5F6368" }}
+                            />
+                            <Radar
+                              name={selectedStudent.name}
+                              dataKey="score"
+                              stroke="#4285F4"
+                              fill="#4285F4"
+                              fillOpacity={0.3}
+                              strokeWidth={2}
+                            />
+                            <Tooltip
+                              contentStyle={{
+                                backgroundColor: "#F8F9FA",
+                                border: "1px solid #E8EAED",
+                                borderRadius: "8px",
+                              }}
+                            />
+                          </RadarChart>
+                        </ResponsiveContainer>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Hobbies & Interests */}
+              {/* Summary */}
+              <Card className="bg-white shadow-md">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-3 bg-material-green-100 rounded-lg">
+                      <TrendingUp className="h-6 w-6 text-material-green" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-material-gray-900">
+                      📝 Summary
+                    </h3>
+                  </div>
+                  <p className="text-material-gray-700 leading-relaxed bg-material-gray-50 p-4 rounded-lg">
+                    {selectedStudent.summary}
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Activities & Achievements */}
               <Card className="bg-white shadow-md">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="p-3 bg-material-green-100 rounded-lg">
-                      <Heart className="h-6 w-6 text-material-green" />
+                    <div className="p-3 bg-material-orange-100 rounded-lg">
+                      <Award className="h-6 w-6 text-material-orange" />
                     </div>
                     <h3 className="text-xl font-semibold text-material-gray-900">
-                      Hobbies & Interests
+                      ⚽ Activities
                     </h3>
                   </div>
 
-                  <div className="space-y-4">
-                    {editMode ? (
-                      <div>
-                        <label className="text-sm font-medium text-material-gray-700 mb-2 block">
-                          Add or remove hobbies (comma separated)
-                        </label>
-                        <input
-                          type="text"
-                          defaultValue={selectedStudent.hobbies.join(", ")}
-                          className="w-full p-3 border border-material-gray-300 rounded-lg focus:ring-2 focus:ring-material-blue focus:border-transparent"
-                          placeholder="Reading, Drawing, Sports..."
-                        />
+                  <div className="space-y-3">
+                    {selectedStudent.activities.map((activity, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-3 p-3 bg-material-blue-50 rounded-lg border border-material-blue-100"
+                      >
+                        <div className="w-2 h-2 bg-material-blue-500 rounded-full"></div>
+                        <span className="text-material-gray-700 font-medium">
+                          {activity}
+                        </span>
                       </div>
-                    ) : (
-                      <div className="flex flex-wrap gap-3">
-                        {selectedStudent.hobbies.map((hobby, index) => (
-                          <Badge
-                            key={index}
-                            variant="outline"
-                            className="px-4 py-2 text-sm bg-material-green-50 text-material-green-700 border-material-green-200"
-                          >
-                            {hobby}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
+                    ))}
                   </div>
                 </CardContent>
               </Card>
@@ -310,8 +552,8 @@ export default function StudentProfile() {
               <Card className="bg-white shadow-md">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="p-3 bg-material-orange-100 rounded-lg">
-                      <Star className="h-6 w-6 text-material-orange" />
+                    <div className="p-3 bg-material-yellow-100 rounded-lg">
+                      <Star className="h-6 w-6 text-material-yellow-600" />
                     </div>
                     <h3 className="text-xl font-semibold text-material-gray-900">
                       Learning Assessment
