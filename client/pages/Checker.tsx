@@ -90,7 +90,7 @@ export default function Checker() {
         {/* 4-Section Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Top Left - Camera Section */}
-          <Card className="material-card">
+          <Card className="material-card bg-material-blue-50 border-material-blue-200">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Camera className="h-5 w-5 text-material-blue" />
