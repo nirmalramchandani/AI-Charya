@@ -151,8 +151,14 @@ export default function KnowledgeBase() {
   };
 
   const filteredFiles = uploadedFiles.filter((file) => {
-    const matchesClass = !filterClass || file.class === filterClass;
-    const matchesSubject = !filterSubject || file.subject === filterSubject;
+    const matchesClass =
+      !filterClass ||
+      filterClass === "all-classes" ||
+      file.class === filterClass;
+    const matchesSubject =
+      !filterSubject ||
+      filterSubject === "all-subjects" ||
+      file.subject === filterSubject;
     const matchesSearch =
       !searchTerm ||
       file.fileName.toLowerCase().includes(searchTerm.toLowerCase()) ||
