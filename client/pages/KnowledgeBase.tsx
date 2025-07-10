@@ -385,8 +385,8 @@ export default function KnowledgeBase() {
                   {/* Clear Filters */}
                   <Button
                     onClick={() => {
-                      setFilterClass("");
-                      setFilterSubject("");
+                      setFilterClass("all-classes");
+                      setFilterSubject("all-subjects");
                       setSearchTerm("");
                     }}
                     variant="outline"
