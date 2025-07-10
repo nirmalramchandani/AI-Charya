@@ -69,9 +69,13 @@ export default function Layout({ children }: LayoutProps) {
         <div className="flex h-full flex-col">
           {/* Logo */}
           <div className="flex h-16 shrink-0 items-center px-6 border-b border-material-gray-200">
-            <GraduationCap className="h-8 w-8 text-material-blue" />
+            <img
+              src="https://cdn.builder.io/api/v1/image/assets%2F51a4707e6cb3452bb5e8ffef0fab69d7%2F4e7bfb36cd894a0d96cca31a023e813b?format=webp&width=800"
+              alt="AI-Charya Logo"
+              className="h-8 w-8"
+            />
             <span className="ml-3 text-xl font-semibold text-material-gray-900">
-              EduPlatform
+              AI-Charya
             </span>
           </div>
 
