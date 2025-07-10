@@ -250,7 +250,9 @@ export default function SmartMatchSyllabus() {
                       <SelectValue placeholder="Select second class..." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">No comparison</SelectItem>
+                      <SelectItem value="no-comparison">
+                        No comparison
+                      </SelectItem>
                       {classes.map((cls) => (
                         <SelectItem key={cls} value={cls}>
                           {cls}
