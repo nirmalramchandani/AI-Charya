@@ -204,10 +204,10 @@ export default function Checker() {
           </Card>
 
           {/* Bottom Left - Student Details */}
-          <Card className="material-card">
+          <Card className="material-card bg-material-orange-50 border-material-orange-200">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5 text-material-blue" />
+                <User className="h-5 w-5 text-material-orange" />
                 Student Details
               </CardTitle>
             </CardHeader>
