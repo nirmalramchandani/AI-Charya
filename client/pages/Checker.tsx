@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Camera, Upload, User, Scan } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function Checker() {
   const [isRecording, setIsRecording] = useState(false);
