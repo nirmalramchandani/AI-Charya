@@ -9,6 +9,7 @@ import {
   Users,
   UserCheck,
   BarChart3,
+  CheckSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Footer from "./Footer";
