@@ -295,25 +295,25 @@ export default function ReportsAnalytics() {
                   </div>
 
                   {/* Subject Progress Bars */}
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {Object.entries(student.scores).map(([subject, score]) => (
-                      <div key={subject} className="flex items-center">
-                        <span className="text-xs font-medium text-material-gray-600 w-16">
-                          {subject}
-                        </span>
-                        <div className="flex-1 mx-2">
-                          <div className="w-full bg-material-gray-200 rounded-full h-1.5">
-                            <div
-                              className={`h-1.5 rounded-full ${getScoreBarColor(score)}`}
-                              style={{ width: `${score}%` }}
-                            />
-                          </div>
+                      <div key={subject} className="flex flex-col space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-medium text-material-gray-600">
+                            {subject}
+                          </span>
+                          <span
+                            className={`text-xs font-medium ${getScoreColor(score)}`}
+                          >
+                            {score}%
+                          </span>
                         </div>
-                        <span
-                          className={`text-xs font-medium ${getScoreColor(score)}`}
-                        >
-                          {score}%
-                        </span>
+                        <div className="w-full bg-material-gray-200 rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full ${getScoreBarColor(score)}`}
+                            style={{ width: `${score}%` }}
+                          />
+                        </div>
                       </div>
                     ))}
                   </div>
