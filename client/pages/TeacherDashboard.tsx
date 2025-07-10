@@ -1,375 +1,158 @@
 import { Link } from "react-router-dom";
 import {
-  BookOpen,
-  Calendar,
-  FileText,
-  Users,
-  BarChart3,
-  Edit,
-  Eye,
-  ArrowRight,
   Clock,
-  Users as StudentsIcon,
+  BookOpen,
+  Users,
+  TrendingUp,
+  Mic,
+  Calendar,
+  School,
+  GraduationCap,
+  AlertTriangle,
+  CheckCircle,
 } from "lucide-react";
 
-interface SyllabusCard {
-  id: string;
+interface ClassSchedule {
+  time: string;
   class: string;
   subject: string;
-  chapterCount: number;
-  uploadDate: string;
-  status: "Active" | "Draft" | "Archived";
-}
-
-interface JointLesson {
-  id: string;
   topic: string;
-  classes: string[];
-  suggestedTimeline: string;
-  priority: "High" | "Medium" | "Low";
 }
 
-const dummySyllabusData: SyllabusCard[] = [
+interface SubjectProgress {
+  subject: string;
+  progress: number;
+  color: string;
+}
+
+interface WeakSubject {
+  subject: string;
+  percentage: number;
+  color: string;
+}
+
+interface ClassAttendance {
+  class: string;
+  present: number;
+  total: number;
+}
+
+const todaySchedule: ClassSchedule[] = [
   {
-    id: "1",
-    class: "Class 3",
+    time: "9:00–9:40",
+    class: "Class 5",
+    subject: "Math",
+    topic: "Fractions",
+  },
+  {
+    time: "10:00–10:40",
+    class: "Class 4",
     subject: "Science",
-    chapterCount: 12,
-    uploadDate: "2024-01-15",
-    status: "Active",
-  },
-  {
-    id: "2",
-    class: "Class 4",
-    subject: "Mathematics",
-    chapterCount: 15,
-    uploadDate: "2024-01-10",
-    status: "Active",
-  },
-  {
-    id: "3",
-    class: "Class 5",
-    subject: "Environmental Studies",
-    chapterCount: 8,
-    uploadDate: "2024-01-08",
-    status: "Active",
-  },
-  {
-    id: "4",
-    class: "Class 3",
-    subject: "Hindi",
-    chapterCount: 10,
-    uploadDate: "2024-01-05",
-    status: "Draft",
-  },
-  {
-    id: "5",
-    class: "Class 4",
-    subject: "English",
-    chapterCount: 14,
-    uploadDate: "2024-01-03",
-    status: "Active",
-  },
-  {
-    id: "6",
-    class: "Class 5",
-    subject: "Social Studies",
-    chapterCount: 11,
-    uploadDate: "2024-01-01",
-    status: "Active",
-  },
-];
-
-const dummyJointLessonsData: JointLesson[] = [
-  {
-    id: "1",
     topic: "Water Cycle",
-    classes: ["Class 3", "Class 4", "Class 5"],
-    suggestedTimeline: "3 weeks",
-    priority: "High",
   },
   {
-    id: "2",
-    topic: "Basic Addition & Subtraction",
-    classes: ["Class 1", "Class 2"],
-    suggestedTimeline: "4 weeks",
-    priority: "Medium",
-  },
-  {
-    id: "3",
-    topic: "Plant Life Cycles",
-    classes: ["Class 2", "Class 3"],
-    suggestedTimeline: "2 weeks",
-    priority: "High",
-  },
-  {
-    id: "4",
-    topic: "Community Helpers",
-    classes: ["Class 1", "Class 2", "Class 3"],
-    suggestedTimeline: "2 weeks",
-    priority: "Medium",
-  },
-  {
-    id: "5",
-    topic: "Introduction to Geography",
-    classes: ["Class 4", "Class 5"],
-    suggestedTimeline: "5 weeks",
-    priority: "Low",
+    time: "12:00–12:40",
+    class: "Class 3",
+    subject: "Marathi",
+    topic: "Story Writing",
   },
 ];
 
-const quickNavItems = [
-  {
-    title: "📋 My Lecture Plates",
-    description: "View and manage your saved lecture content",
-    link: "/lectures",
-    color: "bg-material-blue",
-    hoverColor: "hover:bg-material-blue-600",
-    icon: FileText,
-  },
-  {
-    title: "👥 Student Profiles",
-    description: "Access student information and progress",
-    link: "/students",
-    color: "bg-material-green",
-    hoverColor: "hover:bg-material-green-600",
-    icon: Users,
-  },
-  {
-    title: "📊 Reports",
-    description: "Generate analytics and performance reports",
-    link: "/reports",
-    color: "bg-material-orange",
-    hoverColor: "hover:bg-material-orange-600",
-    icon: BarChart3,
-  },
+const syllabusProgress: SubjectProgress[] = [
+  { subject: "Math", progress: 60, color: "bg-material-blue" },
+  { subject: "Science", progress: 80, color: "bg-material-green" },
+  { subject: "Marathi", progress: 40, color: "bg-material-orange" },
+  { subject: "English", progress: 70, color: "bg-material-yellow" },
 ];
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "Active":
-      return "bg-material-green text-white";
-    case "Draft":
-      return "bg-material-yellow text-material-gray-900";
-    case "Archived":
-      return "bg-material-gray-500 text-white";
-    default:
-      return "bg-material-gray-300 text-material-gray-700";
-  }
-};
+const weakSubjects: WeakSubject[] = [
+  { subject: "Science", percentage: 45, color: "bg-red-500" },
+  { subject: "English", percentage: 30, color: "bg-material-orange" },
+  { subject: "EVS", percentage: 25, color: "bg-material-yellow" },
+];
 
-const getPriorityColor = (priority: string) => {
-  switch (priority) {
-    case "High":
-      return "bg-red-100 text-red-800";
-    case "Medium":
-      return "bg-material-yellow-100 text-material-yellow-800";
-    case "Low":
-      return "bg-material-gray-100 text-material-gray-700";
-    default:
-      return "bg-material-gray-100 text-material-gray-700";
-  }
-};
+const todayAttendance: ClassAttendance[] = [
+  { class: "Class 3", present: 21, total: 25 },
+  { class: "Class 4", present: 18, total: 22 },
+  { class: "Class 5", present: 24, total: 28 },
+];
+
+const weeklyAttendanceData = [
+  { day: "Mon", percentage: 85 },
+  { day: "Tue", percentage: 92 },
+  { day: "Wed", percentage: 88 },
+  { day: "Thu", percentage: 90 },
+  { day: "Fri", percentage: 87 },
+  { day: "Sat", percentage: 82 },
+  { day: "Sun", percentage: 0 },
+];
 
 export default function TeacherDashboard() {
+  const getAttendanceColor = (present: number, total: number) => {
+    const percentage = (present / total) * 100;
+    if (percentage >= 90) return "text-material-green";
+    if (percentage >= 75) return "text-material-yellow-600";
+    return "text-red-600";
+  };
+
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-6 max-w-7xl mx-auto space-y-8">
       {/* Page Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-material-gray-900 mb-2">
           Teacher Dashboard
         </h1>
         <p className="text-lg text-material-gray-600">
-          Welcome! Manage your curriculum and plan smart lessons.
+          Good morning! Here's your overview for today.
         </p>
       </div>
 
-      {/* Section 1: My Syllabus */}
-      <section className="mb-12">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center">
-            <BookOpen className="h-6 w-6 text-material-blue mr-3" />
-            <h2 className="text-2xl font-semibold text-material-gray-900">
-              📚 My Syllabus
-            </h2>
-          </div>
-          <Link
-            to="/curriculum"
-            className="text-material-blue hover:text-material-blue-600 font-medium flex items-center"
-          >
-            Add New Syllabus
-            <ArrowRight className="h-4 w-4 ml-1" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {dummySyllabusData.map((syllabus) => (
-            <div
-              key={syllabus.id}
-              className="bg-white rounded-xl border border-material-gray-200 p-6 hover:shadow-material-md transition-all duration-200 hover:scale-105"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-material-gray-900 mb-1">
-                    {syllabus.class}
-                  </h3>
-                  <p className="text-material-blue font-medium">
-                    {syllabus.subject}
-                  </p>
-                </div>
-                <span
-                  className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                    syllabus.status,
-                  )}`}
-                >
-                  {syllabus.status}
-                </span>
-              </div>
-
-              <div className="mb-4">
-                <div className="flex items-center text-material-gray-600 mb-2">
-                  <BookOpen className="h-4 w-4 mr-2" />
-                  <span className="text-sm">
-                    {syllabus.chapterCount} chapters
-                  </span>
-                </div>
-                <div className="flex items-center text-material-gray-600">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  <span className="text-sm">Updated {syllabus.uploadDate}</span>
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <button className="flex-1 bg-material-gray-100 text-material-gray-700 py-2 px-3 rounded-lg text-sm font-medium hover:bg-material-gray-200 transition-colors flex items-center justify-center">
-                  <Eye className="h-4 w-4 mr-1" />
-                  View
-                </button>
-                <button className="flex-1 bg-material-blue text-white py-2 px-3 rounded-lg text-sm font-medium hover:bg-material-blue-600 transition-colors flex items-center justify-center">
-                  <Edit className="h-4 w-4 mr-1" />
-                  Edit
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Section 2: Joint Lessons */}
-      <section className="mb-12">
+      {/* Section 1: Today's Class Timetable */}
+      <section className="bg-white rounded-xl border border-material-gray-200 p-6 shadow-material">
         <div className="flex items-center mb-6">
-          <Calendar className="h-6 w-6 text-material-green mr-3" />
+          <Clock className="h-6 w-6 text-material-blue mr-3" />
           <h2 className="text-2xl font-semibold text-material-gray-900">
-            📅 Joint Lessons
+            🕒 Today's Class Schedule
           </h2>
         </div>
 
-        <div className="bg-white rounded-xl border border-material-gray-200 overflow-hidden">
-          {/* Mobile: Stacked Cards */}
-          <div className="block md:hidden">
-            {dummyJointLessonsData.map((lesson, index) => (
-              <div
-                key={lesson.id}
-                className={`p-4 ${
-                  index !== dummyJointLessonsData.length - 1
-                    ? "border-b border-material-gray-200"
-                    : ""
-                }`}
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className="font-medium text-material-gray-900">
-                    {lesson.topic}
-                  </h3>
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(
-                      lesson.priority,
-                    )}`}
-                  >
-                    {lesson.priority}
-                  </span>
-                </div>
-
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center">
-                    <StudentsIcon className="h-4 w-4 text-material-gray-500 mr-2" />
-                    <span className="text-sm text-material-gray-600">
-                      {lesson.classes.join(", ")}
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <Clock className="h-4 w-4 text-material-gray-500 mr-2" />
-                    <span className="text-sm text-material-gray-600">
-                      {lesson.suggestedTimeline}
-                    </span>
-                  </div>
-                </div>
-
-                <button className="w-full bg-material-green text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-material-green-600 transition-colors">
-                  Generate Lesson Plan
-                </button>
-              </div>
-            ))}
-          </div>
-
-          {/* Desktop: Table */}
-          <div className="hidden md:block">
+        {/* Desktop Table View */}
+        <div className="hidden md:block">
+          <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-material-gray-50">
+              <thead className="bg-material-gray-50 rounded-lg">
                 <tr>
-                  <th className="text-left py-4 px-6 font-semibold text-material-gray-900">
-                    Topic
+                  <th className="text-left py-3 px-4 font-semibold text-material-gray-900 rounded-l-lg">
+                    🕒 Time
                   </th>
-                  <th className="text-left py-4 px-6 font-semibold text-material-gray-900">
-                    Appears in Classes
+                  <th className="text-left py-3 px-4 font-semibold text-material-gray-900">
+                    🏫 Class
                   </th>
-                  <th className="text-left py-4 px-6 font-semibold text-material-gray-900">
-                    Suggested Timeline
+                  <th className="text-left py-3 px-4 font-semibold text-material-gray-900">
+                    📘 Subject
                   </th>
-                  <th className="text-left py-4 px-6 font-semibold text-material-gray-900">
-                    Priority
-                  </th>
-                  <th className="text-left py-4 px-6 font-semibold text-material-gray-900">
-                    Action
+                  <th className="text-left py-3 px-4 font-semibold text-material-gray-900 rounded-r-lg">
+                    📚 Topic
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {dummyJointLessonsData.map((lesson, index) => (
+                {todaySchedule.map((schedule, index) => (
                   <tr
-                    key={lesson.id}
-                    className={`${
-                      index !== dummyJointLessonsData.length - 1
-                        ? "border-b border-material-gray-200"
-                        : ""
-                    } hover:bg-material-gray-50 transition-colors`}
+                    key={index}
+                    className="border-b border-material-gray-100 hover:bg-material-gray-50 transition-colors"
                   >
-                    <td className="py-4 px-6">
-                      <span className="font-medium text-material-gray-900">
-                        {lesson.topic}
-                      </span>
+                    <td className="py-4 px-4 font-medium text-material-blue">
+                      {schedule.time}
                     </td>
-                    <td className="py-4 px-6">
-                      <span className="text-material-gray-600">
-                        {lesson.classes.join(", ")}
-                      </span>
+                    <td className="py-4 px-4 text-material-gray-700">
+                      {schedule.class}
                     </td>
-                    <td className="py-4 px-6">
-                      <span className="text-material-gray-600">
-                        {lesson.suggestedTimeline}
-                      </span>
+                    <td className="py-4 px-4 text-material-gray-700">
+                      {schedule.subject}
                     </td>
-                    <td className="py-4 px-6">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(
-                          lesson.priority,
-                        )}`}
-                      >
-                        {lesson.priority}
-                      </span>
-                    </td>
-                    <td className="py-4 px-6">
-                      <button className="bg-material-green text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-material-green-600 transition-colors">
-                        Generate Lesson Plan
-                      </button>
+                    <td className="py-4 px-4 text-material-gray-700">
+                      {schedule.topic}
                     </td>
                   </tr>
                 ))}
@@ -377,35 +160,201 @@ export default function TeacherDashboard() {
             </table>
           </div>
         </div>
+
+        {/* Mobile Stacked List View */}
+        <div className="md:hidden space-y-4">
+          {todaySchedule.map((schedule, index) => (
+            <div
+              key={index}
+              className="bg-material-gray-50 rounded-lg p-4 border border-material-gray-200"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-semibold text-material-blue text-lg">
+                  {schedule.time}
+                </span>
+                <span className="text-material-gray-600 text-sm">
+                  {schedule.class}
+                </span>
+              </div>
+              <div className="text-material-gray-900 font-medium mb-1">
+                📘 {schedule.subject}
+              </div>
+              <div className="text-material-gray-600 text-sm">
+                📚 {schedule.topic}
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
 
-      {/* Section 3: Quick Navigation */}
-      <section>
-        <div className="flex items-center mb-6">
-          <ArrowRight className="h-6 w-6 text-material-orange mr-3" />
+      {/* Section 2: Study Material Access */}
+      <section className="bg-gradient-to-r from-material-blue-50 to-material-blue-100 rounded-xl border border-material-blue-200 p-8 text-center shadow-material">
+        <div className="flex items-center justify-center mb-4">
+          <BookOpen className="h-8 w-8 text-material-blue mr-3" />
           <h2 className="text-2xl font-semibold text-material-gray-900">
-            🚀 Quick Navigation
+            📘 Class-Wise Study Material
           </h2>
         </div>
+        <p className="text-material-gray-600 mb-6 text-lg">
+          Access chapters, tests, and learning plates by class
+        </p>
+        <Link
+          to="/class-material"
+          className="inline-flex items-center bg-material-blue text-white px-8 py-3 rounded-xl font-semibold hover:bg-material-blue-600 transition-all duration-200 hover:scale-105 shadow-material"
+        >
+          <GraduationCap className="h-5 w-5 mr-2" />
+          Go to Study Material
+        </Link>
+      </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {quickNavItems.map((item, index) => (
-            <Link
-              key={index}
-              to={item.link}
-              className={`${item.color} ${item.hoverColor} text-white p-6 rounded-xl transition-all duration-200 hover:scale-105 hover:shadow-material-lg group`}
-            >
-              <div className="flex items-center mb-4">
-                <item.icon className="h-8 w-8 mr-3" />
-                <h3 className="text-lg font-semibold">{item.title}</h3>
+      {/* Section 3: Student Insights Row */}
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Syllabus Progress */}
+        <div className="bg-white rounded-xl border border-material-gray-200 p-6 shadow-material">
+          <div className="flex items-center mb-4">
+            <TrendingUp className="h-6 w-6 text-material-green mr-3" />
+            <h3 className="text-xl font-semibold text-material-gray-900">
+              📊 Syllabus Progress
+            </h3>
+          </div>
+          <div className="space-y-4">
+            {syllabusProgress.map((item, index) => (
+              <div key={index}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-material-gray-700 font-medium">
+                    {item.subject}
+                  </span>
+                  <span className="text-material-gray-600 text-sm">
+                    {item.progress}%
+                  </span>
+                </div>
+                <div className="w-full bg-material-gray-200 rounded-full h-3">
+                  <div
+                    className={`h-3 rounded-full ${item.color} transition-all duration-500`}
+                    style={{ width: `${item.progress}%` }}
+                  />
+                </div>
               </div>
-              <p className="text-white/90 mb-4">{item.description}</p>
-              <div className="flex items-center text-white font-medium">
-                <span>Go to section</span>
-                <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+            ))}
+          </div>
+        </div>
+
+        {/* Weak Subjects */}
+        <div className="bg-white rounded-xl border border-material-gray-200 p-6 shadow-material">
+          <div className="flex items-center mb-4">
+            <AlertTriangle className="h-6 w-6 text-red-500 mr-3" />
+            <h3 className="text-xl font-semibold text-material-gray-900">
+              ⚠️ Weak Subjects
+            </h3>
+          </div>
+          <div className="space-y-4">
+            {weakSubjects.map((item, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200"
+              >
+                <div className="flex items-center">
+                  <div className={`w-4 h-4 rounded-full ${item.color} mr-3`} />
+                  <span className="text-material-gray-900 font-medium">
+                    {item.subject}
+                  </span>
+                </div>
+                <span className="text-red-600 font-semibold">
+                  {item.percentage}%
+                </span>
               </div>
-            </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Students Present Today */}
+        <div className="bg-white rounded-xl border border-material-gray-200 p-6 shadow-material">
+          <div className="flex items-center mb-4">
+            <Users className="h-6 w-6 text-material-orange mr-3" />
+            <h3 className="text-xl font-semibold text-material-gray-900">
+              👥 Students Present Today
+            </h3>
+          </div>
+          <div className="space-y-4">
+            {todayAttendance.map((item, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-3 bg-material-gray-50 rounded-lg"
+              >
+                <span className="text-material-gray-900 font-medium">
+                  {item.class}
+                </span>
+                <div className="flex items-center">
+                  <span
+                    className={`font-semibold ${getAttendanceColor(
+                      item.present,
+                      item.total,
+                    )}`}
+                  >
+                    {item.present}/{item.total}
+                  </span>
+                  <div className="ml-2">
+                    {(item.present / item.total) * 100 >= 80 ? (
+                      <CheckCircle className="h-4 w-4 text-material-green" />
+                    ) : (
+                      <AlertTriangle className="h-4 w-4 text-red-500" />
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Section 4: Weekly Attendance Trend (Hidden on mobile) */}
+      <section className="hidden lg:block bg-white rounded-xl border border-material-gray-200 p-6 shadow-material">
+        <div className="flex items-center mb-6">
+          <Calendar className="h-6 w-6 text-material-green mr-3" />
+          <h2 className="text-2xl font-semibold text-material-gray-900">
+            📈 Attendance Trend (Last 7 Days)
+          </h2>
+        </div>
+        <div className="flex items-end justify-between h-40 bg-material-gray-50 rounded-lg p-4">
+          {weeklyAttendanceData.map((day, index) => (
+            <div key={index} className="flex flex-col items-center">
+              <div
+                className="bg-material-blue rounded-t-lg w-8 transition-all duration-500 hover:bg-material-blue-600"
+                style={{
+                  height: `${day.percentage > 0 ? (day.percentage / 100) * 120 : 4}px`,
+                }}
+              />
+              <span className="text-xs text-material-gray-600 mt-2">
+                {day.day}
+              </span>
+              <span className="text-xs text-material-gray-500">
+                {day.percentage}%
+              </span>
+            </div>
           ))}
+        </div>
+      </section>
+
+      {/* Section 5: Voice Note */}
+      <section className="bg-gradient-to-r from-material-blue-50 to-material-blue-100 rounded-xl border border-material-blue-200 p-6 shadow-material">
+        <div className="flex flex-col md:flex-row items-center justify-between">
+          <div className="flex items-center mb-4 md:mb-0">
+            <div className="bg-material-blue rounded-full p-3 mr-4">
+              <Mic className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-material-gray-900">
+                🎤 Quick Voice Note
+              </h3>
+              <p className="text-material-gray-600">
+                Record important reminders or observations
+              </p>
+            </div>
+          </div>
+          <button className="bg-material-blue text-white px-6 py-3 rounded-xl font-semibold hover:bg-material-blue-600 transition-all duration-200 hover:scale-105 shadow-material flex items-center">
+            <Mic className="h-5 w-5 mr-2" />
+            Record Note
+          </button>
         </div>
       </section>
     </div>
