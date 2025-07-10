@@ -49,12 +49,27 @@ export default function Index() {
           <div className="text-center">
             <div className="flex justify-center mb-8">
               <div className="p-4 bg-white rounded-2xl shadow-material-md">
-                <GraduationCap className="h-16 w-16 text-material-blue" />
+                <img
+                  src="https://cdn.builder.io/api/v1/image/assets%2F51a4707e6cb3452bb5e8ffef0fab69d7%2F4e7bfb36cd894a0d96cca31a023e813b?format=webp&width=800"
+                  alt="AI-Charya Logo"
+                  className="h-16 w-16"
+                />
               </div>
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-material-gray-900 mb-6">
-              Modern Educational
-              <span className="text-material-blue block">Platform</span>
+              Welcome to
+              <span
+                className="block"
+                style={{
+                  background:
+                    "linear-gradient(45deg, #4285f4 0%, #fbbc05 50%, #34a853 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}
+              >
+                AI-Charya
+              </span>
             </h1>
             <p className="text-xl text-material-gray-600 mb-8 max-w-3xl mx-auto">
               Streamline curriculum management, generate dynamic lectures, and
