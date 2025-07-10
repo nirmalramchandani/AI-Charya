@@ -10,9 +10,13 @@ import {
   UserCheck,
   BarChart3,
   CheckSquare,
+  Send,
+  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Footer from "./Footer";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -30,6 +34,15 @@ const navigation = [
 
 export default function Layout({ children }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isAssistantOpen, setIsAssistantOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState([
+    {
+      type: "assistant",
+      content:
+        "Hello! I'm your AI assistant. I can help you with questions about curriculum, lectures, student analysis, and more!",
+    },
+  ]);
+  const [newMessage, setNewMessage] = useState("");
   const location = useLocation();
 
   // Close sidebar on route change (mobile)
@@ -48,6 +61,21 @@ export default function Layout({ children }: LayoutProps) {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const handleSendMessage = () => {
+    if (newMessage.trim()) {
+      setChatMessages([
+        ...chatMessages,
+        { type: "user", content: newMessage },
+        {
+          type: "assistant",
+          content:
+            "I'm here to help! I can assist with educational content, provide insights about your platform usage, or answer questions about any feature.",
+        },
+      ]);
+      setNewMessage("");
+    }
+  };
 
   return (
     <div className="min-h-screen flex">
@@ -74,7 +102,16 @@ export default function Layout({ children }: LayoutProps) {
               alt="AI-Charya Logo"
               className="h-8 w-8"
             />
-            <span className="ml-3 text-xl font-semibold text-material-gray-900">
+            <span
+              className="ml-3 text-xl font-semibold"
+              style={{
+                background:
+                  "linear-gradient(45deg, #4285f4 0%, #fbbc05 50%, #34a853 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
               AI-Charya
             </span>
           </div>
@@ -168,6 +205,126 @@ export default function Layout({ children }: LayoutProps) {
 
         {/* Footer */}
         <Footer />
+      </div>
+
+      {/* Global Floating AI Assistant Button */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <Button
+          onClick={() => setIsAssistantOpen(!isAssistantOpen)}
+          className={cn(
+            "w-16 h-16 rounded-full shadow-lg text-white flex items-center justify-center p-1 transition-all duration-300 transform hover:scale-110",
+            "bg-white border-2 border-material-blue hover:bg-material-gray-50",
+            isAssistantOpen && "rotate-180",
+          )}
+        >
+          <img
+            src="https://cdn.builder.io/api/v1/image/assets%2F51a4707e6cb3452bb5e8ffef0fab69d7%2F4e7bfb36cd894a0d96cca31a023e813b?format=webp&width=800"
+            alt="AI Assistant"
+            className={cn(
+              "w-12 h-12 rounded-full transition-all duration-300",
+              isAssistantOpen && "rotate-180",
+            )}
+          />
+        </Button>
+      </div>
+
+      {/* Global Floating AI Assistant Chat */}
+      <div
+        className={cn(
+          "fixed bottom-24 right-6 z-50 w-80 bg-white rounded-lg shadow-xl border border-material-gray-200 transition-all duration-300 transform origin-bottom-right",
+          isAssistantOpen
+            ? "scale-100 opacity-100 translate-y-0"
+            : "scale-0 opacity-0 translate-y-4 pointer-events-none",
+        )}
+      >
+        <div className="flex items-center justify-between p-4 border-b border-material-gray-200 bg-gradient-to-r from-material-blue-50 to-material-green-50 rounded-t-lg">
+          <div className="flex items-center gap-2">
+            <img
+              src="https://cdn.builder.io/api/v1/image/assets%2F51a4707e6cb3452bb5e8ffef0fab69d7%2F4e7bfb36cd894a0d96cca31a023e813b?format=webp&width=800"
+              alt="AI Assistant"
+              className="w-6 h-6 rounded-full"
+            />
+            <span
+              className="font-medium"
+              style={{
+                background:
+                  "linear-gradient(45deg, #4285f4 0%, #fbbc05 50%, #34a853 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              AI-Charya Assistant
+            </span>
+          </div>
+          <Button
+            onClick={() => setIsAssistantOpen(false)}
+            variant="ghost"
+            size="sm"
+            className="p-1 h-8 w-8 hover:bg-material-gray-100"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+
+        <div className="flex flex-col h-80">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            {chatMessages.map((message, index) => (
+              <div
+                key={index}
+                className={cn(
+                  "flex transition-all duration-300 ease-in-out",
+                  message.type === "user" ? "justify-end" : "justify-start",
+                )}
+                style={{
+                  animationDelay: `${index * 100}ms`,
+                }}
+              >
+                <div
+                  className={cn(
+                    "max-w-[80%] p-3 rounded-lg shadow-sm",
+                    message.type === "user"
+                      ? "bg-material-blue text-white"
+                      : "bg-gradient-to-r from-material-blue-50 to-material-green-50 text-material-gray-900 border border-material-gray-200",
+                  )}
+                >
+                  <div className="flex items-start gap-2">
+                    {message.type === "assistant" && (
+                      <img
+                        src="https://cdn.builder.io/api/v1/image/assets%2F51a4707e6cb3452bb5e8ffef0fab69d7%2F4e7bfb36cd894a0d96cca31a023e813b?format=webp&width=800"
+                        alt="AI"
+                        className="w-4 h-4 rounded-full mt-0.5"
+                      />
+                    )}
+                    {message.type === "user" && (
+                      <User className="h-4 w-4 mt-0.5" />
+                    )}
+                    <p className="text-sm">{message.content}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="border-t border-material-gray-200 p-4 bg-material-gray-50 rounded-b-lg">
+            <div className="flex gap-2">
+              <Input
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Ask me anything..."
+                onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+                className="flex-1 border-material-gray-300 focus:border-material-blue focus:ring-material-blue"
+              />
+              <Button
+                onClick={handleSendMessage}
+                size="sm"
+                className="bg-material-blue hover:bg-material-blue-600 text-white shadow-sm"
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
