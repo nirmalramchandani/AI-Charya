@@ -42,10 +42,10 @@ const classes = [
 const subjects = ["Marathi", "English", "Math", "Science", "EVS"];
 
 const chapters: Chapter[] = [
-  { id: 1, title: "Chapter 1", hasPlate: true },
-  { id: 2, title: "Chapter 2", hasPlate: false },
-  { id: 3, title: "Chapter 3", hasPlate: true },
-  { id: 4, title: "Chapter 4", hasPlate: false },
+  { id: 1, title: "Chapter 1", name: "अक्षरांची ओळख", hasPlate: true },
+  { id: 2, title: "Chapter 2", name: "माझे कुटुंब", hasPlate: false },
+  { id: 3, title: "Chapter 3", name: "फुलांची बाग", hasPlate: true },
+  { id: 4, title: "Chapter 4", name: "पक्ष्यांचे जग", hasPlate: false },
 ];
 
 export default function ClassMaterial() {
