@@ -131,10 +131,11 @@ export default function Checker() {
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center">
-                    <Camera className="h-12 w-12 text-material-gray-400 mx-auto mb-2" />
-                    <p className="text-material-gray-600">Camera off</p>
-                  </div>
+                  <img
+                    src="https://cdn.builder.io/api/v1/image/assets%2Fcd5b7d8780cb43cba84933df3ba96784%2Fc0f7c8c0eec848afaebf8041f5431f93?format=webp&width=800"
+                    alt="Student holding homework"
+                    className="w-full h-full object-cover rounded-lg"
+                  />
                 )}
               </div>
 
