@@ -178,8 +178,8 @@ export default function Checker() {
                 AI Assistant
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col">
-              <div className="flex-1 overflow-y-auto space-y-3 mb-4">
+            <CardContent className="h-full flex flex-col">
+              <div className="flex-1 overflow-y-auto space-y-3 min-h-[300px] mb-6">
                 {chatMessages.map((message, index) => (
                   <div
                     key={index}
