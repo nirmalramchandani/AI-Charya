@@ -44,7 +44,25 @@ export default function Index() {
   return (
     <div className="min-h-[calc(100vh-4rem)]">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-material-blue-50 to-material-green-50 min-h-screen flex items-center py-20 px-4 sm:px-6 lg:px-8">
+      <section
+        className="min-h-screen flex items-center py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+        style={{
+          background: `url("${(document.querySelector('meta[property="og:image"]') as any)?.content || "https://cdn.builder.io/api/v1/image/assets%2Fdf3a905663914b9689163bc99d388444%2F47cb04d4dd8e4ebe81671d407af61642?format=webp&width=800"}") center/cover, linear-gradient(135deg, #FBBC05 0%, #4285F4 50%, #FBBC05 100%)`,
+        }}
+      >
+        {/* Background Image */}
+        <div
+          className="absolute inset-0 w-full h-full"
+          style={{
+            backgroundImage: `url("https://cdn.builder.io/api/v1/image/assets%2Fdf3a905663914b9689163bc99d388444%2F47cb04d4dd8e4ebe81671d407af61642?format=webp&width=800")`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            opacity: 0.9,
+          }}
+        />
+        {/* Content overlay */}
+        <div className="absolute inset-0 bg-white bg-opacity-10" />
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
             <div className="flex justify-center mb-8">
