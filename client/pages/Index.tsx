@@ -63,7 +63,7 @@ export default function Index() {
         />
         {/* Content overlay */}
         <div className="absolute inset-0 bg-white bg-opacity-10" />
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center">
             <div className="flex justify-center mb-8">
               <div className="p-4 bg-white rounded-2xl shadow-material-md">
@@ -74,13 +74,13 @@ export default function Index() {
                 />
               </div>
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-material-gray-900 mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 drop-shadow-lg">
               Welcome to
               <span
                 className="block"
                 style={{
                   background:
-                    "linear-gradient(45deg, #4285f4 0%, #fbbc05 50%, #34a853 100%)",
+                    "linear-gradient(45deg, #fff 0%, #f1f1f1 50%, #fff 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
@@ -89,10 +89,11 @@ export default function Index() {
                 AI-Charya
               </span>
             </h1>
-            <p className="text-xl text-material-gray-600 mb-8 max-w-3xl mx-auto">
+            <p className="text-xl text-white mb-8 max-w-3xl mx-auto drop-shadow-md">
               Revolutionize education with AI-powered curriculum management,
               intelligent lecture generation, and comprehensive student progress
-              tracking.
+              tracking. Build the next generation of intelligent educational
+              agents.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
