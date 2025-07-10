@@ -94,7 +94,7 @@ export default function ClassMaterial() {
       <div className="w-full bg-gradient-to-r from-material-blue-50 to-material-green-50 border-b border-material-gray-200">
         <div className="px-8 lg:px-12 py-8">
           <h1 className="text-4xl font-bold text-material-gray-900 mb-3">
-            Study Material Dashboard
+            Study Material
           </h1>
           <p className="text-lg text-material-gray-600">
             Select class and subject to view chapters and actions
