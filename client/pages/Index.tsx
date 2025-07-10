@@ -104,11 +104,14 @@ export default function Index() {
                 AI-Charya
               </span>
             </h1>
-            <p className="text-xl text-material-gray-700 mb-8 max-w-3xl mx-auto font-medium">
+            <p className="text-xl text-material-gray-700 mb-4 max-w-3xl mx-auto font-medium">
               Revolutionize education with AI-powered curriculum management,
               intelligent lecture generation, and comprehensive student progress
               tracking. Build the next generation of intelligent educational
               agents.
+            </p>
+            <p className="text-lg text-material-gray-600 mb-8 max-w-2xl mx-auto">
+              Developed With Google Cloud Vertex AI and Firebase
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
