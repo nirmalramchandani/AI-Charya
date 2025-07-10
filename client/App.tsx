@@ -16,6 +16,9 @@ import ReportsAnalytics from "./pages/ReportsAnalytics";
 import Checker from "./pages/Checker";
 import ClassMaterial from "./pages/ClassMaterial";
 import Quiz from "./pages/Quiz";
+import StudentProfile from "./pages/StudentProfile";
+import KnowledgeBase from "./pages/KnowledgeBase";
+import SmartMatchSyllabus from "./pages/SmartMatchSyllabus";
 import NotFound from "./pages/NotFound";
 
 // Placeholder components for remaining routes
