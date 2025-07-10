@@ -9,6 +9,7 @@ import {
   Users,
   UserCheck,
   BarChart3,
+  CheckSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Footer from "./Footer";
@@ -24,6 +25,7 @@ const navigation = [
   { name: "Student Context", href: "/students", icon: Users },
   { name: "Teacher Dashboard", href: "/dashboard", icon: UserCheck },
   { name: "Reports", href: "/reports", icon: BarChart3 },
+  { name: "Checker", href: "/checker", icon: CheckSquare },
 ];
 
 export default function Layout({ children }: LayoutProps) {

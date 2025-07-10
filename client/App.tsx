@@ -13,6 +13,7 @@ import LecturePlateGenerator from "./pages/LecturePlateGenerator";
 import StudentContextBuilder from "./pages/StudentContextBuilder";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import ReportsAnalytics from "./pages/ReportsAnalytics";
+import Checker from "./pages/Checker";
 import NotFound from "./pages/NotFound";
 
 // Placeholder components for remaining routes
@@ -50,6 +51,7 @@ const App = () => (
               path="/class-material"
               element={<PlaceholderPage title="Class-Wise Study Material" />}
             />
+
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
