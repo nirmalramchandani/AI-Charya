@@ -248,13 +248,29 @@ export default function KnowledgeBase() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                {/* Upload Zone */}
+                                {/* Upload Zone */}
                 <div className="lg:col-span-5">
-                  <div className="border-2 border-dashed border-material-gray-300 rounded-xl p-8 text-center hover:border-material-blue-400 transition-colors">
+                  <motion.div
+                    variants={uploadVariants}
+                    initial="idle"
+                    whileHover="hover"
+                    whileTap="tap"
+                    className="border-2 border-dashed border-material-gray-300 rounded-xl p-8 text-center hover:border-material-blue-400 transition-colors cursor-pointer"
+                  >
                     <div className="flex flex-col items-center gap-4">
-                      <div className="p-4 bg-material-blue-100 rounded-full">
+                      <motion.div
+                        className="p-4 bg-material-blue-100 rounded-full"
+                        animate={{
+                          y: [0, -10, 0],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                      >
                         <Upload className="h-8 w-8 text-material-blue" />
-                      </div>
+                      </motion.div>
                       <div>
                         <h3 className="text-lg font-semibold text-material-gray-900 mb-2">
                           Select PDF File
@@ -262,10 +278,12 @@ export default function KnowledgeBase() {
                         <p className="text-material-gray-600 mb-4">
                           Drag and drop or click to upload curriculum PDF
                         </p>
-                        <Button className="bg-material-blue hover:bg-material-blue-600 text-white">
-                          <Upload className="h-4 w-4 mr-2" />
-                          Browse Files
-                        </Button>
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                          <Button className="bg-material-blue hover:bg-material-blue-600 text-white">
+                            <Upload className="h-4 w-4 mr-2" />
+                            Browse Files
+                          </Button>
+                        </motion.div>
                       </div>
                     </div>
                   </div>
