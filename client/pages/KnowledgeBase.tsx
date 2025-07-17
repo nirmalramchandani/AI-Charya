@@ -436,7 +436,7 @@ export default function KnowledgeBase() {
                 </div>
               </div>
 
-                            {/* Files Grid */}
+              {/* Files Grid */}
               <motion.div
                 initial="hidden"
                 animate="visible"
@@ -455,64 +455,66 @@ export default function KnowledgeBase() {
                       whileHover="hover"
                     >
                       <Card className="bg-material-gray-50 hover:bg-white border border-material-gray-200 h-full">
-                    <CardContent className="p-6">
-                      <div className="flex items-start gap-3 mb-4">
-                        <div className="p-2 bg-material-blue-100 rounded-lg flex-shrink-0">
-                          <FileText className="h-5 w-5 text-material-blue" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-material-gray-900 truncate">
-                            {file.chapterTitle}
-                          </h3>
-                          <p className="text-xs text-material-gray-500 truncate">
-                            {file.fileName}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2 mb-4">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${getSubjectColor(file.subject)}`}
-                          >
-                            {file.subject}
-                          </span>
-                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-material-gray-200 text-material-gray-700">
-                            {file.class}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-4 text-xs text-material-gray-500">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            {file.uploadDate}
+                        <CardContent className="p-6">
+                          <div className="flex items-start gap-3 mb-4">
+                            <div className="p-2 bg-material-blue-100 rounded-lg flex-shrink-0">
+                              <FileText className="h-5 w-5 text-material-blue" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-semibold text-material-gray-900 truncate">
+                                {file.chapterTitle}
+                              </h3>
+                              <p className="text-xs text-material-gray-500 truncate">
+                                {file.fileName}
+                              </p>
+                            </div>
                           </div>
-                          <span>{file.fileSize}</span>
-                        </div>
-                      </div>
 
-                      <div className="flex gap-2">
-                        <Button
-                          onClick={() => handlePreviewFile(file.fileName)}
-                          size="sm"
-                          className="flex-1 bg-material-blue hover:bg-material-blue-600 text-white"
-                        >
-                          <Eye className="h-3 w-3 mr-1" />
-                          Preview
-                        </Button>
-                        <Button
-                          onClick={() => handleDeleteFile(file.id)}
-                          size="sm"
-                          variant="destructive"
-                          className="bg-red-500 hover:bg-red-600"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                          <div className="space-y-2 mb-4">
+                            <div className="flex items-center gap-2">
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${getSubjectColor(file.subject)}`}
+                              >
+                                {file.subject}
+                              </span>
+                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-material-gray-200 text-material-gray-700">
+                                {file.class}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-4 text-xs text-material-gray-500">
+                              <div className="flex items-center gap-1">
+                                <Calendar className="h-3 w-3" />
+                                {file.uploadDate}
+                              </div>
+                              <span>{file.fileSize}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex gap-2">
+                            <Button
+                              onClick={() => handlePreviewFile(file.fileName)}
+                              size="sm"
+                              className="flex-1 bg-material-blue hover:bg-material-blue-600 text-white"
+                            >
+                              <Eye className="h-3 w-3 mr-1" />
+                              Preview
+                            </Button>
+                            <Button
+                              onClick={() => handleDeleteFile(file.id)}
+                              size="sm"
+                              variant="destructive"
+                              className="bg-red-500 hover:bg-red-600"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </motion.div>
 
               {filteredFiles.length === 0 && (
                 <div className="text-center py-12">
