@@ -44,6 +44,14 @@ const sidebarVariants = {
     },
   },
   closed: {
+    x: 0, // Keep sidebar visible on desktop
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 30,
+    },
+  },
+  closedMobile: {
     x: "-100%",
     transition: {
       type: "spring",
