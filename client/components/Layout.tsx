@@ -33,6 +33,93 @@ const navigation = [
   { name: "Checker", href: "/checker", icon: CheckSquare },
 ];
 
+// Animation variants
+const sidebarVariants = {
+  open: {
+    x: 0,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 30,
+    },
+  },
+  closed: {
+    x: "-100%",
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 30,
+    },
+  },
+};
+
+const overlayVariants = {
+  open: {
+    opacity: 1,
+    transition: { duration: 0.3 },
+  },
+  closed: {
+    opacity: 0,
+    transition: { duration: 0.3 },
+  },
+};
+
+const navItemVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    x: 0,
+    transition: {
+      delay: i * 0.1,
+      duration: 0.5,
+      ease: "easeOut",
+    },
+  }),
+};
+
+const assistantVariants = {
+  open: {
+    scale: 1,
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 400,
+      damping: 25,
+    },
+  },
+  closed: {
+    scale: 0,
+    opacity: 0,
+    y: 20,
+    transition: {
+      duration: 0.2,
+    },
+  },
+};
+
+const pageTransitionVariants = {
+  initial: {
+    opacity: 0,
+    y: 20,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut",
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -20,
+    transition: {
+      duration: 0.3,
+    },
+  },
+};
+
 export default function Layout({ children }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
