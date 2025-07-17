@@ -436,13 +436,25 @@ export default function KnowledgeBase() {
                 </div>
               </div>
 
-              {/* Files Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredFiles.map((file) => (
-                  <Card
-                    key={file.id}
-                    className="bg-material-gray-50 hover:bg-white hover:shadow-md transition-all duration-200 border border-material-gray-200"
-                  >
+                            {/* Files Grid */}
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                variants={containerVariants}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              >
+                <AnimatePresence>
+                  {filteredFiles.map((file) => (
+                    <motion.div
+                      key={file.id}
+                      layout
+                      initial="hidden"
+                      animate="visible"
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      variants={cardVariants}
+                      whileHover="hover"
+                    >
+                      <Card className="bg-material-gray-50 hover:bg-white border border-material-gray-200 h-full">
                     <CardContent className="p-6">
                       <div className="flex items-start gap-3 mb-4">
                         <div className="p-2 bg-material-blue-100 rounded-lg flex-shrink-0">
