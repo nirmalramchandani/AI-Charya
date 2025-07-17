@@ -248,7 +248,7 @@ export default function KnowledgeBase() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                                {/* Upload Zone */}
+                {/* Upload Zone */}
                 <div className="lg:col-span-5">
                   <motion.div
                     variants={uploadVariants}
@@ -278,7 +278,10 @@ export default function KnowledgeBase() {
                         <p className="text-material-gray-600 mb-4">
                           Drag and drop or click to upload curriculum PDF
                         </p>
-                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <motion.div
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
                           <Button className="bg-material-blue hover:bg-material-blue-600 text-white">
                             <Upload className="h-4 w-4 mr-2" />
                             Browse Files
@@ -286,7 +289,7 @@ export default function KnowledgeBase() {
                         </motion.div>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 </div>
 
                 {/* Form Fields */}
