@@ -273,18 +273,39 @@ export default function Layout({ children }: LayoutProps) {
 
           {/* Sidebar Footer - User Info */}
           <div className="shrink-0 border-t border-material-gray-200 p-4">
-            <div className="flex items-center">
-              <div className="h-8 w-8 rounded-full bg-material-blue flex items-center justify-center">
-                <span className="text-sm font-medium text-white">U</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center min-w-0 flex-1">
+                {user?.picture ? (
+                  <img
+                    src={user.picture}
+                    alt={user.name}
+                    className="h-8 w-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="h-8 w-8 rounded-full bg-material-blue flex items-center justify-center">
+                    <span className="text-sm font-medium text-white">
+                      {user?.name?.charAt(0) || "U"}
+                    </span>
+                  </div>
+                )}
+                <div className="ml-3 min-w-0 flex-1">
+                  <p className="text-sm font-medium text-material-gray-900 truncate">
+                    {user?.name || "User"}
+                  </p>
+                  <p className="text-xs text-material-gray-500 truncate">
+                    {user?.email || "user@example.com"}
+                  </p>
+                </div>
               </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-material-gray-900">
-                  Teacher
-                </p>
-                <p className="text-xs text-material-gray-500">
-                  teacher@edu.com
-                </p>
-              </div>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={signOut}
+                className="p-1 text-material-gray-400 hover:text-material-red-500 transition-colors"
+                title="Sign out"
+              >
+                <LogOut className="h-4 w-4" />
+              </motion.button>
             </div>
           </div>
         </div>
