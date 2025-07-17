@@ -312,7 +312,7 @@ export default function Layout({ children }: LayoutProps) {
         <Footer />
       </div>
 
-      {/* Global Floating AI Assistant Button */}
+            {/* Global Floating AI Assistant Button */}
       <motion.div
         className="fixed bottom-6 right-6 z-50"
         whileHover={{ scale: 1.1 }}
@@ -334,15 +334,16 @@ export default function Layout({ children }: LayoutProps) {
         </motion.button>
       </motion.div>
 
-      {/* Global Floating AI Assistant Chat */}
-      <div
-        className={cn(
-          "fixed bottom-24 right-6 z-50 w-80 bg-white rounded-lg shadow-xl border border-material-gray-200 transition-all duration-300 transform origin-bottom-right",
-          isAssistantOpen
-            ? "scale-100 opacity-100 translate-y-0"
-            : "scale-0 opacity-0 translate-y-4 pointer-events-none",
-        )}
-      >
+            {/* Global Floating AI Assistant Chat */}
+      <AnimatePresence>
+        {isAssistantOpen && (
+          <motion.div
+            initial="closed"
+            animate="open"
+            exit="closed"
+            variants={assistantVariants}
+            className="fixed bottom-24 right-6 z-50 w-80 bg-white rounded-lg shadow-xl border border-material-gray-200"
+          >
         <div className="flex items-center justify-between p-4 border-b border-material-gray-200 bg-gradient-to-r from-material-blue-50 to-material-green-50 rounded-t-lg">
           <div className="flex items-center gap-2">
             <img
