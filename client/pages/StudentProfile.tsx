@@ -403,7 +403,7 @@ export default function StudentProfile() {
             </div>
 
             {/* Right Column - Detailed Information */}
-            <div className="lg:col-span-8 space-y-6">
+            <div ref={statsCardsRef} className="lg:col-span-8 space-y-6">
               {/* Academic Overview - Table */}
               <Card className="bg-white shadow-md">
                 <CardContent className="p-6">
