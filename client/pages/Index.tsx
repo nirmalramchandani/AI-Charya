@@ -220,19 +220,39 @@ export default function Index() {
               Developed With Google Cloud Vertex AI and Firebase
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                to="/curriculum"
-                className="material-button-primary inline-flex items-center text-lg px-8 py-4"
-              >
-                Get Started
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-              <Link
-                to="/dashboard"
-                className="material-button-secondary inline-flex items-center text-lg px-8 py-4"
-              >
-                Teacher Dashboard
-              </Link>
+              {isAuthenticated ? (
+                <>
+                  <Link
+                    to="/dashboard"
+                    className="material-button-primary inline-flex items-center text-lg px-8 py-4"
+                  >
+                    Go to Dashboard
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                  <Link
+                    to="/knowledge-base"
+                    className="material-button-secondary inline-flex items-center text-lg px-8 py-4"
+                  >
+                    Knowledge Base
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/register"
+                    className="material-button-primary inline-flex items-center text-lg px-8 py-4"
+                  >
+                    Get Started Free
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                  <Link
+                    to="/login"
+                    className="material-button-secondary inline-flex items-center text-lg px-8 py-4"
+                  >
+                    Sign In
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </motion.div>
