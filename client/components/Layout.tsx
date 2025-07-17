@@ -198,12 +198,9 @@ export default function Layout({ children }: LayoutProps) {
       {/* Sidebar */}
       <motion.aside
         initial={false}
-        animate={sidebarOpen ? "open" : "closed"}
+        animate={isMobile ? (sidebarOpen ? "open" : "closedMobile") : "open"}
         variants={sidebarVariants}
         className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-material-lg"
-        style={{
-          transform: window.innerWidth >= 1024 ? "translateX(0)" : undefined,
-        }}
       >
         <div className="flex h-full flex-col">
           {/* Logo */}
