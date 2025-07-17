@@ -313,25 +313,26 @@ export default function Layout({ children }: LayoutProps) {
       </div>
 
       {/* Global Floating AI Assistant Button */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button
+      <motion.div
+        className="fixed bottom-6 right-6 z-50"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <motion.button
           onClick={() => setIsAssistantOpen(!isAssistantOpen)}
-          className={cn(
-            "w-16 h-16 rounded-full shadow-lg text-white flex items-center justify-center p-1 transition-all duration-300 transform hover:scale-110",
-            "bg-white border-2 border-material-blue hover:bg-material-gray-50",
-            isAssistantOpen && "rotate-180",
-          )}
+          className="w-16 h-16 rounded-full shadow-lg text-white flex items-center justify-center p-1 bg-white border-2 border-material-blue hover:bg-material-gray-50"
+          animate={{ rotate: isAssistantOpen ? 180 : 0 }}
+          transition={{ duration: 0.3 }}
         >
-          <img
+          <motion.img
             src="https://cdn.builder.io/api/v1/image/assets%2F51a4707e6cb3452bb5e8ffef0fab69d7%2F4e7bfb36cd894a0d96cca31a023e813b?format=webp&width=800"
             alt="AI Assistant"
-            className={cn(
-              "w-12 h-12 rounded-full transition-all duration-300",
-              isAssistantOpen && "rotate-180",
-            )}
+            className="w-12 h-12 rounded-full"
+            animate={{ rotate: isAssistantOpen ? 180 : 0 }}
+            transition={{ duration: 0.3 }}
           />
-        </Button>
-      </div>
+        </motion.button>
+      </motion.div>
 
       {/* Global Floating AI Assistant Chat */}
       <div
