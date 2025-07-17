@@ -155,17 +155,29 @@ export default function Index() {
             background: "linear-gradient(135deg, #FBBC05 0%, #F9AB00 100%)",
           }}
         />
-        <div className="max-w-7xl mx-auto relative z-10">
+                <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+          className="max-w-7xl mx-auto relative z-10"
+        >
           <div className="text-center">
-            <div className="flex justify-center mb-8">
-              <div className="p-6 bg-white rounded-3xl shadow-material-lg border-4 border-opacity-20 border-material-blue">
+            <motion.div
+              variants={itemVariants}
+              className="flex justify-center mb-8"
+            >
+              <motion.div
+                variants={logoVariants}
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                className="p-6 bg-white rounded-3xl shadow-material-lg border-4 border-opacity-20 border-material-blue"
+              >
                 <img
                   src="https://cdn.builder.io/api/v1/image/assets%2F51a4707e6cb3452bb5e8ffef0fab69d7%2F4e7bfb36cd894a0d96cca31a023e813b?format=webp&width=800"
                   alt="AI-Charya Logo"
                   className="h-32 w-32"
                 />
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-material-gray-900 mb-6">
               Welcome to
               <span
