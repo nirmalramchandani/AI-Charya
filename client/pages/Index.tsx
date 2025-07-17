@@ -248,13 +248,23 @@ export default function Index() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature) => (
-              <Link
+                    <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+          >
+            {features.map((feature, index) => (
+              <motion.div
                 key={feature.name}
-                to={feature.href}
-                className="material-card-elevated p-6 group cursor-pointer hover:scale-105 transform transition-all duration-200"
+                variants={featureCardVariants}
+                whileHover="hover"
+                custom={index}
               >
+                <Link
+                  to={feature.href}
+                  className="material-card-elevated p-6 group cursor-pointer block"
+                >
                 <div className={`p-3 rounded-xl ${feature.color} w-fit mb-4`}>
                   <feature.icon className="h-6 w-6 text-white" />
                 </div>
