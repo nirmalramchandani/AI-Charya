@@ -248,7 +248,7 @@ export default function Index() {
             </p>
           </div>
 
-                    <motion.div
+          <motion.div
             initial="hidden"
             animate="visible"
             variants={containerVariants}
@@ -265,22 +265,23 @@ export default function Index() {
                   to={feature.href}
                   className="material-card-elevated p-6 group cursor-pointer block"
                 >
-                <div className={`p-3 rounded-xl ${feature.color} w-fit mb-4`}>
-                  <feature.icon className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="text-lg font-semibold text-material-gray-900 mb-2 group-hover:text-material-blue transition-colors">
-                  {feature.name}
-                </h3>
-                <p className="text-material-gray-600 text-sm">
-                  {feature.description}
-                </p>
-                <div className="mt-4 flex items-center text-material-blue font-medium text-sm">
-                  Explore
-                  <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </Link>
+                  <div className={`p-3 rounded-xl ${feature.color} w-fit mb-4`}>
+                    <feature.icon className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-material-gray-900 mb-2 group-hover:text-material-blue transition-colors">
+                    {feature.name}
+                  </h3>
+                  <p className="text-material-gray-600 text-sm">
+                    {feature.description}
+                  </p>
+                  <div className="mt-4 flex items-center text-material-blue font-medium text-sm">
+                    Explore
+                    <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
