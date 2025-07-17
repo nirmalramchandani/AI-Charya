@@ -117,8 +117,11 @@ export default function Index() {
       {/* Hero Section */}
       <section className="min-h-screen flex items-center py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-white">
         {/* Yellow Patch - Top Left */}
-        <div
-          className="absolute top-0 left-0 w-96 h-96 rounded-br-full opacity-90"
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={backgroundPatchVariants}
+          className="absolute top-0 left-0 w-96 h-96 rounded-br-full"
           style={{
             background: "linear-gradient(135deg, #FBBC05 0%, #F9AB00 100%)",
             transform: "translate(-40%, -40%)",
@@ -126,8 +129,11 @@ export default function Index() {
         />
 
         {/* Blue Patch - Bottom Right */}
-        <div
-          className="absolute bottom-0 right-0 w-80 h-80 rounded-tl-full opacity-90"
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={backgroundPatchVariants}
+          className="absolute bottom-0 right-0 w-80 h-80 rounded-tl-full"
           style={{
             background: "linear-gradient(135deg, #4285F4 0%, #1A73E8 100%)",
             transform: "translate(40%, 40%)",
