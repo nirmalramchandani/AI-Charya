@@ -127,6 +127,61 @@ export default function StudentProfile() {
   );
   const [editMode, setEditMode] = useState(false);
 
+  // Animation refs
+  const profileCardRef = useRef<HTMLDivElement>(null);
+  const statsCardsRef = useRef<HTMLDivElement>(null);
+  const timelineRef = useRef<HTMLDivElement>(null);
+
+  // GSAP animations on mount and student change
+  useEffect(() => {
+    if (profileCardRef.current) {
+      gsap.fromTo(
+        profileCardRef.current,
+        { scale: 0.8, opacity: 0, y: 50 },
+        {
+          scale: 1,
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "back.out(1.7)",
+        },
+      );
+    }
+
+    if (statsCardsRef.current) {
+      const cards = statsCardsRef.current.querySelectorAll(".stat-card");
+      gsap.fromTo(
+        cards,
+        { opacity: 0, y: 30, scale: 0.9 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "power2.out",
+          delay: 0.3,
+        },
+      );
+    }
+  }, [selectedStudent]);
+
+  // Chart animation effect
+  useEffect(() => {
+    if (statsCardsRef.current) {
+      const progressBars =
+        statsCardsRef.current.querySelectorAll(".progress-bar");
+      progressBars.forEach((bar) => {
+        const width = bar.getAttribute("data-width") || "0%";
+        gsap.fromTo(
+          bar,
+          { width: "0%" },
+          { width: width, duration: 1.5, ease: "power2.out", delay: 0.5 },
+        );
+      });
+    }
+  }, [selectedStudent]);
+
   const getLearningLevelColor = (level: string) => {
     switch (level) {
       case "Slow":
