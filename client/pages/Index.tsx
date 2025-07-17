@@ -178,7 +178,7 @@ export default function Index() {
                 />
               </motion.div>
             </motion.div>
-                        <motion.h1
+            <motion.h1
               variants={itemVariants}
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-material-gray-900 mb-6"
             >
@@ -212,7 +212,7 @@ export default function Index() {
               intelligent lecture generation, and comprehensive student progress
               tracking. Build the next generation of intelligent educational
               agents.
-            </p>
+            </motion.p>
             <p className="text-lg text-material-gray-600 mb-8 max-w-2xl mx-auto">
               Developed With Google Cloud Vertex AI and Firebase
             </p>
