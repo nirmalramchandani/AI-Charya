@@ -305,7 +305,16 @@ export default function Layout({ children }: LayoutProps) {
 
         {/* Page content */}
         <main className="flex-1 bg-material-gray-50">
-          <div className="h-full">{children}</div>
+          <motion.div
+            key={location.pathname}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            variants={pageTransitionVariants}
+            className="h-full"
+          >
+            {children}
+          </motion.div>
         </main>
 
         {/* Footer */}
