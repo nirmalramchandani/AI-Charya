@@ -186,7 +186,10 @@ export default function Layout({ children }: LayoutProps) {
         initial={false}
         animate={sidebarOpen ? "open" : "closed"}
         variants={sidebarVariants}
-        className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-material-lg lg:translate-x-0"
+        className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-material-lg"
+        style={{
+          transform: window.innerWidth >= 1024 ? "translateX(0)" : undefined,
+        }}
       >
         <div className="flex h-full flex-col">
           {/* Logo */}
