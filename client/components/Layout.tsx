@@ -213,31 +213,42 @@ export default function Layout({ children }: LayoutProps) {
           {/* Navigation */}
           <nav className="flex-1 px-6 py-6 overflow-y-auto">
             <ul className="space-y-1">
-              {navigation.map((item) => {
+              {navigation.map((item, index) => {
                 const isActive = location.pathname === item.href;
                 return (
-                  <li key={item.name}>
+                  <motion.li
+                    key={item.name}
+                    initial="hidden"
+                    animate="visible"
+                    custom={index}
+                    variants={navItemVariants}
+                  >
                     <Link
                       to={item.href}
                       className={cn(
-                        "group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors duration-200",
+                        "group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-sm",
                         isActive
                           ? "bg-material-blue text-white shadow-material"
                           : "text-material-gray-700 hover:bg-material-gray-100 hover:text-material-gray-900",
                       )}
                       onClick={() => setSidebarOpen(false)}
                     >
-                      <item.icon
-                        className={cn(
-                          "mr-3 h-5 w-5 shrink-0",
-                          isActive
-                            ? "text-white"
-                            : "text-material-gray-500 group-hover:text-material-gray-900",
-                        )}
-                      />
+                      <motion.div
+                        whileHover={{ rotate: 360 }}
+                        transition={{ duration: 0.6 }}
+                      >
+                        <item.icon
+                          className={cn(
+                            "mr-3 h-5 w-5 shrink-0",
+                            isActive
+                              ? "text-white"
+                              : "text-material-gray-500 group-hover:text-material-gray-900",
+                          )}
+                        />
+                      </motion.div>
                       {item.name}
                     </Link>
-                  </li>
+                  </motion.li>
                 );
               })}
             </ul>
