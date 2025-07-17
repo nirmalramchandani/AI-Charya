@@ -167,7 +167,7 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <div className="min-h-screen flex">
-            {/* Mobile sidebar overlay */}
+      {/* Mobile sidebar overlay */}
       <AnimatePresence>
         {sidebarOpen && (
           <motion.div
@@ -181,7 +181,7 @@ export default function Layout({ children }: LayoutProps) {
         )}
       </AnimatePresence>
 
-            {/* Sidebar */}
+      {/* Sidebar */}
       <motion.aside
         initial={false}
         animate={sidebarOpen ? "open" : "closed"}
@@ -260,7 +260,7 @@ export default function Layout({ children }: LayoutProps) {
             </div>
           </div>
         </div>
-      </aside>
+      </motion.aside>
 
       {/* Main content area */}
       <div className="flex-1 flex flex-col min-h-screen lg:ml-64">
