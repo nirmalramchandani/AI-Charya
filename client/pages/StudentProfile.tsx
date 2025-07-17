@@ -509,11 +509,23 @@ export default function StudentProfile() {
                               angle={-45}
                               textAnchor="end"
                               height={80}
+                              axisLine={true}
+                              tickLine={true}
+                              tick={true}
+                              mirror={false}
+                              orientation="bottom"
+                              type="category"
                             />
                             <YAxis
                               stroke="#5F6368"
                               fontSize={12}
                               domain={[0, 100]}
+                              axisLine={true}
+                              tickLine={true}
+                              tick={true}
+                              mirror={false}
+                              orientation="left"
+                              type="number"
                             />
                             <Tooltip
                               contentStyle={{
