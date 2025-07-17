@@ -363,21 +363,39 @@ export default function StudentProfile() {
 
                   {/* Action Buttons */}
                   <div className="mt-8 flex gap-3 justify-center">
-                    <Button
-                      onClick={() => setEditMode(!editMode)}
-                      className="bg-material-blue hover:bg-material-blue-600 text-white"
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
-                      <Edit className="h-4 w-4 mr-2" />
-                      {editMode ? "Cancel" : "Edit Profile"}
-                    </Button>
-                    {editMode && (
                       <Button
-                        onClick={() => setEditMode(false)}
-                        className="bg-material-green hover:bg-material-green-600 text-white"
+                        onClick={() => setEditMode(!editMode)}
+                        className="bg-material-blue hover:bg-material-blue-600 text-white"
                       >
-                        <Save className="h-4 w-4 mr-2" />
-                        Save Changes
+                        <motion.div
+                          animate={{ rotate: editMode ? 180 : 0 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <Edit className="h-4 w-4 mr-2" />
+                        </motion.div>
+                        {editMode ? "Cancel" : "Edit Profile"}
                       </Button>
+                    </motion.div>
+                    {editMode && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Button
+                          onClick={() => setEditMode(false)}
+                          className="bg-material-green hover:bg-material-green-600 text-white"
+                        >
+                          <Save className="h-4 w-4 mr-2" />
+                          Save Changes
+                        </Button>
+                      </motion.div>
                     )}
                   </div>
                 </CardContent>
