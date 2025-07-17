@@ -270,7 +270,10 @@ export default function StudentProfile() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Left Column - Profile Info */}
             <div className="lg:col-span-4">
-              <Card className="bg-white shadow-lg sticky top-8">
+              <Card
+                ref={profileCardRef}
+                className="bg-white shadow-lg sticky top-8"
+              >
                 <CardContent className="p-8 text-center">
                   {/* Profile Photo */}
                   <div className="mb-6">
