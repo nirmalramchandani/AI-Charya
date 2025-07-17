@@ -155,7 +155,7 @@ export default function Index() {
             background: "linear-gradient(135deg, #FBBC05 0%, #F9AB00 100%)",
           }}
         />
-                <motion.div
+        <motion.div
           initial="hidden"
           animate="visible"
           variants={containerVariants}
@@ -218,7 +218,7 @@ export default function Index() {
               </Link>
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* Features Section */}
