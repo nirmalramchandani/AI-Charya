@@ -147,13 +147,18 @@ export default function Layout({ children }: LayoutProps) {
     setSidebarOpen(false);
   }, [location.pathname]);
 
-  // Close sidebar when clicking outside (mobile)
+  // Track mobile state and handle resize
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setSidebarOpen(false);
+      const isMobileNow = window.innerWidth < 1024;
+      setIsMobile(isMobileNow);
+      if (!isMobileNow) {
+        setSidebarOpen(false); // Reset mobile sidebar state on desktop
       }
     };
+
+    // Set initial state
+    handleResize();
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
