@@ -335,9 +335,19 @@ export default function Layout({ children }: LayoutProps) {
             </div>
 
             {/* Mobile user menu */}
-            <div className="h-8 w-8 rounded-full bg-material-blue flex items-center justify-center">
-              <span className="text-sm font-medium text-white">U</span>
-            </div>
+            {user?.picture ? (
+              <img
+                src={user.picture}
+                alt={user.name}
+                className="h-8 w-8 rounded-full object-cover"
+              />
+            ) : (
+              <div className="h-8 w-8 rounded-full bg-material-blue flex items-center justify-center">
+                <span className="text-sm font-medium text-white">
+                  {user?.name?.charAt(0) || "U"}
+                </span>
+              </div>
+            )}
           </div>
         </header>
 
