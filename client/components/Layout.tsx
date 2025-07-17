@@ -167,7 +167,7 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <div className="min-h-screen flex">
-      {/* Mobile sidebar overlay */}
+            {/* Mobile sidebar overlay */}
       <AnimatePresence>
         {sidebarOpen && (
           <motion.div
@@ -181,12 +181,12 @@ export default function Layout({ children }: LayoutProps) {
         )}
       </AnimatePresence>
 
-      {/* Sidebar */}
-      <aside
-        className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-material-lg transform transition-transform duration-200 ease-in-out lg:translate-x-0",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full",
-        )}
+            {/* Sidebar */}
+      <motion.aside
+        initial={false}
+        animate={sidebarOpen ? "open" : "closed"}
+        variants={sidebarVariants}
+        className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-material-lg lg:translate-x-0"
       >
         <div className="flex h-full flex-col">
           {/* Logo */}
