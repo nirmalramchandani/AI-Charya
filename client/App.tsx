@@ -21,6 +21,8 @@ import Quiz from "./pages/Quiz";
 import StudentProfile from "./pages/StudentProfile";
 import KnowledgeBase from "./pages/KnowledgeBase";
 import SmartMatchSyllabus from "./pages/SmartMatchSyllabus";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 
 // Placeholder components for remaining routes
