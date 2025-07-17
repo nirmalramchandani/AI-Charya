@@ -564,11 +564,17 @@ export default function StudentProfile() {
                             <PolarAngleAxis
                               dataKey="name"
                               tick={{ fontSize: 12, fill: "#5F6368" }}
+                              type="category"
+                              axisLine={false}
+                              tickLine={false}
                             />
                             <PolarRadiusAxis
                               angle={90}
                               domain={[0, 100]}
                               tick={{ fontSize: 10, fill: "#5F6368" }}
+                              type="number"
+                              axisLine={false}
+                              tickLine={false}
                             />
                             <Radar
                               name={selectedStudent.name}
