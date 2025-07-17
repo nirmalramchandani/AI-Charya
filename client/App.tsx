@@ -48,38 +48,90 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          {/* Quiz route outside Layout for fullscreen */}
-          <Route path="/quiz" element={<Quiz />} />
+        <AuthProvider>
+          <Routes>
+            {/* Public auth routes */}
+            <Route
+              path="/login"
+              element={
+                <PublicRoute>
+                  <Login />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <PublicRoute>
+                  <Register />
+                </PublicRoute>
+              }
+            />
 
-          {/* All other routes within Layout */}
-          <Route
-            path="/*"
-            element={
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/curriculum" element={<CurriculumUpload />} />
-                  <Route path="/knowledge-base" element={<KnowledgeBase />} />
-                  <Route path="/lectures" element={<LecturePlateGenerator />} />
-                  <Route
-                    path="/lecture-plate-generator"
-                    element={<LecturePlateGenerator />}
-                  />
-                  <Route path="/students" element={<StudentContextBuilder />} />
-                  <Route path="/student-profile" element={<StudentProfile />} />
-                  <Route path="/smart-match" element={<SmartMatchSyllabus />} />
-                  <Route path="/dashboard" element={<TeacherDashboard />} />
-                  <Route path="/reports" element={<ReportsAnalytics />} />
-                  <Route path="/class-material" element={<ClassMaterial />} />
-                  <Route path="/checker" element={<Checker />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Layout>
-            }
-          />
-        </Routes>
+            {/* Quiz route outside Layout for fullscreen (protected) */}
+            <Route
+              path="/quiz"
+              element={
+                <ProtectedRoute>
+                  <Quiz />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Public home page */}
+            <Route path="/" element={<Index />} />
+
+            {/* Protected routes within Layout */}
+            <Route
+              path="/*"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Routes>
+                      <Route
+                        path="/curriculum"
+                        element={<CurriculumUpload />}
+                      />
+                      <Route
+                        path="/knowledge-base"
+                        element={<KnowledgeBase />}
+                      />
+                      <Route
+                        path="/lectures"
+                        element={<LecturePlateGenerator />}
+                      />
+                      <Route
+                        path="/lecture-plate-generator"
+                        element={<LecturePlateGenerator />}
+                      />
+                      <Route
+                        path="/students"
+                        element={<StudentContextBuilder />}
+                      />
+                      <Route
+                        path="/student-profile"
+                        element={<StudentProfile />}
+                      />
+                      <Route
+                        path="/smart-match"
+                        element={<SmartMatchSyllabus />}
+                      />
+                      <Route path="/dashboard" element={<TeacherDashboard />} />
+                      <Route path="/reports" element={<ReportsAnalytics />} />
+                      <Route
+                        path="/class-material"
+                        element={<ClassMaterial />}
+                      />
+                      <Route path="/checker" element={<Checker />} />
+                      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
