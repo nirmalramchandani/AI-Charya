@@ -178,9 +178,12 @@ export default function Index() {
                 />
               </motion.div>
             </motion.div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-material-gray-900 mb-6">
+                        <motion.h1
+              variants={itemVariants}
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-material-gray-900 mb-6"
+            >
               Welcome to
-              <span
+              <motion.span
                 className="block"
                 style={{
                   background:
@@ -189,11 +192,22 @@ export default function Index() {
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
                 }}
+                animate={{
+                  backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
               >
                 AI-Charya
-              </span>
-            </h1>
-            <p className="text-xl text-material-gray-700 mb-4 max-w-3xl mx-auto font-medium">
+              </motion.span>
+            </motion.h1>
+            <motion.p
+              variants={itemVariants}
+              className="text-xl text-material-gray-700 mb-4 max-w-3xl mx-auto font-medium"
+            >
               Revolutionize education with AI-powered curriculum management,
               intelligent lecture generation, and comprehensive student progress
               tracking. Build the next generation of intelligent educational
