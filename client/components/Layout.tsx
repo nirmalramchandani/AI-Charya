@@ -134,6 +134,7 @@ export default function Layout({ children }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const { user, signOut } = useAuth();
   const [chatMessages, setChatMessages] = useState([
     {
       type: "assistant",
