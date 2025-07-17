@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 
 export default function Index() {
+  const { isAuthenticated } = useAuth();
+
   const features = [
     {
       name: "Curriculum Upload",
