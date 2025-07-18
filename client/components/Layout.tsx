@@ -209,9 +209,9 @@ export default function Layout({ children }: LayoutProps) {
           {/* Logo */}
           <div className="flex h-16 shrink-0 items-center px-6 border-b border-material-gray-200">
             <img
-              src="https://cdn.builder.io/api/v1/image/assets%2F51a4707e6cb3452bb5e8ffef0fab69d7%2F4e7bfb36cd894a0d96cca31a023e813b?format=webp&width=800"
+              src="..\public\aicharya.png"
               alt="AI-Charya Logo"
-              className="h-16 w-16"
+              className="h-10 w-10"
             />
             <span
               className="ml-3 text-xl font-semibold"
@@ -382,7 +382,7 @@ export default function Layout({ children }: LayoutProps) {
           transition={{ duration: 0.3 }}
         >
           <motion.img
-            src="https://cdn.builder.io/api/v1/image/assets%2F51a4707e6cb3452bb5e8ffef0fab69d7%2F4e7bfb36cd894a0d96cca31a023e813b?format=webp&width=800"
+            src="..\public\aicharya.png"
             alt="AI Assistant"
             className="w-12 h-12 rounded-full"
             animate={{ rotate: isAssistantOpen ? 180 : 0 }}

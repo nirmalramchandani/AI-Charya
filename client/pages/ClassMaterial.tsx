@@ -193,9 +193,9 @@ export default function ClassMaterial() {
                           <p className="text-material-gray-600 mb-2">
                             {chapter.name}
                           </p>
-                          <div className="bg-material-gray-100 text-material-gray-700 px-3 py-1 rounded-full text-sm font-medium inline-block">
+                          {/* <div className="bg-material-gray-100 text-material-gray-700 px-3 py-1 rounded-full text-sm font-medium inline-block">
                             Chapter {chapter.id}
-                          </div>
+                          </div> */}
                         </div>
                       </div>
                     </div>
@@ -239,28 +239,36 @@ export default function ClassMaterial() {
 
                     {/* Right Column - Action Buttons */}
                     <div className="lg:col-span-6">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                         <Button
                           onClick={() =>
                             handleTakeTest(chapter.title, chapter.name)
                           }
-                          className="bg-material-blue hover:bg-material-blue-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm h-12 px-3"
+                          className="bg-material-blue hover:bg-material-blue-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm h-12 px-1 flex flex-wrap"
                         >
-                          🧪 Take Test
+                          Take Test
                         </Button>
 
                         <Button
                           onClick={handleSeeResult}
-                          className="bg-material-green hover:bg-material-green-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm h-12 px-3"
+                          className="bg-material-green hover:bg-material-green-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm h-12 px-1 flex flex-wrap"
                         >
-                          📊 View Result
+                          View Result
                         </Button>
 
                         <Button
                           onClick={handleCheckExercise}
-                          className="bg-purple-500 hover:bg-purple-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm h-12 px-3"
+                          className="bg-purple-500 hover:bg-purple-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm h-12 px-1 flex flex-wrap"
                         >
-                          📷 Check Exercise
+                          Check Exercise
+                        </Button>
+                        <Button
+                          onClick={() =>
+                            handleTakeTest(chapter.title, chapter.name)
+                          }
+                          className="bg-material-orange hover:bg-material-orange-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-sm h-12 px-3 flex flex-wrap"
+                        >
+                          Upload HW
                         </Button>
                       </div>
                     </div>

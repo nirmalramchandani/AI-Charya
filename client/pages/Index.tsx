@@ -175,7 +175,7 @@ export default function Index() {
                 className="p-6 bg-white rounded-3xl shadow-material-lg border-4 border-opacity-20 border-material-blue"
               >
                 <img
-                  src="https://cdn.builder.io/api/v1/image/assets%2F51a4707e6cb3452bb5e8ffef0fab69d7%2F4e7bfb36cd894a0d96cca31a023e813b?format=webp&width=800"
+                  src="\public\aicharya.png"
                   alt="AI-Charya Logo"
                   className="h-32 w-32"
                 />
