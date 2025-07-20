@@ -5,10 +5,6 @@ import { createServer } from "./server";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  server: {
-    host: "::",
-    port: 8080,
-  },
   build: {
     outDir: "dist/spa",
   },
@@ -17,6 +13,18 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": path.resolve(__dirname, "./client"),
       "@shared": path.resolve(__dirname, "./shared"),
+    },
+  },
+  server: {
+    host: "::",
+    port: 8080,
+    proxy: {
+      // A key that will be used to identify API requests
+      '/api': {
+        target: 'https://002f335f8e8e.ngrok-free.app', // Your backend URL
+        changeOrigin: true, // Recommended for virtual-hosted sites
+        rewrite: (path) => path.replace(/^\/api/, ''), // Remove /api from the request path
+      },
     },
   },
 }));

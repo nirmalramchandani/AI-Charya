@@ -15,13 +15,6 @@ export interface Academic {
   subjects: Subject[];
 }
 
-export interface Address {
-  street: string;
-  city: string;
-  state: string;
-  zip: string;
-}
-
 export interface ParentDetails {
   name: string;
   phone: string;
@@ -40,7 +33,7 @@ export interface HealthInfo {
 }
 
 export interface Student {
-  student_id: string;
+  roll_no: string;
   name: string;
   profilePhoto: string;
   age: number;
@@ -48,9 +41,8 @@ export interface Student {
   gender: 'Male' | 'Female' | 'Other';
   student_class: string;
   blood_group: string;
-  address: Address;
+  address: string;
   aadhar_number: string;
-  preferred_mode: 'Online' | 'Offline';
   preferred_language: string;
   mother_tongue: string;
   fatherDetails: ParentDetails;
