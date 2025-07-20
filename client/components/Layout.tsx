@@ -209,7 +209,7 @@ export default function Layout({ children }: LayoutProps) {
           {/* Logo */}
           <div className="flex h-16 shrink-0 items-center px-6 border-b border-material-gray-200">
             <img
-              src="..\public\aicharya.png"
+              src="@\aicharya.png"
               alt="AI-Charya Logo"
               className="h-10 w-10"
             />
@@ -382,7 +382,7 @@ export default function Layout({ children }: LayoutProps) {
           transition={{ duration: 0.3 }}
         >
           <motion.img
-            src="..\public\aicharya.png"
+            src="@/public/aicharya.png"
             alt="AI Assistant"
             className="w-12 h-12 rounded-full"
             animate={{ rotate: isAssistantOpen ? 180 : 0 }}
