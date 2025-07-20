@@ -103,43 +103,51 @@ export default function Index() {
     },
   };
 
-  const backgroundPatchVariants = {
-    hidden: { scale: 0, opacity: 0 },
+  // ✅ FIXED: New variants for the background patches
+  const topLeftPatchVariants = {
+    hidden: { opacity: 0, x: "-100%", y: "-100%" },
     visible: {
-      scale: 1,
       opacity: 0.9,
-      transition: {
-        duration: 1.2,
-        ease: "easeOut",
-      },
+      x: "-40%",
+      y: "-40%",
+      transition: { duration: 1.2, ease: "easeOut" },
     },
   };
+
+  const bottomRightPatchVariants = {
+    hidden: { opacity: 0, x: "100%", y: "100%" },
+    visible: {
+      opacity: 0.9,
+      x: "40%",
+      y: "40%",
+      transition: { duration: 1.2, ease: "easeOut", delay: 0.2 },
+    },
+  };
+
 
   return (
     <div className="min-h-[calc(100vh-4rem)]">
       {/* Hero Section */}
       <section className="min-h-screen flex items-center py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-white">
-        {/* Yellow Patch - Top Left */}
+        {/* ✅ FIXED: Yellow Patch - Top Left */}
         <motion.div
           initial="hidden"
           animate="visible"
-          variants={backgroundPatchVariants}
+          variants={topLeftPatchVariants}
           className="absolute top-0 left-0 w-96 h-96 rounded-br-full"
           style={{
             background: "linear-gradient(135deg, #FBBC05 0%, #F9AB00 100%)",
-            transform: "translate(-40%, -40%)",
           }}
         />
 
-        {/* Blue Patch - Bottom Right */}
+        {/* ✅ FIXED: Blue Patch - Bottom Right */}
         <motion.div
           initial="hidden"
           animate="visible"
-          variants={backgroundPatchVariants}
+          variants={bottomRightPatchVariants}
           className="absolute bottom-0 right-0 w-80 h-80 rounded-tl-full"
           style={{
             background: "linear-gradient(135deg, #4285F4 0%, #1A73E8 100%)",
-            transform: "translate(40%, 40%)",
           }}
         />
 
@@ -172,12 +180,16 @@ export default function Index() {
               <motion.div
                 variants={logoVariants}
                 whileHover={{ scale: 1.1, rotate: 5 }}
-                className="p-6 bg-white rounded-3xl shadow-material-lg border-4 border-opacity-20 border-material-blue"
+                className="p-6 bg-white rounded-3xl shadow-material-lg overflow-hidden" // Added overflow-hidden
               >
-                <img
-                  src="\public\aicharya.png"
-                  alt="AI-Charya Logo"
-                  className="h-32 w-32"
+                {/* ✅ REPLACED: Image with Video */}
+                <video
+                  src="/Logo_Dance_Video_Generated.mp4"
+                  autoPlay
+                  muted
+                  playsInline
+                  disablePictureInPicture={true}
+                  className="h-32 w-32 object-cover object-center scale-110"
                 />
               </motion.div>
             </motion.div>
