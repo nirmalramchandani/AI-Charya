@@ -1,21 +1,34 @@
-// src/components/checker/RecognitionPanel.tsx
+// src/components/checker/CameraPanel.tsx
 
 import FaceDetectionComponent from "./FaceDetectionComponent";
-import DocumentScannerComponent from "./DocumentScannerComponent";
 import { Camera, CheckCircle, FileText } from "lucide-react";
+import Webcam from "react-webcam";
 
 export default function RecognitionPanel({
   appStep,
   onStartCamera,
   onFaceCapture,
-  onHomeworkCapture,
   capturedFaceImage,
   onReset,
   captureResetKey
-}) {
+}: any) {
   
   const renderContent = () => {
     switch (appStep) {
+      case 'INTERACTIVE_SESSION':
+        return (
+          <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
+            <Webcam
+              audio={false}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              videoConstraints={{ width: 1280, height: 720, facingMode: 'user' }}
+            />
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-black bg-opacity-50 text-white text-sm rounded-full">
+              Live Session
+            </div>
+          </div>
+        );
+      
       case 'FACE_SCANNING':
         return <FaceDetectionComponent onCapture={onFaceCapture} onReset={captureResetKey} />;
       
@@ -42,13 +55,10 @@ export default function RecognitionPanel({
         return (
           <div className="w-full aspect-video bg-blue-100 rounded-lg flex flex-col items-center justify-center text-center p-4">
             <FileText className="h-16 w-16 text-blue-600 mb-4" />
-            <p className="text-blue-800 text-xl font-bold">Get Ready to Scan Your Homework</p>
-            <p className="text-blue-700 mt-2">The camera will start in a few seconds...</p>
+            <p className="text-blue-800 text-xl font-bold">Please show your work to the camera.</p>
+            <p className="text-blue-700 mt-2">The interactive session will begin shortly...</p>
           </div>
         );
-
-      case 'SCANNING_HOMEWORK':
-        return <DocumentScannerComponent onCapture={onHomeworkCapture} />;
       
       case 'FAILED':
         return (

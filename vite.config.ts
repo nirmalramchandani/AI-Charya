@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => ({
     proxy: {
       // A key that will be used to identify API requests
       '/api': {
-        target: 'https://002f335f8e8e.ngrok-free.app', // Your backend URL
+        target: 'https://5f53c992e7ae.ngrok-free.app', // Your backend URL
         changeOrigin: true, // Recommended for virtual-hosted sites
         rewrite: (path) => path.replace(/^\/api/, ''), // Remove /api from the request path
       },

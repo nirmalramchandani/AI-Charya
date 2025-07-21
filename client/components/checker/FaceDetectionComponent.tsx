@@ -1,9 +1,8 @@
 // src/components/checker/FaceDetectionComponent.tsx
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import Webcam from "react-webcam";
 import { FaceDetection } from "@mediapipe/face_detection";
-import { Camera } from "@mediapipe/camera_utils";
 
 const TARGET_ZONE = { x: 0.2, y: 0.05, width: 0.6, height: 0.9 };
 const roundedRectLoaderCss = `
@@ -26,126 +25,122 @@ const roundedRectLoaderCss = `
 @keyframes fill-rect { to { stroke-dashoffset: 0; } }
 `;
 
-export default function FaceDetectionComponent({ onCapture, onReset }) {
+export default function FaceDetectionComponent({ onCapture, onReset }: { onCapture: (imageSrc: string) => void, onReset: number }) {
   const webcamRef = useRef<Webcam | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const faceDetectionRef = useRef<FaceDetection | null>(null);
-  const cameraRef = useRef<Camera | null>(null);
-  const boundingBoxRef = useRef(null);
+  const animationFrameId = useRef<number>(0);
+  const captureTimeoutId = useRef<NodeJS.Timeout | null>(null);
+  
+  // This ref is for the high-frequency onResults callback to get the latest state
+  const isCapturingRef = useRef(false);
+  // This state is just for triggering the CSS animation
+  const [isAnimationActive, setIsAnimationActive] = useState(false);
+  const [isLoadingModel, setIsLoadingModel] = useState(true);
 
-  const [isTimerActive, setIsTimerActive] = useState(false);
-  const isTimerActiveRef = useRef(false);
+  const cropFace = (imageElement: HTMLCanvasElement | HTMLImageElement, boundingBox: any) => {
+    const cropCanvas = document.createElement("canvas");
+    const cropCtx = cropCanvas.getContext("2d");
+    if (!cropCtx) return;
 
-  useEffect(() => {
-    setIsTimerActive(false);
-    isTimerActiveRef.current = false;
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-  }, [onReset]);
+    const { width, height, xCenter, yCenter } = boundingBox;
+    const cropWidth = width * imageElement.width;
+    const cropHeight = height * imageElement.height;
+    const cropX = xCenter * imageElement.width - cropWidth / 2;
+    const cropY = yCenter * imageElement.height - cropHeight / 2;
 
-  useEffect(() => {
-    faceDetectionRef.current = new FaceDetection({
-      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/${file}`,
-    });
-    faceDetectionRef.current.setOptions({ model: "short", minDetectionConfidence: 0.7 });
-    
-    return () => {
-      faceDetectionRef.current?.close();
-      cameraRef.current?.stop();
-    };
-  }, []);
+    cropCanvas.width = cropWidth;
+    cropCanvas.height = cropHeight;
 
-  const handleUserMedia = () => {
-    const video = webcamRef.current?.video;
-    const faceDetection = faceDetectionRef.current;
-    if (!video || !faceDetection) return;
+    cropCtx.drawImage(imageElement, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+    const croppedImageSrc = cropCanvas.toDataURL("image/png");
+    onCapture(croppedImageSrc);
+  };
 
-    faceDetection.onResults((results) => {
-      const canvas = canvasRef.current;
-      const ctx = canvas?.getContext("2d");
-      if (!ctx || !canvas) return;
+  const onResults = useCallback((results: any) => {
+    if (!canvasRef.current || !webcamRef.current?.video) return;
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
-      
-      let bothEyesInZone = false;
-      if (results.detections.length > 0) {
-        const detection = results.detections[0];
-        // MODIFIED: Changed keypoints to landmarks
-        const landmarks = detection.landmarks;
-        if (landmarks.length >= 2) {
-          const leftEye = landmarks[0];
-          const rightEye = landmarks[1];
-          
-          const isPointInZone = (point) => {
-            return (
-              point.x > TARGET_ZONE.x && point.x < TARGET_ZONE.x + TARGET_ZONE.width &&
-              point.y > TARGET_ZONE.y && point.y < TARGET_ZONE.y + TARGET_ZONE.height
-            );
-          };
+    const canvas = canvasRef.current;
+    const video = webcamRef.current.video;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-          if (isPointInZone(leftEye) && isPointInZone(rightEye)) {
-            bothEyesInZone = true;
-            boundingBoxRef.current = detection.boundingBox;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
+
+    let bothEyesInZone = false;
+    if (results.detections.length > 0) {
+      const detection = results.detections[0];
+      const landmarks = detection.landmarks;
+
+      if (landmarks && landmarks.length >= 2) {
+        const isPointInZone = (point: any) => (
+          point.x > TARGET_ZONE.x && point.x < TARGET_ZONE.x + TARGET_ZONE.width &&
+          point.y > TARGET_ZONE.y && point.y < TARGET_ZONE.y + TARGET_ZONE.height
+        );
+        if (isPointInZone(landmarks[0]) && isPointInZone(landmarks[1])) {
+          bothEyesInZone = true;
+          // FIX: Use ref to check status and prevent multiple timers
+          if (!isCapturingRef.current) {
+            isCapturingRef.current = true;
+            setIsAnimationActive(true);
+            captureTimeoutId.current = setTimeout(() => {
+              cropFace(results.image, detection.boundingBox);
+            }, 5000);
           }
         }
       }
-      
-      if (bothEyesInZone && !isTimerActiveRef.current) {
-        setIsTimerActive(true);
-        isTimerActiveRef.current = true;
-        timerRef.current = setTimeout(() => {
-          const fullImageSrc = webcamRef.current?.getScreenshot();
-          if (fullImageSrc && boundingBoxRef.current) {
-            const image = new Image();
-            image.onload = () => {
-              const bbox = boundingBoxRef.current;
-              const cropCanvas = document.createElement("canvas");
-              const cropCtx = cropCanvas.getContext("2d");
-
-              const cropWidth = bbox.width * image.width;
-              const cropHeight = bbox.height * image.height;
-              const cropX = (bbox.xCenter * image.width) - (cropWidth / 2);
-              const cropY = (bbox.yCenter * image.height) - (cropHeight / 2);
-
-              cropCanvas.width = cropWidth;
-              cropCanvas.height = cropHeight;
-
-              cropCtx.drawImage(
-                image,
-                cropX, cropY, cropWidth, cropHeight,
-                0, 0, cropWidth, cropHeight
-              );
-
-              const croppedImageSrc = cropCanvas.toDataURL("image/png");
-              onCapture(croppedImageSrc);
-            };
-            image.src = fullImageSrc;
-          }
-          
-          timerRef.current = null;
-          setIsTimerActive(false);
-          isTimerActiveRef.current = false;
-        }, 5000);
-      } else if (!bothEyesInZone && timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-        setIsTimerActive(false);
-        isTimerActiveRef.current = false;
+    }
+    
+    // FIX: Use ref to reliably cancel the timer
+    if (!bothEyesInZone && isCapturingRef.current) {
+      isCapturingRef.current = false;
+      setIsAnimationActive(false);
+      if (captureTimeoutId.current) {
+        clearTimeout(captureTimeoutId.current);
       }
-    });
+    }
+  }, [onCapture]);
 
-    cameraRef.current = new Camera(video, {
-      onFrame: async () => await faceDetection.send({ image: video }),
-      width: 640,
-      height: 480,
-    });
-    cameraRef.current.start();
-  };
+  useEffect(() => {
+    const setupMediaPipe = async () => {
+      const faceDetection = new FaceDetection({
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/${file}`,
+      });
+      faceDetection.setOptions({ model: "short", minDetectionConfidence: 0.7 });
+      faceDetection.onResults(onResults);
+      
+      await faceDetection.initialize();
+      faceDetectionRef.current = faceDetection;
+      
+      setIsLoadingModel(false);
+      animate();
+    };
+
+    const animate = () => {
+      if (webcamRef.current?.video && webcamRef.current.video.readyState === 4 && faceDetectionRef.current) {
+        faceDetectionRef.current.send({ image: webcamRef.current.video });
+      }
+      animationFrameId.current = requestAnimationFrame(animate);
+    };
+
+    setupMediaPipe();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId.current);
+      if (captureTimeoutId.current) clearTimeout(captureTimeoutId.current);
+      faceDetectionRef.current?.close();
+    };
+  }, [onResults]);
   
+  useEffect(() => {
+    setIsAnimationActive(false);
+    isCapturingRef.current = false;
+    if(captureTimeoutId.current) clearTimeout(captureTimeoutId.current);
+  }, [onReset]);
+
   const canvasWidth = 640;
   const canvasHeight = 480;
   const x = TARGET_ZONE.x * canvasWidth;
@@ -154,26 +149,35 @@ export default function FaceDetectionComponent({ onCapture, onReset }) {
   const height = TARGET_ZONE.height * canvasHeight;
   
   return (
-    <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden shadow-inner">
+    <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden shadow-inner flex items-center justify-center">
       <style>{roundedRectLoaderCss}</style>
-      <div className={`loader-container ${isTimerActive ? "active" : ""}`}>
-        <svg width="100%" height="100%" viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}>
-          <rect className="rect-guide" x={x} y={y} width={width} height={height} rx="30" />
-          <rect className="rect-progress" x={x} y={y} width={width} height={height} rx="30" />
-        </svg>
-      </div>
-      <Webcam
-        ref={webcamRef}
-        audio={false}
-        onUserMedia={handleUserMedia}
-        style={{ position: 'absolute', visibility: 'hidden' }}
-        screenshotFormat="image/png"
-        videoConstraints={{ width: canvasWidth, height: canvasHeight }}
-      />
-      <canvas
-        ref={canvasRef}
-        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-      />
+      
+      {isLoadingModel ? (
+        <div className="text-white text-center">
+          <div className="w-8 h-8 border-4 border-dashed rounded-full animate-spin border-white mx-auto mb-4"></div>
+          <p>Initializing Camera...</p>
+        </div>
+      ) : (
+        <>
+          <div className={`loader-container ${isAnimationActive ? "active" : ""}`}>
+            <svg width="100%" height="100%" viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}>
+              <rect className="rect-guide" x={x} y={y} width={width} height={height} rx="30" />
+              <rect className="rect-progress" x={x} y={y} width={width} height={height} rx="30" />
+            </svg>
+          </div>
+          <Webcam
+            ref={webcamRef}
+            audio={false}
+            style={{ position: 'absolute', visibility: 'hidden' }}
+            screenshotFormat="image/png"
+            videoConstraints={{ width: canvasWidth, height: canvasHeight, facingMode: 'user' }}
+          />
+          <canvas
+            ref={canvasRef}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        </>
+      )}
     </div>
   );
 }

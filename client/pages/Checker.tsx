@@ -1,130 +1,211 @@
-// src/components/checker/CheckerDashboard.tsx
+import React, { useState, useRef, useEffect } from 'react';
+import { GoogleGenAI } from '@google/genai';
 
-import { useState, useCallback, useEffect } from "react";
-import axios from 'axios';
-import StudentHeader from "@/components/checker/StudentHeader";
-import RecognitionPanel from "@/components/checker/CameraPanel";
-import TaskDetailsPanel from "@/components/checker/TaskDetailsPanel";
-import ChatbotPanel from "@/components/checker/ChatbotPanel";
-import AnalysisPanel from "@/components/checker/AnalysisPanel";
+// --- Configuration ---
+const API_KEY = "AIzaSyC1Uq8CQqUAJWFZXOPwoH4kiaivesylOFw";
+if (!API_KEY) {
+  alert("Please add your Gemini API key to the GeminiTestComponent.tsx file.");
+}
+const genAI = new GoogleGenAI({ apiKey: API_KEY });
 
-// Helper function to convert base64 data URL to a File object
-function dataURLtoFile(dataurl, filename) {
-  const arr = dataurl.split(',');
-  const mime = arr[0].match(/:(.*?);/)[1];
-  const bstr = atob(arr[1]);
-  let n = bstr.length;
-  const u8arr = new Uint8Array(n);
-  while (n--) {
-    u8arr[n] = bstr.charCodeAt(n);
-  }
-  return new File([u8arr], filename, { type: mime });
+interface TestMessage {
+  from: 'ai' | 'user';
+  text: string;
 }
 
-export default function CheckerDashboard() {
-  const [appStep, setAppStep] = useState('IDLE');
-  const [student, setStudent] = useState({ name: "...", roll: "..." });
-  const [capturedFaceImage, setCapturedFaceImage] = useState(null);
-  const [capturedHomeworkImage, setCapturedHomeworkImage] = useState(null);
-  const [task, setTask] = useState({ subject: "Mathematics", chapter: "Algebra", mode: "Homework", totalScored: null });
-  const [messages, setMessages] = useState([{ from: 'ai', text: 'Your 5th question is wrong?' }]);
-  const [analysis, setAnalysis] = useState(null);
-  const [captureResetKey, setCaptureResetKey] = useState(0);
+export default function GeminiTestComponent() {
+  const [status, setStatus] = useState<'IDLE' | 'CONNECTING' | 'CONNECTED' | 'ERROR'>('IDLE');
+  const [messages, setMessages] = useState<TestMessage[]>([]);
+  const [inputValue, setInputValue] = useState('');
+  const [audioStatus, setAudioStatus] = useState<'OK' | 'FAILED'>('OK'); // State for audio feedback
 
-  useEffect(() => {
-    let timer;
-    if (appStep === 'VERIFIED_SUCCESS') {
-      timer = setTimeout(() => setAppStep('SHOWING_INSTRUCTION'), 1000);
-    } else if (appStep === 'SHOWING_INSTRUCTION') {
-      timer = setTimeout(() => setAppStep('SCANNING_HOMEWORK'), 3000);
+  const sessionRef = useRef<any>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const animationFrameId = useRef<number>(0);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const streamVideo = () => {
+    if (status !== 'CONNECTED' || !sessionRef.current || !videoRef.current || !canvasRef.current) return;
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+      canvas.toBlob((blob) => {
+        if (blob && sessionRef.current) {
+          sessionRef.current.sendRealtimeInput({ media: blob });
+        }
+      }, 'image/jpeg', 0.7);
     }
-    return () => clearTimeout(timer);
-  }, [appStep]);
+    animationFrameId.current = requestAnimationFrame(streamVideo);
+  };
 
-  const handleStartCamera = () => setAppStep('FACE_SCANNING');
-
-  // MODIFIED: Simplified to handle the direct response from the backend
-  const handleFaceCapture = useCallback(async (imageDataUrl) => {
-    setCapturedFaceImage(imageDataUrl);
-    setAppStep('VERIFYING');
-
-    const imageFile = dataURLtoFile(imageDataUrl, "student_face.png");
-    const formData = new FormData();
-    formData.append('image', imageFile); // The key is 'image'
+  const startSession = async () => {
+    if (sessionRef.current) return;
+    setStatus('CONNECTING');
+    setAudioStatus('OK');
+    setMessages([]);
 
     try {
-      const response = await axios.post('/api/recognize_student/', formData);
-      
-      // The backend now directly returns the student's name and roll_no
-      const studentData = response.data;
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      mediaStreamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
 
-      if (studentData && studentData.name && studentData.roll_no) {
-        setStudent({ name: studentData.name, roll: studentData.roll_no });
-        setAppStep('VERIFIED_SUCCESS');
-      } else {
-        // This case handles unexpected successful responses that don't have the data
-        console.error("API response missing student data.");
-        setAppStep('FAILED');
+      const session = await genAI.live.connect({
+        model: "models/gemini-1.5-flash-latest",
+        config: {
+          systemInstruction: {
+            parts: [{ text: "You are a helpful test assistant. Respond to user input." }],
+            role: "user"
+          }
+        },
+        callbacks: {
+          onmessage: (message: any) => {
+            try {
+              const response = JSON.parse(message.data);
+              const geminiResponse = response.content; 
+              if (geminiResponse && geminiResponse.text) {
+                setMessages((prev) => [...prev, { from: 'ai', text: geminiResponse.text }]);
+              }
+            } catch (error) {
+              console.error("Error parsing server message", error);
+            }
+          },
+          onerror: (err: any) => {
+            console.error("Connection error:", err);
+            setStatus('ERROR');
+          },
+          onclose: () => {
+            console.log("Connection closed.");
+          },
+        }
+      });
+      
+      sessionRef.current = session;
+      setStatus('CONNECTED');
+      
+      animationFrameId.current = requestAnimationFrame(streamVideo);
+
+      // --- GRACEFUL AUDIO RECORDER SETUP ---
+      if (stream.getAudioTracks().length > 0) {
+        try {
+          const MimeTypes = ['audio/webm;codecs=opus', 'audio/ogg;codecs=opus', 'audio/webm'];
+          const supportedMimeType = MimeTypes.find(type => MediaRecorder.isTypeSupported(type));
+
+          if (!supportedMimeType) {
+            throw new Error("No supported audio MIME type found for MediaRecorder.");
+          }
+          
+          const options = { mimeType: supportedMimeType };
+          
+          mediaRecorderRef.current = new MediaRecorder(stream, options);
+          mediaRecorderRef.current.ondataavailable = (event) => {
+            if (event.data.size > 0 && sessionRef.current) {
+              sessionRef.current.sendRealtimeInput({ media: event.data });
+            }
+          };
+          mediaRecorderRef.current.start(1000);
+        } catch (recorderError) {
+          console.error("--- MediaRecorder failed to start. Session will continue without audio. ---", recorderError);
+          setAudioStatus('FAILED');
+        }
       }
 
     } catch (error) {
-      console.error("Recognition failed:", error);
-      if (error.response) {
-        // The backend now sends a 404 with a detail message if not found
-        const errorMessage = error.response.data?.detail || "An unknown error occurred.";
-        console.error("Backend error:", errorMessage);
-        alert(`Recognition Failed: ${errorMessage}`);
-      }
-      setAppStep('FAILED');
+      console.error("Failed to start session:", error);
+      setStatus('ERROR');
     }
-  }, []);
-  
-  const handleHomeworkCapture = useCallback((imageDataUrl) => {
-    setCapturedHomeworkImage(imageDataUrl);
-    setAppStep('ANALYZING');
-    // This can be replaced with a real API call to analyze homework
-    setTimeout(() => {
-      const results = { total: 12, max: 20 };
-      setAnalysis(results);
-      setTask(prev => ({ ...prev, totalScored: `${results.total}/${results.max}`}));
-      setAppStep('DONE');
-    }, 3000);
-  }, []);
+  };
 
-  const handleReset = useCallback(() => {
-    setAnalysis(null);
-    setCapturedFaceImage(null);
-    setCapturedHomeworkImage(null);
-    setTask(prev => ({ ...prev, totalScored: null}));
-    setStudent({ name: "...", roll: "..." });
-    setAppStep('IDLE');
-    setCaptureResetKey(prevKey => prevKey + 1);
-  }, []);
+  const handleSendMessage = () => {
+    if (inputValue.trim() && sessionRef.current && status === 'CONNECTED') {
+      setMessages((prev) => [...prev, { from: 'user', text: inputValue }]);
+      sessionRef.current.sendClientContent(inputValue);
+      setInputValue('');
+    }
+  };
+
+  const stopSession = () => {
+    cancelAnimationFrame(animationFrameId.current);
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      mediaRecorderRef.current.stop();
+    }
+    if (sessionRef.current) {
+      sessionRef.current.close();
+      sessionRef.current = null;
+    }
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach(track => track.stop());
+      mediaStreamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    setStatus('IDLE');
+    setMessages([]);
+  };
+
+  const chatBodyRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (chatBodyRef.current) {
+      chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   return (
-    <div className="p-4 md:p-6 min-h-screen bg-gray-100">
-      <StudentHeader studentName={student.name} rollNumber={student.roll} />
-      <div className="mt-6 grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <div className="lg:col-span-2 flex flex-col gap-6">
-          <RecognitionPanel 
-            appStep={appStep}
-            onStartCamera={handleStartCamera}
-            onFaceCapture={handleFaceCapture} 
-            onHomeworkCapture={handleHomeworkCapture}
-            capturedFaceImage={capturedFaceImage}
-            onReset={handleReset}
-            captureResetKey={captureResetKey} 
-          />
-          <TaskDetailsPanel task={task} />
+    <div style={{ padding: '20px', fontFamily: 'sans-serif', maxWidth: '600px', margin: 'auto' }}>
+      <h2>Gemini Live API Test Component</h2>
+      <div style={{ border: '1px solid #ccc', padding: '10px', borderRadius: '8px' }}>
+        
+        <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <button onClick={startSession} disabled={status !== 'IDLE'}>Start Session</button>
+          <button onClick={stopSession} disabled={status === 'IDLE' || status === 'CONNECTING'}>Stop Session</button>
+          <p>Status: <b style={{ color: status === 'CONNECTED' ? 'green' : 'orange' }}>{status}</b></p>
         </div>
-        <div className="lg:col-span-3 flex flex-col gap-6">
-          <ChatbotPanel initialMessages={messages} />
-          <AnalysisPanel 
-            appStep={appStep}
-            analysis={analysis}
-            capturedHomeworkImage={capturedHomeworkImage}
-            onReset={handleReset}
+        
+        {audioStatus === 'FAILED' && (
+            <p style={{ color: 'red', fontSize: '12px', textAlign: 'center', padding: '5px', background: '#fff0f0', border: '1px solid red', borderRadius: '4px' }}>
+              Warning: Audio recording failed. Session will continue with video and text only.
+            </p>
+        )}
+
+        <div style={{ position: 'relative', width: '100%', backgroundColor: 'black' }}>
+          <video ref={videoRef} autoPlay playsInline muted style={{ width: '100%' }} />
+          <canvas ref={canvasRef} style={{ display: 'none' }} />
+        </div>
+
+        <div ref={chatBodyRef} style={{ height: '200px', overflowY: 'auto', border: '1px solid #eee', padding: '10px', marginTop: '10px' }}>
+          {messages.length === 0 && <p style={{ color: '#888' }}>Chat log...</p>}
+          {messages.map((msg, index) => (
+            <div key={index} style={{ textAlign: msg.from === 'user' ? 'right' : 'left', marginBottom: '5px' }}>
+              <span style={{ 
+                background: msg.from === 'user' ? '#007bff' : '#e9e9eb',
+                color: msg.from === 'user' ? 'white' : 'black',
+                padding: '5px 10px',
+                borderRadius: '10px'
+              }}>
+                {msg.text}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ display: 'flex', marginTop: '10px' }}>
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+            disabled={status !== 'CONNECTED'}
+            style={{ flex: 1, padding: '8px' }}
           />
+          <button onClick={handleSendMessage} disabled={status !== 'CONNECTED'} style={{ marginLeft: '10px' }}>Send</button>
         </div>
       </div>
     </div>
