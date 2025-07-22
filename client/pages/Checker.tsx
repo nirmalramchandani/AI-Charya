@@ -23,7 +23,7 @@ export default function LiveTutor() {
 
   useEffect(() => {
     if (effectRan.current === true) return;
-    ws.current = new WebSocket('ws://localhost:3001');
+    ws.current = new WebSocket('wss://ai-charya.onrender.com');
     ws.current.onopen = () => setIsConnected(true);
     ws.current.onclose = () => setIsConnected(false);
     ws.current.onerror = (error) => console.error('WebSocket Error:', error);
