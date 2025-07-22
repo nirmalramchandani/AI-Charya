@@ -1,15 +1,10 @@
+# This is the configuration for your Vite frontend site
 [build]
-  command = "npm run build:client"
-  functions = "netlify/functions"
-  publish = "dist/spa"
+  command = "npm run build"
+  publish = "dist/spa" # Or "dist" if you changed it
 
-
-[functions]
-  external_node_modules = ["express"]
-  node_bundler = "esbuild"
-  
+# This rule is important for single-page applications like React
 [[redirects]]
-  force = true
-  from = "/api/*"
+  from = "/*"
+  to = "/index.html"
   status = 200
-  to = "/.netlify/functions/api/:splat"
