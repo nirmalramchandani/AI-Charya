@@ -23,12 +23,7 @@ wss.on('connection', (ws: WebSocket) => {
     try {
       geminiSession = await ai.live.connect({
         model: 'models/gemini-2.0-flash-live-001',
-        config: {
-          responseModalities: [Modality.TEXT, Modality.AUDIO],
-          speechConfig: {
-            languageCode: 'en-US',
-          },
-        },
+        
         callbacks: {
           onmessage: (message: LiveServerMessage) => ws.send(JSON.stringify(message)),
           onerror: (e: ErrorEvent) => {
