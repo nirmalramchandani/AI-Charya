@@ -1,170 +1,156 @@
-import React, { useState, useEffect, useRef } from 'react';
+// src/components/checker/CheckerDashboard.tsx
+import { useState, useCallback, useEffect } from "react";
+import axios from 'axios';
+import StudentHeader from "@/components/checker/StudentHeader";
+import RecognitionPanel from "@/components/checker/CameraStream";
+import TaskDetailsPanel from "@/components/checker/TaskDetailsPanel";
+import ChatBot from "@/components/checker/ChatBox";
+import AnalysisPanel from "@/components/checker/AnalysisPanel";
 
-interface ChatMessage {
-  sender: 'user' | 'bot';
-  text?: string;
-  audioUrl?: string;
+// Helper function (remains the same)
+function dataURLtoFile(dataurl: string, filename: string) {
+  const arr = dataurl.split(',');
+  const mimeMatch = arr[0].match(/:(.*?);/);
+  if (!mimeMatch) {
+    throw new Error("Invalid data URL");
+  }
+  const mime = mimeMatch[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new File([u8arr], filename, { type: mime });
 }
 
-export default function LiveTutor() {
-  const [inputText, setInputText] = useState('');
-  const [chatLog, setChatLog] = useState<ChatMessage[]>([]);
-  const [isConnected, setIsConnected] = useState(false);
-  const [isSessionActive, setIsSessionActive] = useState(false);
+interface Message {
+  from: 'ai' | 'user';
+  text: string;
+}
+
+// FIX: Define the specific types for the application steps
+export type AppStep =
+  | 'IDLE'
+  | 'FACE_SCANNING'
+  | 'VERIFYING'
+  | 'VERIFIED_SUCCESS'
+  | 'SHOWING_INSTRUCTION'
+  | 'INTERACTIVE_SESSION'
+  | 'FAILED'
+  | 'ANALYZING'
+  | 'DONE';
+
+export default function CheckerDashboard() {
+  // FIX: Explicitly type the useState hook with the AppStep type
+  const [appStep, setAppStep] = useState<AppStep>('IDLE');
   
-  const ws = useRef<WebSocket | null>(null);
-  const mediaStream = useRef<MediaStream | null>(null);
-  const mediaRecorder = useRef<MediaRecorder | null>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const videoInterval = useRef<NodeJS.Timeout | null>(null);
-  const audioParts = useRef<string[]>([]);
-  const effectRan = useRef(false);
+  const [student, setStudent] = useState({ name: "...", roll: "..." });
+  const [capturedFaceImage, setCapturedFaceImage] = useState<string | null>(null);
+  const [capturedHomeworkImage, setCapturedHomeworkImage] = useState<string | null>(null);
+  const [task, setTask] = useState({ subject: "Mathematics", chapter: "Algebra", mode: "Interactive", totalScored: null });
+  
+  const [messages, setMessages] = useState<Message[]>([
+    { from: 'ai', text: 'Hello! Please position your face in the camera to get verified.' }
+  ]);
+  
+  const [analysis, setAnalysis] = useState(null);
+  const [captureResetKey, setCaptureResetKey] = useState(0);
+  
+  // Simple streaming state for ChatBot (no WebSocket management needed here)
+  const [isStreaming, setIsStreaming] = useState(false);
+
+  // Update streaming state based on app step
+  useEffect(() => {
+    if (appStep === 'INTERACTIVE_SESSION') {
+      console.log('🚀 Interactive session started');
+      setIsStreaming(true);
+    } else {
+      console.log('⏹️ Interactive session ended');
+      setIsStreaming(false);
+    }
+  }, [appStep]);
 
   useEffect(() => {
-    if (effectRan.current === true) return;
-    ws.current = new WebSocket('wss://ai-charya.onrender.com');
-    ws.current.onopen = () => setIsConnected(true);
-    ws.current.onclose = () => setIsConnected(false);
-    ws.current.onerror = (error) => console.error('WebSocket Error:', error);
-    ws.current.onmessage = (event) => handleServerMessage(event);
-    return () => {
-      ws.current?.close();
-      effectRan.current = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    const setupMedia = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        if (videoRef.current) videoRef.current.srcObject = stream;
-        mediaStream.current = stream;
-      } catch (err) {
-        console.error("Error accessing media devices.", err);
-      }
-    };
-    setupMedia();
-    return () => {
-      mediaStream.current?.getTracks().forEach(track => track.stop());
-    };
-  }, []);
-
-  const handleServerMessage = (event: MessageEvent) => {
-    const message = JSON.parse(event.data);
-    if (message.serverContent) {
-      const turn = message.serverContent.modelTurn;
-      if (turn?.parts) {
-        const part = turn.parts[0];
-        if (part.text) setChatLog(prev => [...prev, { sender: 'bot', text: part.text }]);
-        if (part.inlineData?.data) audioParts.current.push(part.inlineData.data);
-      }
-      if (message.serverContent.turnComplete) {
-        if (audioParts.current.length > 0) {
-          const audioData = audioParts.current.join('');
-          const audioBlob = new Blob([Buffer.from(audioData, 'base64')], { type: 'audio/wav' });
-          const url = URL.createObjectURL(audioBlob);
-          setChatLog(prev => [...prev, { sender: 'bot', audioUrl: url }]);
-          audioParts.current = [];
-        }
-      }
+    let timer: NodeJS.Timeout;
+    if (appStep === 'VERIFIED_SUCCESS') {
+      timer = setTimeout(() => setAppStep('SHOWING_INSTRUCTION'), 1000);
+    } else if (appStep === 'SHOWING_INSTRUCTION') {
+      timer = setTimeout(() => setAppStep('INTERACTIVE_SESSION'), 3000);
     }
-  };
+    return () => clearTimeout(timer);
+  }, [appStep]);
 
-  const blobToBase64 = (blob: Blob): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onload = () => {
-        const result = reader.result as string;
-        resolve(result.split(',')[1]);
-      };
-      reader.onerror = (error) => reject(error);
-    });
-  };
+  const handleStartCamera = () => setAppStep('FACE_SCANNING');
+
+  const handleFaceCapture = useCallback(async (imageDataUrl: string) => {
+    setCapturedFaceImage(imageDataUrl);
+    setAppStep('VERIFYING');
+
+    const imageFile = dataURLtoFile(imageDataUrl, "student_face.png");
+    const formData = new FormData();
+    formData.append('image', imageFile);
+
+    try {
+      const response = await axios.post('/api/recognize_student/', formData);
+      const studentData = response.data;
+
+      if (studentData && studentData.name && studentData.roll_no) {
+        setStudent({ name: studentData.name, roll: studentData.roll_no });
+        setAppStep('VERIFIED_SUCCESS');
+      } else {
+        console.error("API response missing student data.");
+        setAppStep('FAILED');
+      }
+
+    } catch (error: any) {
+      console.error("Recognition failed:", error);
+      if (error.response) {
+        const errorMessage = error.response.data?.detail || "An unknown error occurred.";
+        console.error("Backend error:", errorMessage);
+        alert(`Recognition Failed: ${errorMessage}`);
+      }
+      setAppStep('FAILED');
+    }
+  }, []);
   
-  const sendVideoFrame = () => {
-      if (videoRef.current && canvasRef.current && ws.current?.readyState === WebSocket.OPEN) {
-          const canvas = canvasRef.current;
-          const video = videoRef.current;
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-          const context = canvas.getContext('2d');
-          if (context) {
-              context.drawImage(video, 0, 0, canvas.width, canvas.height);
-              const dataUrl = canvas.toDataURL('image/jpeg', 0.5);
-              const base64Data = dataUrl.split(',')[1];
-              ws.current?.send(JSON.stringify({
-                  video: { mimeType: 'image/jpeg', data: base64Data }
-              }));
-          }
-      }
-  };
-
-  const startSession = () => {
-    if (mediaStream.current && ws.current?.readyState === WebSocket.OPEN) {
-      mediaRecorder.current = new MediaRecorder(mediaStream.current);
-      mediaRecorder.current.ondataavailable = async (event) => {
-        if (event.data.size > 0) {
-          const base64Data = await blobToBase64(event.data);
-          ws.current?.send(JSON.stringify({
-            audio: { mimeType: event.data.type, data: base64Data },
-          }));
-        }
-      };
-      mediaRecorder.current.start(500);
-      videoInterval.current = setInterval(sendVideoFrame, 500);
-      setIsSessionActive(true);
-    }
-  };
-
-  const stopSession = () => {
-    mediaRecorder.current?.stop();
-    if (videoInterval.current) clearInterval(videoInterval.current);
-    setIsSessionActive(false);
-  };
-
-  const sendTextMessage = () => {
-    if (ws.current?.readyState === WebSocket.OPEN && inputText) {
-      setChatLog(prev => [...prev, { sender: 'user', text: inputText }]);
-      ws.current.send(JSON.stringify({ text: inputText }));
-      setInputText('');
-    }
-  };
+  const handleReset = useCallback(() => {
+    setAnalysis(null);
+    setCapturedFaceImage(null);
+    setCapturedHomeworkImage(null);
+    setTask(prev => ({ ...prev, totalScored: null}));
+    setStudent({ name: "...", roll: "..." });
+    setAppStep('IDLE');
+    setCaptureResetKey(prevKey => prevKey + 1);
+  }, []);
 
   return (
-    <div style={{ display: 'flex', gap: '20' }}>
-      <div>
-        <h2>Your Camera</h2>
-        <video ref={videoRef} autoPlay muted style={{ width: '480px', border: '1px solid black', backgroundColor: 'black' }} />
-        <canvas ref={canvasRef} style={{ display: 'none' }} />
-        <div>
-          <button onClick={startSession} disabled={isSessionActive || !isConnected}>Start Session</button>
-          <button onClick={stopSession} disabled={!isSessionActive}>End Session</button>
-        </div>
-      </div>
-      <div style={{ flexGrow: 1 }}>
-        <h2>Live AI Tutor</h2>
-        <div style={{ border: '1px solid #ccc', padding: '10px', height: '400px', overflowY: 'scroll', marginBottom: '10px' }}>
-          {chatLog.map((msg, index) => (
-            <div key={index} style={{ textAlign: msg.sender === 'user' ? 'right' : 'left', margin: '5px 0' }}>
-              <div style={{ display: 'inline-block', padding: '8px 12px', borderRadius: '10px', backgroundColor: msg.sender === 'user' ? '#007bff' : '#e9ecef', color: msg.sender === 'user' ? 'white' : 'black' }}>
-                {msg.text && <p>{msg.text}</p>}
-                {msg.audioUrl && <audio controls src={msg.audioUrl} />}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <input 
-            type="text" 
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder="Type a text message..."
-            style={{ flexGrow: 1 }}
-            onKeyPress={(e) => e.key === 'Enter' && sendTextMessage()}
+    <div className="p-4 md:p-6 min-h-screen bg-gray-100">
+      <StudentHeader studentName={student.name} rollNumber={student.roll} />
+      <div className="mt-6 grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div className="lg:col-span-2 flex flex-col gap-6">
+          <RecognitionPanel 
+            appStep={appStep}
+            onStartCamera={handleStartCamera}
+            onFaceCapture={handleFaceCapture} 
+            capturedFaceImage={capturedFaceImage}
+            onReset={handleReset}
+            captureResetKey={captureResetKey}
+            // WebSocket props removed - CameraStream now handles WebSocket directly
           />
-          <button onClick={sendTextMessage} disabled={!isConnected}>Send Text</button>
+          <TaskDetailsPanel task={task} />
+        </div>
+        <div className="lg:col-span-3 flex flex-col gap-6">
+          <ChatBot
+            isActive={isStreaming}
+            initialMessages={[]}
+          />
+          <AnalysisPanel 
+            appStep={appStep}
+            analysis={analysis}
+            capturedHomeworkImage={capturedHomeworkImage}
+            onReset={handleReset}
+          />
         </div>
       </div>
     </div>

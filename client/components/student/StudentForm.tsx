@@ -1,7 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { format } from "date-fns";
-import axios from 'axios'; // Import axios
-import { Student } from "@/types/student"; // Assuming your types are here
+import axios from 'axios';
+import { useDayPicker, useNavigation } from "react-day-picker";
+
+// --- UI & Icon Imports ---
+import { Student } from "@/types/student";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,29 +12,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import Webcam from "react-webcam";
-import { FaceDetection } from "@mediapipe/face_detection";
-import { Camera as MediapipeCamera } from "@mediapipe/camera_utils";
 import {
     User, Calendar, Home, Users, HeartPulse, BookOpen,
     ImageIcon, Upload, Camera, X, Check, Loader2
 } from "lucide-react";
 
-// --- Helper Functions ---
+// --- Webcam & Face Detection Imports ---
+import Webcam from "react-webcam";
+import { FaceDetection } from "@mediapipe/face_detection";
+import { Camera as MediapipeCamera } from "@mediapipe/camera_utils";
 
-/**
- * Converts a base64 data URL to a File object.
- * @param dataurl The base64 data URL.
- * @param filename The desired filename for the new File object.
- * @returns A File object.
- */
+// --- Helper: Convert Base64 to File ---
 function dataURLtoFile(dataurl: string, filename: string): File | null {
     const arr = dataurl.split(',');
     if (arr.length < 2) return null;
-
     const mimeMatch = arr[0].match(/:(.*?);/);
     if (!mimeMatch) return null;
-
     const mime = mimeMatch[1];
     const bstr = atob(arr[1]);
     let n = bstr.length;
@@ -42,9 +38,7 @@ function dataURLtoFile(dataurl: string, filename: string): File | null {
     return new File([u8arr], filename, { type: mime });
 }
 
-
-// --- Webcam Capture Modal Component (No changes needed here) ---
-
+// --- Webcam Modal Component ---
 const TARGET_ZONE = { x: 0.2, y: 0.1, width: 0.6, height: 0.8 };
 const guideLoaderCss = `
 .guide-loader-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
@@ -209,16 +203,65 @@ const WebcamCaptureModal = ({ onCapture, onClose }: WebcamCaptureModalProps) => 
     );
 };
 
+// --- ✨ Polished Calendar Caption Component ---
+type CustomCaptionProps = {
+    displayMonth: Date;
+    fromYear: number;
+    toYear: number;
+};
 
-// --- StudentForm Component ---
+function CustomCaption({ displayMonth, fromYear, toYear }: CustomCaptionProps) {
+    const { goToMonth } = useNavigation();
+
+    const years = Array.from({ length: toYear - fromYear + 1 }, (_, i) => fromYear + i);
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    const handleYearChange = (year: string) => {
+        const newDate = new Date(displayMonth);
+        newDate.setFullYear(parseInt(year, 10));
+        goToMonth(newDate);
+    };
+
+    const handleMonthChange = (monthIndex: string) => {
+        goToMonth(new Date(displayMonth.getFullYear(), parseInt(monthIndex, 10)));
+    };
+
+    return (
+        <div className="flex justify-center items-center gap-2 mb-4">
+            <Select value={displayMonth.getMonth().toString()} onValueChange={handleMonthChange}>
+                <SelectTrigger className="w-[120px] focus:ring-0">
+                    <SelectValue placeholder={months[displayMonth.getMonth()]} />
+                </SelectTrigger>
+                <SelectContent>
+                    {months.map((month, i) => (
+                        <SelectItem key={month} value={i.toString()}>{month}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+
+            <Select value={displayMonth.getFullYear().toString()} onValueChange={handleYearChange}>
+                <SelectTrigger className="w-[90px] focus:ring-0">
+                    <SelectValue placeholder={displayMonth.getFullYear()} />
+                </SelectTrigger>
+                <SelectContent>
+                    {years.map((year) => (
+                        <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+        </div>
+    );
+}
+
+// --- Main Student Form Component ---
 const initialFormState = {
-    roll_no: '', // UPDATED from student_id
+    roll_no: '',
     name: '',
     dob: new Date(),
     student_class: '',
     gender: 'Male' as 'Male' | 'Female' | 'Other',
     blood_group: 'A+',
-    address: { street: '', city: '', state: '', zip: '' }, // Keep as object for UI
+    address: { street: '', city: '', state: '', zip: '' },
     aadhar_number: '',
     preferred_mode: 'Online' as 'Online' | 'Offline',
     preferred_language: 'English',
@@ -244,6 +287,11 @@ export function StudentForm({ onSave, onCancel }: StudentFormProps) {
     const [photoFile, setPhotoFile] = useState<File | null>(null);
     const [isWebcamOpen, setIsWebcamOpen] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+
+    // --- Calendar Constants ---
+    const currentYear = new Date().getFullYear();
+    const fromYear = currentYear - 100;
+    const defaultMonth = new Date(currentYear - 18, 0);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -278,94 +326,78 @@ export function StudentForm({ onSave, onCancel }: StudentFormProps) {
     }
 
     const handleSubmit = async () => {
-    // --- Basic form validation ---
-    const mandatoryFields = {
-        "Profile Photo": photoFile,
-        "Full Name": formData.name,
-        "Roll Number": formData.roll_no,
-        "Class & Section": formData.student_class,
-    };
-    for (const [fieldName, value] of Object.entries(mandatoryFields)) {
-        if (!value || (typeof value === 'string' && !value.trim())) {
-            alert(`${fieldName} is a required field.`);
-            return;
+        const mandatoryFields = {
+            "Profile Photo": photoFile,
+            "Full Name": formData.name,
+            "Roll Number": formData.roll_no,
+            "Class & Section": formData.student_class,
+        };
+        for (const [fieldName, value] of Object.entries(mandatoryFields)) {
+            if (!value || (typeof value === 'string' && !value.trim())) {
+                alert(`${fieldName} is a required field.`);
+                return;
+            }
         }
-    }
 
-    setIsSaving(true);
-    const data = new FormData();
+        setIsSaving(true);
+        const data = new FormData();
 
-    // 1. Append the profile photo file
-    if (photoFile) {
-        data.append('profilePhoto', photoFile);
-    }
-
-    // 2. Append all simple string fields
-    data.append('roll_no', formData.roll_no);
-    data.append('name', formData.name);
-    data.append('student_class', formData.student_class);
-    data.append('dob', format(formData.dob, "yyyy-MM-dd"));
-    data.append('age', (new Date().getFullYear() - new Date(formData.dob).getFullYear()).toString());
-    data.append('gender', formData.gender);
-    data.append('blood_group', formData.blood_group);
-    data.append('aadhar_number', formData.aadhar_number);
-    data.append('preferred_language', formData.preferred_language);
-    data.append('mother_tongue', formData.mother_tongue);
-    data.append('academic_achievements', formData.academic_achievements);
-    
-    // Combine address and append as a single string
-    const fullAddress = [formData.address.street, formData.address.city, formData.address.state, formData.address.zip].filter(Boolean).join(', ');
-    data.append('address', fullAddress);
-
-    // 3. Stringify nested objects and append them
-    data.append('fatherDetails', JSON.stringify(formData.fatherDetails));
-    data.append('motherDetails', JSON.stringify(formData.motherDetails));
-    data.append('emergency_contact', JSON.stringify(formData.emergencyContact));
-
-    // 4. IMPORTANT: Convert hobbies and health info to JSON arrays/objects as strings
-    
-    // Hobbies: split string into an array, then stringify the array
-    const hobbiesPayload = formData.hobbies.split(',').map(h => h.trim()).filter(Boolean);
-    data.append('hobbies', JSON.stringify(hobbiesPayload));
-    
-    // HealthInfo: create an object with arrays, then stringify the object
-    const healthInfoPayload = {
-        allergies: formData.healthInfo.allergies.split(',').map(s => s.trim()).filter(Boolean),
-        medicalNotes: formData.healthInfo.medicalNotes.split(',').map(s => s.trim()).filter(Boolean),
-    };
-    data.append('healthInfo', JSON.stringify(healthInfoPayload));
-
-    // --- Make the API call using axios ---
-    try {
-        const response = await axios.post('/api/register_student/', data, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-
-        alert(response.data.message || "Student registered successfully!");
-        onSave(response.data); // Pass the response data to the onSave handler
-
-    } catch (error) {
-        console.error('An error occurred while saving the student:', error);
-        let errorMessage = 'An error occurred. Please check the console.';
-        if (axios.isAxiosError(error) && error.response) {
-            const errorDetail = error.response.data?.detail || 'Unknown error';
-            errorMessage = `Failed to save student: ${JSON.stringify(errorDetail)}`;
+        if (photoFile) {
+            data.append('profilePhoto', photoFile);
         }
-        alert(errorMessage);
-    } finally {
-        setIsSaving(false);
-    }
-};
+        data.append('roll_no', formData.roll_no);
+        data.append('name', formData.name);
+        data.append('student_class', formData.student_class);
+        data.append('dob', format(formData.dob, "yyyy-MM-dd"));
+        data.append('age', (new Date().getFullYear() - new Date(formData.dob).getFullYear()).toString());
+        data.append('gender', formData.gender);
+        data.append('blood_group', formData.blood_group);
+        data.append('aadhar_number', formData.aadhar_number);
+        data.append('preferred_language', formData.preferred_language);
+        data.append('mother_tongue', formData.mother_tongue);
+        data.append('academic_achievements', formData.academic_achievements);
+
+        const fullAddress = [formData.address.street, formData.address.city, formData.address.state, formData.address.zip].filter(Boolean).join(', ');
+        data.append('address', fullAddress);
+
+        data.append('fatherDetails', JSON.stringify(formData.fatherDetails));
+        data.append('motherDetails', JSON.stringify(formData.motherDetails));
+        data.append('emergency_contact', JSON.stringify(formData.emergencyContact));
+
+        const hobbiesPayload = formData.hobbies.split(',').map(h => h.trim()).filter(Boolean);
+        data.append('hobbies', JSON.stringify(hobbiesPayload));
+
+        const healthInfoPayload = {
+            allergies: formData.healthInfo.allergies.split(',').map(s => s.trim()).filter(Boolean),
+            medicalNotes: formData.healthInfo.medicalNotes.split(',').map(s => s.trim()).filter(Boolean),
+        };
+        data.append('healthInfo', JSON.stringify(healthInfoPayload));
+
+        try {
+            const response = await axios.post('/api/register_student/', data, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+
+            alert(response.data.message || "Student registered successfully!");
+            onSave(response.data);
+
+        } catch (error) {
+            console.error('An error occurred while saving the student:', error);
+            let errorMessage = 'An error occurred. Please check the console.';
+            if (axios.isAxiosError(error) && error.response) {
+                const errorDetail = error.response.data?.detail || 'Unknown error';
+                errorMessage = `Failed to save student: ${JSON.stringify(errorDetail)}`;
+            }
+            alert(errorMessage);
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     return (
         <>
             {isWebcamOpen && (
-                <WebcamCaptureModal
-                    onCapture={handleWebcamCapture}
-                    onClose={() => setIsWebcamOpen(false)}
-                />
+                <WebcamCaptureModal onCapture={handleWebcamCapture} onClose={() => setIsWebcamOpen(false)} />
             )}
             <div className="min-h-screen bg-gray-50 p-4 md:p-8">
                 <div className="max-w-4xl mx-auto space-y-6">
@@ -393,10 +425,34 @@ export function StudentForm({ onSave, onCancel }: StudentFormProps) {
                     <Card className="overflow-hidden"><CardHeader className="bg-[#E8F0FE] border-b border-[#D2E3FC]"><CardTitle className="flex items-center gap-2 text-[#1967D2]"><User /> Personal Details</CardTitle></CardHeader>
                         <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div><MandatoryLabel htmlFor="name">Full Name</MandatoryLabel><Input id="name" name="name" value={formData.name} onChange={handleInputChange} disabled={isSaving} /></div>
-                            {/* UPDATED: Changed from student_id to roll_no */}
                             <div><MandatoryLabel htmlFor="roll_no">Roll Number</MandatoryLabel><Input id="roll_no" name="roll_no" value={formData.roll_no} onChange={handleInputChange} disabled={isSaving} /></div>
                             <div><MandatoryLabel htmlFor="student_class">Class & Section</MandatoryLabel><Input id="student_class" name="student_class" value={formData.student_class} placeholder="e.g., 8th Grade" onChange={handleInputChange} disabled={isSaving} /></div>
-                            <div><MandatoryLabel htmlFor="dob">Date of Birth</MandatoryLabel><Popover><PopoverTrigger asChild><Button variant={"outline"} className="w-full justify-start font-normal" disabled={isSaving}><Calendar className="mr-2 h-4 w-4" />{formData.dob ? format(formData.dob, "PPP") : <span>Pick a date</span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0"><CalendarComponent mode="single" selected={formData.dob} onSelect={(date) => date && setFormData(p => ({ ...p, dob: date }))} initialFocus /></PopoverContent></Popover></div>
+                            
+                            <div>
+                                <MandatoryLabel htmlFor="dob">Date of Birth</MandatoryLabel>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant={"outline"} className="w-full justify-start font-normal" disabled={isSaving}>
+                                            <Calendar className="mr-2 h-4 w-4" />{formData.dob ? format(formData.dob, "PPP") : <span>Pick a date</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0">
+                                        <CalendarComponent
+                                            mode="single"
+                                            selected={formData.dob}
+                                            onSelect={(date) => date && setFormData(p => ({ ...p, dob: date }))}
+                                            fromYear={fromYear}
+                                            toYear={currentYear}
+                                            defaultMonth={defaultMonth}
+                                            disabled={(date) => date > new Date()}
+                                            components={{
+                                                Caption: (props) => <CustomCaption {...props} fromYear={fromYear} toYear={currentYear} />,
+                                            }}
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+
                             <div><MandatoryLabel htmlFor="gender">Gender</MandatoryLabel><Select onValueChange={(v) => handleSelectChange('gender', v as any)} defaultValue={formData.gender} disabled={isSaving}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{['Male', 'Female', 'Other'].map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}</SelectContent></Select></div>
                             <div><Label>Blood Group</Label><Select onValueChange={(v) => handleSelectChange('blood_group', v)} defaultValue={formData.blood_group} disabled={isSaving}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(bg => <SelectItem key={bg} value={bg}>{bg}</SelectItem>)}</SelectContent></Select></div>
                             <div><Label htmlFor="mother_tongue">Mother Tongue</Label><Input id="mother_tongue" name="mother_tongue" value={formData.mother_tongue} onChange={handleInputChange} disabled={isSaving} /></div>
@@ -423,8 +479,8 @@ export function StudentForm({ onSave, onCancel }: StudentFormProps) {
                     <Card className="overflow-hidden"><CardHeader className="bg-[#FCE8E6] border-b border-[#FAD2CF]"><CardTitle className="flex items-center gap-2 text-[#C5221F]"><HeartPulse /> Emergency & Health</CardTitle></CardHeader>
                         <CardContent className="p-6 space-y-6">
                             <div><h4 className="font-semibold mb-2 text-gray-700">Emergency Contact</h4><div className="grid grid-cols-1 md:grid-cols-3 gap-4"><div><MandatoryLabel htmlFor="emergency_name">Name</MandatoryLabel><Input id="emergency_name" name="name" value={formData.emergencyContact.name} onChange={e => handleNestedInputChange('emergencyContact', e)} disabled={isSaving} /></div><div><MandatoryLabel htmlFor="emergency_phone">Phone</MandatoryLabel><Input id="emergency_phone" name="phone" type="tel" value={formData.emergencyContact.phone} onChange={e => handleNestedInputChange('emergencyContact', e)} disabled={isSaving} /></div><div><Label>Relation</Label><Input name="relation" value={formData.emergencyContact.relation} onChange={e => handleNestedInputChange('emergencyContact', e)} disabled={isSaving} /></div></div></div>
-                            <div><Label>Allergies (if any)</Label><Input name="allergies" value={formData.healthInfo.allergies} placeholder="e.g., Peanuts, Dust" onChange={e => handleNestedInputChange('healthInfo', e)} disabled={isSaving} /></div>
-                            <div><Label>Medical Notes</Label><Input name="medicalNotes" value={formData.healthInfo.medicalNotes} placeholder="e.g., Requires inhaler for asthma" onChange={e => handleNestedInputChange('healthInfo', e)} disabled={isSaving} /></div>
+                            <div><Label>Allergies (comma-separated)</Label><Input name="allergies" value={formData.healthInfo.allergies} placeholder="e.g., Peanuts, Dust" onChange={e => handleNestedInputChange('healthInfo', e)} disabled={isSaving} /></div>
+                            <div><Label>Medical Notes (comma-separated)</Label><Input name="medicalNotes" value={formData.healthInfo.medicalNotes} placeholder="e.g., Requires inhaler for asthma" onChange={e => handleNestedInputChange('healthInfo', e)} disabled={isSaving} /></div>
                         </CardContent>
                     </Card>
 
@@ -440,11 +496,7 @@ export function StudentForm({ onSave, onCancel }: StudentFormProps) {
                     <div className="flex justify-end gap-4">
                         <Button variant="outline" size="lg" onClick={onCancel} disabled={isSaving}>Cancel</Button>
                         <Button size="lg" onClick={handleSubmit} className="bg-[#4285F4] hover:bg-[#3367D6] text-white" disabled={isSaving}>
-                            {isSaving ? (
-                                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</>
-                            ) : (
-                                "Save Student"
-                            )}
+                            {isSaving ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</>) : ("Save Student")}
                         </Button>
                     </div>
                 </div>

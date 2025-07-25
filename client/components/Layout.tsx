@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+// MODIFIED: Imported Variants to fix the type error
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   Menu,
@@ -35,99 +36,36 @@ const navigation = [
   { name: "Checker", href: "/checker", icon: CheckSquare },
 ];
 
-// Animation variants
-const sidebarVariants = {
-  open: {
-    x: 0,
-    transition: {
-      type: "spring",
-      stiffness: 300,
-      damping: 30,
-    },
-  },
-  closed: {
-    x: 0, // Keep sidebar visible on desktop
-    transition: {
-      type: "spring",
-      stiffness: 300,
-      damping: 30,
-    },
-  },
-  closedMobile: {
-    x: "-100%",
-    transition: {
-      type: "spring",
-      stiffness: 300,
-      damping: 30,
-    },
-  },
+const sidebarVariants: Variants = {
+  open: { x: 0, transition: { type: "spring", stiffness: 300, damping: 30 } },
+  closed: { x: 0, transition: { type: "spring", stiffness: 300, damping: 30 } },
+  closedMobile: { x: "-100%", transition: { type: "spring", stiffness: 300, damping: 30 } },
 };
 
-const overlayVariants = {
-  open: {
-    opacity: 1,
-    transition: { duration: 0.3 },
-  },
-  closed: {
-    opacity: 0,
-    transition: { duration: 0.3 },
-  },
+const overlayVariants: Variants = {
+  open: { opacity: 1, transition: { duration: 0.3 } },
+  closed: { opacity: 0, transition: { duration: 0.3 } },
 };
 
-const navItemVariants = {
+const navItemVariants: Variants = {
   hidden: { opacity: 0, x: -20 },
   visible: (i: number) => ({
     opacity: 1,
     x: 0,
-    transition: {
-      delay: i * 0.1,
-      duration: 0.5,
-      ease: "easeOut",
-    },
+    transition: { delay: i * 0.1, duration: 0.5, ease: "easeOut" },
   }),
 };
 
-const assistantVariants = {
-  open: {
-    scale: 1,
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: "spring",
-      stiffness: 400,
-      damping: 25,
-    },
-  },
-  closed: {
-    scale: 0,
-    opacity: 0,
-    y: 20,
-    transition: {
-      duration: 0.2,
-    },
-  },
+const assistantVariants: Variants = {
+  open: { scale: 1, opacity: 1, y: 0, transition: { type: "spring", stiffness: 400, damping: 25 } },
+  closed: { scale: 0, opacity: 0, y: 20, transition: { duration: 0.2 } },
 };
 
-const pageTransitionVariants = {
-  initial: {
-    opacity: 0,
-    y: 20,
-  },
-  animate: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: "easeOut",
-    },
-  },
-  exit: {
-    opacity: 0,
-    y: -20,
-    transition: {
-      duration: 0.3,
-    },
-  },
+// FIX: Explicitly defined the type as Variants to resolve the error
+const pageTransitionVariants: Variants = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+  exit: { opacity: 0, y: -20, transition: { duration: 0.3 } },
 };
 
 export default function Layout({ children }: LayoutProps) {
@@ -145,24 +83,21 @@ export default function Layout({ children }: LayoutProps) {
   const [newMessage, setNewMessage] = useState("");
   const location = useLocation();
 
-  // Close sidebar on route change (mobile)
   useEffect(() => {
-    setSidebarOpen(false);
-  }, [location.pathname]);
+    if (isMobile) {
+      setSidebarOpen(false);
+    }
+  }, [location.pathname, isMobile]);
 
-  // Track mobile state and handle resize
   useEffect(() => {
     const handleResize = () => {
       const isMobileNow = window.innerWidth < 1024;
       setIsMobile(isMobileNow);
       if (!isMobileNow) {
-        setSidebarOpen(false); // Reset mobile sidebar state on desktop
+        setSidebarOpen(false);
       }
     };
-
-    // Set initial state
     handleResize();
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -184,7 +119,6 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <div className="min-h-screen flex">
-      {/* Mobile sidebar overlay */}
       <AnimatePresence>
         {sidebarOpen && (
           <motion.div
@@ -198,7 +132,6 @@ export default function Layout({ children }: LayoutProps) {
         )}
       </AnimatePresence>
 
-      {/* Sidebar */}
       <motion.aside
         initial={false}
         animate={isMobile ? (sidebarOpen ? "open" : "closedMobile") : "open"}
@@ -206,18 +139,16 @@ export default function Layout({ children }: LayoutProps) {
         className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-material-lg"
       >
         <div className="flex h-full flex-col">
-          {/* Logo */}
           <div className="flex h-16 shrink-0 items-center px-6 border-b border-material-gray-200">
             <img
-              src="@\aicharya.png"
+              src="../../aicharya.png"
               alt="AI-Charya Logo"
               className="h-10 w-10"
             />
             <span
               className="ml-3 text-xl font-semibold"
               style={{
-                background:
-                  "linear-gradient(45deg, #4285f4 0%, #fbbc05 50%, #34a853 100%)",
+                background: "linear-gradient(45deg, #4285f4 0%, #fbbc05 50%, #34a853 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
@@ -226,8 +157,6 @@ export default function Layout({ children }: LayoutProps) {
               AI-Charya
             </span>
           </div>
-
-          {/* Navigation */}
           <nav className="flex-1 px-6 py-6 overflow-y-auto">
             <ul className="space-y-1">
               {navigation.map((item, index) => {
@@ -246,20 +175,17 @@ export default function Layout({ children }: LayoutProps) {
                         "group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-sm",
                         isActive
                           ? "bg-material-blue text-white shadow-material"
-                          : "text-material-gray-700 hover:bg-material-gray-100 hover:text-material-gray-900",
+                          : "text-material-gray-700 hover:bg-material-gray-100 hover:text-material-gray-900"
                       )}
                       onClick={() => setSidebarOpen(false)}
                     >
-                      <motion.div
-                        whileHover={{ rotate: 360 }}
-                        transition={{ duration: 0.6 }}
-                      >
+                      <motion.div whileHover={{ rotate: 360 }} transition={{ duration: 0.6 }}>
                         <item.icon
                           className={cn(
                             "mr-3 h-5 w-5 shrink-0",
                             isActive
                               ? "text-white"
-                              : "text-material-gray-500 group-hover:text-material-gray-900",
+                              : "text-material-gray-500 group-hover:text-material-gray-900"
                           )}
                         />
                       </motion.div>
@@ -270,8 +196,6 @@ export default function Layout({ children }: LayoutProps) {
               })}
             </ul>
           </nav>
-
-          {/* Sidebar Footer - User Info */}
           <div className="shrink-0 border-t border-material-gray-200 p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center min-w-0 flex-1">
@@ -311,12 +235,9 @@ export default function Layout({ children }: LayoutProps) {
         </div>
       </motion.aside>
 
-      {/* Main content area */}
       <div className="flex-1 flex flex-col min-h-screen lg:ml-64">
-        {/* Mobile header */}
         <header className="lg:hidden sticky top-0 z-30 bg-white shadow-material border-b border-material-gray-200">
           <div className="flex h-16 items-center justify-between px-4">
-            {/* Mobile menu button */}
             <button
               type="button"
               className="material-button-secondary p-2"
@@ -325,16 +246,11 @@ export default function Layout({ children }: LayoutProps) {
               <Menu className="h-5 w-5" />
               <span className="sr-only">Open sidebar</span>
             </button>
-
-            {/* Mobile page title */}
             <div className="flex-1 text-center">
               <h1 className="text-lg font-semibold text-material-gray-900">
-                {navigation.find((item) => item.href === location.pathname)
-                  ?.name || "Educational Platform"}
+                {navigation.find((item) => item.href === location.pathname)?.name || "Educational Platform"}
               </h1>
             </div>
-
-            {/* Mobile user menu */}
             {user?.picture ? (
               <img
                 src={user.picture}
@@ -351,25 +267,24 @@ export default function Layout({ children }: LayoutProps) {
           </div>
         </header>
 
-        {/* Page content */}
         <main className="flex-1 bg-material-gray-50">
-          <motion.div
-            key={location.pathname}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            variants={pageTransitionVariants}
-            className="h-full"
-          >
-            {children}
-          </motion.div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={pageTransitionVariants}
+              className="h-full"
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
         </main>
 
-        {/* Footer */}
         <Footer />
       </div>
 
-      {/* Global Floating AI Assistant Button */}
       <motion.div
         className="fixed bottom-6 right-6 z-50"
         whileHover={{ scale: 1.1 }}
@@ -382,7 +297,7 @@ export default function Layout({ children }: LayoutProps) {
           transition={{ duration: 0.3 }}
         >
           <motion.img
-            src="@/public/aicharya.png"
+            src="../../aicharya.png"
             alt="AI Assistant"
             className="w-12 h-12 rounded-full"
             animate={{ rotate: isAssistantOpen ? 180 : 0 }}
@@ -391,7 +306,6 @@ export default function Layout({ children }: LayoutProps) {
         </motion.button>
       </motion.div>
 
-      {/* Global Floating AI Assistant Chat */}
       <AnimatePresence>
         {isAssistantOpen && (
           <motion.div
@@ -430,7 +344,6 @@ export default function Layout({ children }: LayoutProps) {
                 <X className="h-4 w-4" />
               </Button>
             </div>
-
             <div className="flex flex-col h-80">
               <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 {chatMessages.map((message, index) => (
@@ -438,7 +351,7 @@ export default function Layout({ children }: LayoutProps) {
                     key={index}
                     className={cn(
                       "flex transition-all duration-300 ease-in-out",
-                      message.type === "user" ? "justify-end" : "justify-start",
+                      message.type === "user" ? "justify-end" : "justify-start"
                     )}
                     style={{
                       animationDelay: `${index * 100}ms`,
@@ -449,7 +362,7 @@ export default function Layout({ children }: LayoutProps) {
                         "max-w-[80%] p-3 rounded-lg shadow-sm",
                         message.type === "user"
                           ? "bg-material-blue text-white"
-                          : "bg-gradient-to-r from-material-blue-50 to-material-green-50 text-material-gray-900 border border-material-gray-200",
+                          : "bg-gradient-to-r from-material-blue-50 to-material-green-50 text-material-gray-900 border border-material-gray-200"
                       )}
                     >
                       <div className="flex items-start gap-2">
@@ -469,7 +382,6 @@ export default function Layout({ children }: LayoutProps) {
                   </div>
                 ))}
               </div>
-
               <div className="border-t border-material-gray-200 p-4 bg-material-gray-50 rounded-b-lg">
                 <div className="flex gap-2">
                   <Input
