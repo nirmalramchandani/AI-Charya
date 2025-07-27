@@ -22,23 +22,33 @@ interface Chapter {
   ppt_link: string;
   guideline: string;
   homework: Homework[];
-  // Adding computed properties for existing functionality
   id?: string;
   title?: string;
   hasPlate?: boolean;
 }
 
-// Class and subject options
 const classes = [
   "Class 1", "Class 2", "Class 3", "Class 4", "Class 5",
   "Class 6", "Class 7", "Class 8", "Class 9", "Class 10",
 ];
 const subjects = ["marathi", "English", "Mathematics", "Science", "EVS"];
 
-const lecturePlateLinks: Record<string, string> = {
-  1: "https://yourbackend.com/lecture-plate/1",
-  2: "https://yourbackend.com/lecture-plate/2",
-  3: "https://yourbackend.com/lecture-plate/3",
+// Helper function to check if PPT link is valid
+const isPptLinkValid = (pptLink: any): boolean => {
+  if (!pptLink) return false;
+  
+  const linkStr = String(pptLink).trim().toLowerCase();
+  
+  if (linkStr === "" || 
+      linkStr === "null" || 
+      linkStr === "undefined" || 
+      linkStr === "none" ||
+      linkStr === "0" ||
+      linkStr === "false") {
+    return false;
+  }
+  
+  return true;
 };
 
 export default function ClassMaterial() {
@@ -50,11 +60,8 @@ export default function ClassMaterial() {
   const [isLoading, setIsLoading] = useState({ chapters: false });
   const [error, setError] = useState<string | null>(null);
   const [creatingPlateFor, setCreatingPlateFor] = useState<string | null>(null);
-
-  // For inline expand of single chapter card
   const [viewingChapterId, setViewingChapterId] = useState<string | null>(null);
 
-  // This handles the backend fetch using class_name and subject as GET params
   const handleFetchSyllabus = useCallback(async () => {
     if (!selectedClass || !selectedSubject) {
       alert("Please select both a class and a subject.");
@@ -67,12 +74,11 @@ export default function ClassMaterial() {
 
     try {
       const classNumber = selectedClass.split(" ")[1] || selectedClass;
-      const url = `https://6f44963c85a7.ngrok-free.app/fetch_chapters/?class_name=${classNumber}&subject=${selectedSubject}`;
+      const url = `https://c29242dde8a3.ngrok-free.app/fetch_chapters/?class_name=${classNumber}&subject=${selectedSubject}`;
 
       const response = await fetch(url, {
         method: 'GET',
         headers: {
-          // This header bypasses ngrok's browser warning page
           'ngrok-skip-browser-warning': 'true',
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -84,7 +90,6 @@ export default function ClassMaterial() {
         throw new Error(`HTTP error! Status: ${response.status}. Response: ${errorText.substring(0, 200)}...`);
       }
 
-      // Check if the response is actually JSON
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const responseText = await response.text();
@@ -97,13 +102,26 @@ export default function ClassMaterial() {
         throw new Error("Invalid server format: not an array");
       }
 
-      // Transform the fetched data to match existing component expectations
-      const transformedChapters = data.map((chapter) => ({
-        ...chapter,
-        id: chapter.number,
-        title: `Chapter ${chapter.number}`,
-        hasPlate: chapter.ppt_link && chapter.ppt_link !== "", // Check if pdf_link exists and is not empty
-      }));
+      const transformedChapters = data.map((chapter) => {
+        // Check all possible field names
+        const validLink = chapter.ppt_link || 
+                         (chapter as any).pptLink || 
+                         (chapter as any).pdf_link || 
+                         (chapter as any).pdfLink || 
+                         (chapter as any).link || 
+                         (chapter as any).url || 
+                         (chapter as any).file_link || 
+                         (chapter as any).fileLink || 
+                         "";
+        
+        return {
+          ...chapter,
+          id: chapter.number,
+          title: `Chapter ${chapter.number}`,
+          ppt_link: validLink,
+          hasPlate: isPptLinkValid(validLink),
+        };
+      });
 
       setChapters(transformedChapters);
     } catch (err: any) {
@@ -114,13 +132,12 @@ export default function ClassMaterial() {
     }
   }, [selectedClass, selectedSubject]);
 
-  // --- Actions ---
   const handleCreateLecturePlate = async (chapter: Chapter) => {
     const classNumber = selectedClass.split(" ")[1] || selectedClass;
     setCreatingPlateFor(chapter.id || "");
     
     try {
-      const url = `https://6f44963c85a7.ngrok-free.app/create_lecture_plate/?std=${classNumber}&subject=${selectedSubject}&chapter_no=${chapter.number}`;
+      const url = `https://c29242dde8a3.ngrok-free.app/create_lecture_plate/?std=${classNumber}&subject=${selectedSubject}&chapter_no=${chapter.number}`;
       
       const response = await fetch(url, {
         method: 'GET',
@@ -144,14 +161,22 @@ export default function ClassMaterial() {
 
       const responseData = await response.json();
       
-      // Update the specific chapter with the new PDF link
+      const newPptLink = responseData.ppt_link || 
+                        responseData.pptLink || 
+                        responseData.pdf_link || 
+                        responseData.pdfLink || 
+                        responseData.link || 
+                        responseData.url || 
+                        responseData.file_link || 
+                        responseData.fileLink || "";
+      
       setChapters(prevChapters => 
         prevChapters.map(ch => 
           ch.id === chapter.id 
             ? { 
                 ...ch, 
-                ppt_link: responseData.ppt_link || responseData.link || responseData.url || "",
-                hasPlate: true 
+                ppt_link: newPptLink,
+                hasPlate: isPptLinkValid(newPptLink)
               }
             : ch
         )
@@ -166,6 +191,13 @@ export default function ClassMaterial() {
   };
   
   const handleViewPlate = (chapter: Chapter) => {
+    const hasValidLink = isPptLinkValid(chapter.ppt_link);
+    
+    if (!hasValidLink) {
+      alert("No PPT link available for this chapter. Please create a lecture plate first.");
+      return;
+    }
+    
     setViewingChapterId((id) => (id === chapter.id ? null : chapter.id));
   };
   
@@ -311,32 +343,54 @@ export default function ClassMaterial() {
           
           {/* Chapters List */}
           <div className="space-y-6">
-            {chapters.map((chapter) => (
-              <Card
-                key={chapter.id}
-                className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all"
-              >
-                <CardContent className="p-6">
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-                    {/* Chapter info */}
-                    <div className="lg:col-span-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-bold">
-                          {chapter.number}
-                        </div>
-                        <div>
-                          <h3 className="text-lg font-semibold text-gray-900">
-                            {chapter.title}
-                          </h3>
-                          <p className="text-gray-600 mb-2">{chapter.name}</p>
+            {chapters.map((chapter) => {
+              const hasValidLink = isPptLinkValid(chapter.ppt_link);
+              
+              return (
+                <Card
+                  key={chapter.id}
+                  className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all"
+                >
+                  <CardContent className="p-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                      {/* Chapter info */}
+                      <div className="lg:col-span-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-bold">
+                            {chapter.number}
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-semibold text-gray-900">
+                              {chapter.title}
+                            </h3>
+                            <p className="text-gray-600 mb-2">{chapter.name}</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    
-                    {/* Create or View Plate Button */}
-                    <div className="lg:col-span-3">
-                      <div className="space-y-2">
-                        {chapter.hasPlate ? (
+                      
+                      {/* Both Buttons Section - View button never disabled */}
+                      <div className="lg:col-span-3">
+                        <div className="space-y-2">
+                          {/* Create Lecture Plate Button */}
+                          <Button
+                            onClick={() => handleCreateLecturePlate(chapter)}
+                            disabled={creatingPlateFor === chapter.id}
+                            className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold disabled:bg-blue-400 disabled:cursor-not-allowed min-h-[40px]"
+                          >
+                            {creatingPlateFor === chapter.id ? (
+                              <div className="flex items-center justify-center space-x-2">
+                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                                <span>Creating...</span>
+                              </div>
+                            ) : (
+                              <>
+                                <BookOpen className="h-4 w-4 mr-2" />
+                                Create Lecture Plate
+                              </>
+                            )}
+                          </Button>
+                          
+                          {/* View Button - Always enabled, never blocked */}
                           <Button
                             onClick={() => handleViewPlate(chapter)}
                             className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-xl font-semibold"
@@ -344,116 +398,90 @@ export default function ClassMaterial() {
                             <BookOpen className="h-4 w-4 mr-2" />
                             {viewingChapterId === chapter.id ? "Hide" : "View"}
                           </Button>
-                        ) : (
-                          <>
-                            <Button
-                              onClick={() => handleCreateLecturePlate(chapter)}
-                              disabled={creatingPlateFor === chapter.id}
-                              className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold disabled:bg-blue-400 disabled:cursor-not-allowed min-h-[40px]"
-                            >
-                              {creatingPlateFor === chapter.id ? (
-                                <div className="flex items-center justify-center space-x-2">
-                                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                                  <span>Creating...</span>
-                                </div>
-                              ) : (
-                                <>
-                                  <BookOpen className="h-4 w-4 mr-2" />
-                                  Create Lecture Plate
-                                </>
-                              )}
-                            </Button>
-                            {creatingPlateFor !== chapter.id && (
-                              <div className="flex items-center justify-center">
-                                <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-medium">
-                                  Plate Not Created
-                                </span>
-                              </div>
-                            )}
-                          </>
-                        )}
+                        </div>
+                      </div>
+                      
+                      {/* Other Action Buttons */}
+                      <div className="lg:col-span-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                          <Button
+                            onClick={() => handleTakeTest(chapter)}
+                            className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium h-12"
+                          >
+                            Take Test
+                          </Button>
+                          <Button
+                            onClick={() => handleSeeResult(chapter)}
+                            className="bg-green-500 hover:bg-green-600 text-white rounded-xl font-medium h-12"
+                          >
+                            View Result
+                          </Button>
+                          <Button
+                            onClick={() => handleCheckExercise(chapter)}
+                            className="bg-purple-500 hover:bg-purple-600 text-white rounded-xl font-medium h-12"
+                          >
+                            Check Exercise
+                          </Button>
+                          <Button
+                            onClick={() => handleUploadHomework(chapter)}
+                            className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-medium h-12"
+                          >
+                            Upload HW
+                          </Button>
+                        </div>
                       </div>
                     </div>
                     
-                    {/* Other Action Buttons */}
-                    <div className="lg:col-span-6">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                        <Button
-                          onClick={() => handleTakeTest(chapter)}
-                          className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium h-12"
-                        >
-                          Take Test
-                        </Button>
-                        <Button
-                          onClick={() => handleSeeResult(chapter)}
-                          className="bg-green-500 hover:bg-green-600 text-white rounded-xl font-medium h-12"
-                        >
-                          View Result
-                        </Button>
-                        <Button
-                          onClick={() => handleCheckExercise(chapter)}
-                          className="bg-purple-500 hover:bg-purple-600 text-white rounded-xl font-medium h-12"
-                        >
-                          Check Exercise
-                        </Button>
-                        <Button
-                          onClick={() => handleUploadHomework(chapter)}
-                          className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-medium h-12"
-                        >
-                          Upload HW
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Inline expand details */}
-                  {viewingChapterId === chapter.id && (
-                    <div className="mt-6 rounded-xl border border-blue-100 bg-blue-50/50 px-6 py-5 space-y-5 shadow-inner">
-                      <div>
-                        <strong className="block text-blue-700 mb-1">Guidelines</strong>
-                        <span className="text-gray-700">
-                          {chapter.guideline || "No guidelines available."}
-                        </span>
-                      </div>
-                      
-                      <div className="flex flex-row items-center justify-between">
+                    {/* Inline expand details */}
+                    {viewingChapterId === chapter.id && (
+                      <div className="mt-6 rounded-xl border border-blue-100 bg-blue-50/50 px-6 py-5 space-y-5 shadow-inner">
                         <div>
-                          <strong className="block text-yellow-700 mb-1">PDF Material</strong>
+                          <strong className="block text-blue-700 mb-1">Guidelines</strong>
                           <span className="text-gray-700">
-                            {chapter.ppt_link ? "Available" : "Not available"}
+                            {chapter.guideline || "No guidelines available."}
                           </span>
                         </div>
-                        <Button
-                          disabled={!chapter.ppt_link}
-                          onClick={() => window.open(chapter.ppt_link, "_blank", "noopener noreferrer")}
-                          className="flex gap-2 ml-5 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-extrabold disabled:bg-gray-400"
-                        >
-                          Open PDF
-                        </Button>
-                      </div>
-                      
-                      <div>
-                        <strong className="block text-green-700 mb-1">Homework</strong>
-                        {chapter.homework && chapter.homework.length > 0 ? (
-                          <div className="space-y-3 mt-2">
-                            {chapter.homework.map((hw, index) => (
-                              <div key={index} className="bg-white p-3 rounded-lg border border-green-200">
-                                <p className="text-sm font-medium text-green-800 mb-1">Question {index + 1}:</p>
-                                <p className="text-gray-700 mb-2">{hw.question}</p>
-                                <p className="text-sm font-medium text-green-800 mb-1">Answer:</p>
-                                <p className="text-gray-600">{hw.answer}</p>
-                              </div>
-                            ))}
+                        
+                        <div className="flex flex-row items-center justify-between">
+                          <div>
+                            <strong className="block text-yellow-700 mb-1">PDF Material</strong>
+                            <span className="text-gray-700">
+                              {hasValidLink ? "Available" : "Not available"}
+                            </span>
                           </div>
-                        ) : (
-                          <span className="text-gray-700">No homework available.</span>
-                        )}
+                          {/* Open PDF button - only disabled if no link */}
+                          <Button
+                            disabled={!hasValidLink}
+                            onClick={() => hasValidLink ? window.open(chapter.ppt_link, "_blank", "noopener noreferrer") : alert("No PDF link available")}
+                            className="flex gap-2 ml-5 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-extrabold disabled:bg-gray-400"
+                          >
+                            Open PDF
+                          </Button>
+                        </div>
+                        
+                        <div>
+                          <strong className="block text-green-700 mb-1">Homework</strong>
+                          {chapter.homework && chapter.homework.length > 0 ? (
+                            <div className="space-y-3 mt-2">
+                              {chapter.homework.map((hw, index) => (
+                                <div key={index} className="bg-white p-3 rounded-lg border border-green-200">
+                                  <p className="text-sm font-medium text-green-800 mb-1">Question {index + 1}:</p>
+                                  <p className="text-gray-700 mb-2">{hw.question}</p>
+                                  <p className="text-sm font-medium text-green-800 mb-1">Answer:</p>
+                                  <p className="text-gray-600">{hw.answer}</p>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-gray-700">No homework available.</span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </div>

@@ -6,7 +6,7 @@ import { User, Send, X, Mic, MicOff, Loader, Pause, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Put your backend API URL here:
-const API_URL = "https://c226b90d503f.ngrok-free.app/general_chatbot/";
+const API_URL = "https://c29242dde8a3.ngrok-free.app/general_chatbot/";
 
 type ChatMessage = {
   type: "user" | "assistant";
