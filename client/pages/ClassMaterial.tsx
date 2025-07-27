@@ -67,7 +67,7 @@ export default function ClassMaterial() {
 
     try {
       const classNumber = selectedClass.split(" ")[1] || selectedClass;
-      const url = `https://c226b90d503f.ngrok-free.app/fetch_chapters/?class_name=${classNumber}&subject=${selectedSubject}`;
+      const url = `https://6f44963c85a7.ngrok-free.app/fetch_chapters/?class_name=${classNumber}&subject=${selectedSubject}`;
 
       const response = await fetch(url, {
         method: 'GET',
