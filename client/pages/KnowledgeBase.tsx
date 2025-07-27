@@ -53,7 +53,7 @@ const KnowledgeBaseUploadApp = () => {
       }
 
       // If connection test passes, proceed with file upload
-      const API_URL = 'https://c29242dde8a3.ngrok-free.app/upload_chapter_pdf/';
+      const API_URL = 'https://e23423032121.ngrok-free.app/upload_chapter_pdf/';
       
       const formData = new FormData();
       formData.append('file', selectedFile, selectedFile.name);
