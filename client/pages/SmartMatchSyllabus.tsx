@@ -2,7 +2,7 @@ import { useState } from "react";
 import { BookOpen, Target, ArrowRight, CheckCircle2, AlertCircle, Copy } from "lucide-react";
 
 // You can change this to your tunnel/server/proxy as needed
-const BASE_URL = "https://c226b90d503f.ngrok-free.app";
+const BASE_URL = "https://6f44963c85a7.ngrok-free.app";
 
 interface BackendResponse {
   sr: number;

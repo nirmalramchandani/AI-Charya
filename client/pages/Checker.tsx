@@ -137,7 +137,7 @@ export default function CheckerDashboard() {
 
       try {
         // The API endpoint for recognition
-        const response = await axios.post("https://c226b90d503f.ngrok-free.app/recognize_student/", formData);
+        const response = await axios.post("https://6f44963c85a7.ngrok-free.app/recognize_student/", formData);
 
         // Check if the backend returned student data
         if (response.data && response.data.name && response.data.roll_no) {
