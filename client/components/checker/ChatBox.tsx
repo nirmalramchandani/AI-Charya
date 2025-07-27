@@ -1,5 +1,5 @@
 // src/components/checker/ChatBox.tsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Send } from 'lucide-react';
 
 const WEBSOCKET_URL = import.meta.env.VITE_WEBSOCKET_URL;
@@ -12,9 +12,20 @@ interface Message {
   text: string;
 }
 
+interface SessionDetails {
+  subject?: string;
+  chapter?: string;
+  name?: string;
+  roll?: string;
+  mode?: string;
+  totalScored?: number | null;
+  grade?: string;
+}
+
 interface ChatBotProps {
   isActive: boolean;
   initialMessages?: Message[];
+  sessionDetails :SessionDetails;
 }
 
 const TypingIndicator = () => (
@@ -32,6 +43,7 @@ const TypingIndicator = () => (
 const ChatBot: React.FC<ChatBotProps> = ({
   isActive,
   initialMessages = [],
+  sessionDetails,
 }) => {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [inputValue, setInputValue] = useState('');
@@ -98,12 +110,20 @@ const ChatBot: React.FC<ChatBotProps> = ({
     console.log('🔊 Playing audio chunk');
   };
 
+  const dynamicURL = useMemo(() => {
+  if (!sessionDetails?.roll || !sessionDetails?.grade || !sessionDetails?.subject || !sessionDetails?.chapter) {
+    return null;
+  }
+  return `${WEBSOCKET_URL}/${encodeURIComponent(sessionDetails.roll)}/${encodeURIComponent(sessionDetails.grade)}/${encodeURIComponent(sessionDetails.subject)}/${encodeURIComponent(sessionDetails.chapter)}`;
+}, [sessionDetails]);
+
+
   // WebSocket setup with audio handling
   useEffect(() => {
-    if (!isActive) return;
+    if (!isActive || !dynamicURL) return;
 
-    ws.current = new WebSocket(WEBSOCKET_URL);
-    console.log(`🔌 ChatBot connecting to ${WEBSOCKET_URL}`);
+    ws.current = new WebSocket(dynamicURL);
+    console.log(`🔌 ChatBot connecting to ${dynamicURL}`);
 
     ws.current.onopen = () => {
       console.log('✅ ChatBot WebSocket open');
@@ -161,7 +181,7 @@ const ChatBot: React.FC<ChatBotProps> = ({
     };
 
     return () => ws.current?.close();
-  }, [isActive]);
+  }, [isActive, dynamicURL]);
 
   const sendText = () => {
     if (!inputValue.trim()) return;

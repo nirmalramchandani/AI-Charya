@@ -374,7 +374,7 @@ export function StudentForm({ onSave, onCancel }: StudentFormProps) {
         data.append('healthInfo', JSON.stringify(healthInfoPayload));
 
         try {
-            const response = await axios.post('/api/register_student/', data, {
+            const response = await axios.post('https://c226b90d503f.ngrok-free.app/register_student/', data, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
 

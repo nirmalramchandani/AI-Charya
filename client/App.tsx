@@ -117,6 +117,7 @@ const App = () => (
                         element={<SmartMatchSyllabus />}
                       />
                       <Route path="/dashboard" element={<TeacherDashboard />} />
+                      <Route path="/lecture-plate/:chapter_no" element={<LecturePlateGenerator />} />
                       <Route path="/reports" element={<ReportsAnalytics />} />
                       <Route
                         path="/class-material"

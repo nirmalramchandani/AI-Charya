@@ -195,11 +195,37 @@ export default function Index() {
             </motion.div>
             <motion.h1
               variants={itemVariants}
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-material-gray-900 mb-6"
+              className="text-2xl sm:text-3xl lg:text-4xl font-bold text-material-gray-900 mb-6"
             >
               Welcome to
               <motion.span
                 className="block"
+                style={{
+                  background:
+                    "linear-gradient(45deg, #4285f4 100%, #fbbc05 50%, #34a853 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}
+                animate={{
+                  backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                ADROIT's
+              </motion.span>
+              
+            </motion.h1>
+            <motion.h1
+              variants={itemVariants}
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-material-gray-900 mb-6"
+            >
+                          <motion.span
+                className="block "
                 style={{
                   background:
                     "linear-gradient(45deg, #4285f4 0%, #fbbc05 50%, #34a853 100%)",
@@ -218,7 +244,9 @@ export default function Index() {
               >
                 AI-Charya
               </motion.span>
+              
             </motion.h1>
+
             <motion.p
               variants={itemVariants}
               className="text-xl text-material-gray-700 mb-4 max-w-3xl mx-auto font-medium"

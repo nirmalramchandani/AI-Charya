@@ -21,7 +21,7 @@ export default defineConfig({
     proxy: {
       // Forwards HTTP requests to your Python backend
       '/api': {
-        target: 'https://80fb03756847.ngrok-free.app', // Your Python backend's address
+        target: 'https://c226b90d503f.ngrok-free.app', // Your Python backend's address
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },

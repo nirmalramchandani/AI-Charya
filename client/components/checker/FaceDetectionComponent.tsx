@@ -38,6 +38,8 @@ export default function FaceDetectionComponent({ onCapture, onReset }: { onCaptu
   const [isAnimationActive, setIsAnimationActive] = useState(false);
   const [isLoadingModel, setIsLoadingModel] = useState(true);
 
+  // Temporarily commented out crop functionality
+  /*
   const cropFace = (imageElement: HTMLCanvasElement | HTMLImageElement, boundingBox: any) => {
     const cropCanvas = document.createElement("canvas");
     const cropCtx = cropCanvas.getContext("2d");
@@ -52,9 +54,28 @@ export default function FaceDetectionComponent({ onCapture, onReset }: { onCaptu
     cropCanvas.width = cropWidth;
     cropCanvas.height = cropHeight;
 
+    // Simply draw the cropped region without any flipping
     cropCtx.drawImage(imageElement, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+    
     const croppedImageSrc = cropCanvas.toDataURL("image/png");
     onCapture(croppedImageSrc);
+  };
+  */
+
+  // New function to send the original full image
+  const captureOriginalImage = (imageElement: HTMLCanvasElement | HTMLImageElement) => {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    canvas.width = imageElement.width;
+    canvas.height = imageElement.height;
+
+    // Draw the original image without cropping
+    ctx.drawImage(imageElement, 0, 0, canvas.width, canvas.height);
+    
+    const originalImageSrc = canvas.toDataURL("image/png");
+    onCapture(originalImageSrc);
   };
 
   const onResults = useCallback((results: any) => {
@@ -68,6 +89,7 @@ export default function FaceDetectionComponent({ onCapture, onReset }: { onCaptu
     if (!ctx) return;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Draw the image normally (not mirrored)
     ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
 
     let bothEyesInZone = false;
@@ -87,8 +109,10 @@ export default function FaceDetectionComponent({ onCapture, onReset }: { onCaptu
             isCapturingRef.current = true;
             setIsAnimationActive(true);
             captureTimeoutId.current = setTimeout(() => {
-              cropFace(results.image, detection.boundingBox);
-            }, 5000);
+              // Send original image instead of cropped
+              captureOriginalImage(results.image);
+              // cropFace(results.image, detection.boundingBox); // Commented out
+            }, 2000);
           }
         }
       }

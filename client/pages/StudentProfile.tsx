@@ -1,25 +1,24 @@
-import { useState, useMemo } from "react";
-import { Button } from "@/components/ui/button";
+import { useState, useMemo, useEffect } from "react";
+import { Button } from "../components/ui/button";
 import { UserPlus } from "lucide-react";
 
 // Import the TypeScript types
-import { Student, Subject, Academic } from "@/types/student"; 
+import { Student, Subject, Academic } from "../types/student"; 
 
 // Import your page components from their respective files
-import { StudentForm } from "@/components/student/StudentForm";
-import { ProfileInfoCard } from "@/components/student/ProfileInfoCard";
-import AcademicOverviewCard from "@/components/student/AcademicOverviewCard";
-import PerformanceChartsCard from "@/components/student/PerformanceChartsCard";
-import { SummaryCard } from "@/components/student/SummaryCard";
-import { ActivitiesCard } from "@/components/student/ActivitiesCard";
-import { LearningAssessmentCard } from "@/components/student/LearningAssessmentCard";
-
+import { StudentForm } from "../components/student/StudentForm";
+import { ProfileInfoCard } from "../components/student/ProfileInfoCard";
+import AcademicOverviewCard from "../components/student/AcademicOverviewCard";
+import PerformanceChartsCard from "../components/student/PerformanceChartsCard";
+import { SummaryCard } from "../components/student/SummaryCard";
+import { ActivitiesCard } from "../components/student/ActivitiesCard";
+import { LearningAssessmentCard } from "../components/student/LearningAssessmentCard";
+import axios from "axios";
 
 // --- Dummy Data ---
-// This data is now included directly in the page component file.
 const initialStudents: Student[] = [
     {
-        student_id: 'S12345',
+        roll_no: 'S12345',
         name: 'Rahul Sharma',
         profilePhoto: 'https://i.pravatar.cc/150?img=1',
         age: 14,
@@ -27,9 +26,8 @@ const initialStudents: Student[] = [
         gender: 'Male',
         student_class: '8th Grade',
         blood_group: 'B+',
-        address: { street: '123 MG Road', city: 'Pune', state: 'Maharashtra', zip: '411001' },
+        address: '123 MG Road, Pune, Maharashtra, 411001',
         aadhar_number: '1234 5678 9012',
-        preferred_mode: 'Online',
         preferred_language: 'English',
         mother_tongue: 'Marathi',
         fatherDetails: { name: 'Rajesh Sharma', phone: '9123456789', occupation: 'Engineer' },
@@ -61,48 +59,35 @@ const initialStudents: Student[] = [
                 }
             ]
         }
-    },
-    {
-        student_id: 'S12346',
-        name: 'Priya Patel',
-        profilePhoto: 'https://i.pravatar.cc/150?img=2',
-        age: 15,
-        dob: '2007-02-15',
-        gender: 'Female',
-        student_class: '9th Grade',
-        blood_group: 'O+',
-        address: { street: '456 Park Avenue', city: 'Mumbai', state: 'Maharashtra', zip: '400001' },
-        aadhar_number: '9876 5432 1098',
-        preferred_mode: 'Offline',
-        preferred_language: 'Gujarati',
-        mother_tongue: 'Gujarati',
-        fatherDetails: { name: 'Suresh Patel', phone: '9988776655', occupation: 'Businessman' },
-        motherDetails: { name: 'Mina Patel', phone: '9911223344', occupation: 'Homemaker' },
-        emergencyContact: { name: 'Suresh Patel', phone: '9988776655', relation: 'Father' },
-        healthInfo: { allergies: 'Dust', medicalNotes: 'None' },
-        hobbies: ['Dancing', 'Painting'],
-        academic_achievements: 'State level dance competition winner. Excels in creative writing.',
-        academic: {
-            subjects: [
-                {
-                    name: 'English',
-                    chapters: [
-                        { name: 'Poetry', homework_score: 9, test_score: 9, chapter_exercise_score: 9, remarks: 'Excellent creative writing.' },
-                        { name: 'Grammar', homework_score: 8, test_score: 8, chapter_exercise_score: 8, remarks: 'Very good.' }
-                    ]
-                },
-                {
-                    name: 'Social Studies',
-                    chapters: [
-                        { name: 'Civics', homework_score: 7, test_score: 8, chapter_exercise_score: 7, remarks: 'Good participation in class discussions.' }
-                    ]
-                }
-            ]
-        }
     }
 ];
 
-// Helper function to calculate subject metrics - needed for LearningAssessmentCard
+// Helper function to transform API data to match your component structure
+const transformApiDataToStudent = (apiData: any): Student => {
+    return {
+        roll_no: apiData.roll_no || '',
+        name: apiData.name || '',
+        profilePhoto: apiData.profilePhoto || `https://api.dicebear.com/8.x/initials/svg?seed=${apiData.name}`,
+        age: apiData.age || 0,
+        dob: apiData.dob || '',
+        gender: apiData.gender || '',
+        student_class: apiData.student_class || '',
+        blood_group: apiData.blood_group || '',
+        address: apiData.address || '',
+        aadhar_number: apiData.aadhar_number || '',
+        preferred_language: apiData.preferred_language || '',
+        mother_tongue: apiData.mother_tongue || '',
+        fatherDetails: apiData.fatherDetails || { name: '', phone: '', occupation: '' },
+        motherDetails: apiData.motherDetails || { name: '', phone: '', occupation: '' },
+        emergencyContact: apiData.emergencyContact || { name: '', phone: '', relation: '' },
+        healthInfo: apiData.healthInfo || { allergies: '', medicalNotes: '' },
+        hobbies: apiData.hobbies || [],
+        academic_achievements: apiData.academic_achievements || '',
+        academic: apiData.academic || { subjects: [] }
+    };
+};
+
+// Helper function to calculate subject metrics
 const calculateSubjectMetrics = (subject: Subject) => {
   if (!subject.chapters || subject.chapters.length === 0) {
     return { averageScore: 0, strength: 'Weak' as const };
@@ -123,31 +108,77 @@ const calculateSubjectMetrics = (subject: Subject) => {
   return { averageScore: averageScorePercentage, strength };
 };
 
-
 export default function StudentProfile() {
-  const [students, setStudents] = useState<Student[]>(initialStudents);
-  const [selectedStudent, setSelectedStudent] = useState<Student | undefined>(students[0]);
+  // Initialize with dummy data to prevent blank page
+  const [students, setStudents] = useState<Student[]>(initialStudents); 
+  const [selectedStudent, setSelectedStudent] = useState<Student | undefined>(initialStudents[0]);
   const [editMode, setEditMode] = useState(false);
   const [view, setView] = useState<'profile' | 'form'>('profile');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [apiResponse, setApiResponse] = useState<any>(null); // To store raw API response
 
+  const fetchStudents = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Make GET request using axios - Updated URL
+      const response = await axios.get('https://c226b90d503f.ngrok-free.app/students/', {
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+        }
+      });
+      
+      const data = response.data;
+      console.log('API Response:', data); // Display in console as requested
+      setApiResponse(data); // Store raw response
+      
+      // Transform the API data to match your component structure
+      const transformedStudents = Array.isArray(data) 
+        ? data.map(transformApiDataToStudent)
+        : [transformApiDataToStudent(data)];
+      
+      setStudents(transformedStudents);
+      if (transformedStudents.length > 0) {
+        setSelectedStudent(transformedStudents[0]);
+      }
+    } catch (err) {
+      const errorMessage = axios.isAxiosError(err) ? err.message : 'An unknown error occurred';
+      setError(errorMessage);
+      console.error("Failed to fetch students:", err);
+      // Keep the dummy data on error instead of setting empty array
+      console.log("Using fallback dummy data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // API call on component mount
+  useEffect(() => {
+    fetchStudents();
+  }, []);
+  
   const handleSaveStudent = (newStudentData: Student) => {
-    // The backend will generate the permanent ID.
-    // For local state management and React keys, we'll add a temporary, unique ID.
     const newStudentWithTempId = {
       ...newStudentData,
       student_id: `temp_${Date.now()}`, 
     };
     setStudents(prevStudents => [...prevStudents, newStudentWithTempId]);
-    setSelectedStudent(newStudentWithTempId); // Select the newly added student
+    setSelectedStudent(newStudentWithTempId);
     setView('profile');
   };
   
-  // Calculate learning level for the selected student to pass to LearningAssessmentCard
+  // Calculate learning level for the selected student
   const studentMetrics = useMemo((): { learningLevel: "Average" | "Advanced" | "Slow" } => {
-    if (!selectedStudent) return { learningLevel: 'Average' as const };
+    if (!selectedStudent || !selectedStudent.academic || !selectedStudent.academic.subjects) {
+      return { learningLevel: 'Average' as const };
+    }
     
     const subjects = selectedStudent.academic.subjects;
-    if (!subjects || subjects.length === 0) return { learningLevel: 'Average' as const };
+    if (subjects.length === 0) {
+      return { learningLevel: 'Average' as const };
+    }
     
     const subjectDetails = subjects.map(s => calculateSubjectMetrics(s));
     const totalAverage = subjectDetails.reduce((acc, s) => acc + s.averageScore, 0) / subjectDetails.length;
@@ -159,7 +190,6 @@ export default function StudentProfile() {
 
     return { learningLevel };
   }, [selectedStudent]);
-
 
   if (view === 'form') {
     return (
@@ -180,13 +210,13 @@ export default function StudentProfile() {
       </div>
 
       <div className="w-full bg-white shadow-sm border-b border-gray-200">
-        <div className="px-8 lg:px-12 py-6 flex flex-wrap justify-between items-center gap-4">
-          <div className="flex flex-wrap gap-3">
+        <div className="px-8 lg:px-12 py-6 flex flex-row justify-between items-center gap-4">
+          <div className="flex flex-wrap gap-3 overflow-clip ">
             {students.map((student) => (
               <Button
-                key={student.student_id}
+                key={student.roll_no}
                 onClick={() => setSelectedStudent(student)}
-                variant={selectedStudent?.student_id === student.student_id ? "default" : "outline"}
+                variant={selectedStudent?.roll_no === student.roll_no ? "default" : "outline"}
                 className="flex items-center gap-2"
               >
                 <img
@@ -198,16 +228,37 @@ export default function StudentProfile() {
               </Button>
             ))}
           </div>
-          <Button onClick={() => setView('form')} className="bg-[#34A853] hover:bg-[#1E8E3E] text-white">
-            <UserPlus className="h-4 w-4 mr-2" />
-            Add New Student
-          </Button>
+          <div className="flex gap-2 justify-end">
+            <Button onClick={fetchStudents} variant="outline">
+              Refresh Data
+            </Button>
+            <Button onClick={() => setView('form')} className="bg-[#34A853] hover:bg-[#1E8E3E] text-white">
+              <UserPlus className="h-4 w-4 mr-2" />
+              Add New Student
+            </Button>
+          </div>
         </div>
       </div>
 
       <div className="px-8 lg:px-12 py-8">
         <div className="max-w-7xl mx-auto">
-          {selectedStudent ? (
+          {loading ? (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              <span className="ml-3 text-lg">Loading students...</span>
+            </div>
+          ) : error ? (
+            <div className="text-center py-10">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-4">
+                <h3 className="text-red-800 font-semibold">Error loading data</h3>
+                <p className="text-red-600">{error}</p>
+                <p className="text-sm text-red-500 mt-2">Showing demo data instead</p>
+                <Button onClick={fetchStudents} className="mt-3">
+                  Retry API Call
+                </Button>
+              </div>
+            </div>
+          ) : selectedStudent ? (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               <div className="lg:col-span-4">
                 <ProfileInfoCard
@@ -217,26 +268,38 @@ export default function StudentProfile() {
                 />
               </div>
               <div className="lg:col-span-8 space-y-6">
-                <AcademicOverviewCard
-                  subjects={selectedStudent.academic.subjects}
-                  studentId={selectedStudent.student_id}
-                />
-                <PerformanceChartsCard
-                  subjects={selectedStudent.academic.subjects}
-                  studentName={selectedStudent.name}
-                />
-                <SummaryCard summary={selectedStudent.academic_achievements} />
-                <ActivitiesCard activities={selectedStudent.hobbies} />
-                <LearningAssessmentCard
-                  learningLevel={studentMetrics.learningLevel}
-                  editMode={editMode}
-                />
+                {selectedStudent.academic && selectedStudent.academic.subjects && selectedStudent.academic.subjects.length > 0 ? (
+                  <>
+                    <AcademicOverviewCard
+                      subjects={selectedStudent.academic.subjects}
+                      studentId={selectedStudent.roll_no}
+                    />
+                    <PerformanceChartsCard
+                      subjects={selectedStudent.academic.subjects}
+                      studentName={selectedStudent.name}
+                    />
+                    <SummaryCard summary={selectedStudent.academic_achievements} />
+                    <ActivitiesCard activities={selectedStudent.hobbies} />
+                    <LearningAssessmentCard
+                      learningLevel={studentMetrics.learningLevel}
+                      editMode={editMode}
+                    />
+                  </>
+                ) : (
+                  <div className="text-center py-10 bg-gray-100 rounded-lg">
+                    <h2 className="text-xl font-semibold text-gray-700">No Academic Data</h2>
+                    <p className="text-gray-500">This student does not have any academic records to display.</p>
+                  </div>
+                )}
               </div>
             </div>
           ) : (
             <div className="text-center py-10">
-              <h2 className="text-xl font-semibold text-gray-600">No Student Selected</h2>
-              <p className="text-gray-500">Please add or select a student to view their profile.</p>
+              <h2 className="text-xl font-semibold text-gray-600">No Students Found</h2>
+              <p className="text-gray-500">Please add a student to view their profile.</p>
+              <Button onClick={fetchStudents} className="mt-4">
+                Retry Loading
+              </Button>
             </div>
           )}
         </div>

@@ -23,5 +23,3 @@ export interface AudioContextRefs {
   aiAudioQueue: React.MutableRefObject<Int16Array[]>;
   isAiAudioPlaying: React.MutableRefObject<boolean>;
 }
-
-export interface 

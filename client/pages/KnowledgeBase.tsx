@@ -1,560 +1,340 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Upload,
-  FileText,
-  Eye,
-  Trash2,
-  Calendar,
-  BookOpen,
-  GraduationCap,
-  Search,
-  Filter,
-  CloudUpload,
-} from "lucide-react";
+import React, { useState, useRef } from 'react';
+import { Upload, FileText, RotateCcw, Book, GraduationCap, Loader2 } from 'lucide-react';
 
-interface UploadedFile {
-  id: string;
-  fileName: string;
-  subject: string;
-  class: string;
-  chapterTitle: string;
-  uploadDate: string;
-  fileSize: string;
-}
+const KnowledgeBaseUploadApp = () => {
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [subjectName, setSubjectName] = useState('');
+  const [standard, setStandard] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState('');
+  const [response, setResponse] = useState(null);
+  const [error, setError] = useState(null);
+  
+  const fileInputRef = useRef(null);
 
-const classes = [
-  "Class 1",
-  "Class 2",
-  "Class 3",
-  "Class 4",
-  "Class 5",
-  "Class 6",
-  "Class 7",
-  "Class 8",
-  "Class 9",
-  "Class 10",
-];
-
-const subjects = [
-  "Marathi",
-  "English",
-  "Math",
-  "Science",
-  "EVS",
-  "History",
-  "Geography",
-];
-
-const dummyFiles: UploadedFile[] = [
-  {
-    id: "1",
-    fileName: "marathi_chapter1.pdf",
-    subject: "Marathi",
-    class: "Class 5",
-    chapterTitle: "अक्षरांची ओळख",
-    uploadDate: "2024-01-15",
-    fileSize: "2.4 MB",
-  },
-  {
-    id: "2",
-    fileName: "math_geometry.pdf",
-    subject: "Math",
-    class: "Class 7",
-    chapterTitle: "Geometry Basics",
-    uploadDate: "2024-01-12",
-    fileSize: "3.1 MB",
-  },
-  {
-    id: "3",
-    fileName: "science_plants.pdf",
-    subject: "Science",
-    class: "Class 6",
-    chapterTitle: "Plant Life Cycle",
-    uploadDate: "2024-01-10",
-    fileSize: "4.2 MB",
-  },
-  {
-    id: "4",
-    fileName: "english_grammar.pdf",
-    subject: "English",
-    class: "Class 8",
-    chapterTitle: "Tenses and Grammar",
-    uploadDate: "2024-01-08",
-    fileSize: "1.8 MB",
-  },
-  {
-    id: "5",
-    fileName: "evs_environment.pdf",
-    subject: "EVS",
-    class: "Class 4",
-    chapterTitle: "Our Environment",
-    uploadDate: "2024-01-05",
-    fileSize: "2.9 MB",
-  },
-];
-
-export default function KnowledgeBase() {
-  const [selectedClass, setSelectedClass] = useState("");
-  const [selectedSubject, setSelectedSubject] = useState("");
-  const [chapterTitle, setChapterTitle] = useState("");
-
-  // Animation variants
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20, scale: 0.95 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.4,
-        ease: "easeOut",
-      },
-    },
-    hover: {
-      y: -5,
-      scale: 1.02,
-      transition: {
-        duration: 0.2,
-        ease: "easeInOut",
-      },
-    },
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type === 'application/pdf') {
+      setSelectedFile(file);
+      setError(null);
+    } else {
+      setError('Please select a valid PDF file.');
+    }
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const uploadVariants = {
-    idle: { scale: 1 },
-    hover: { scale: 1.05 },
-    tap: { scale: 0.95 },
-  };
-  const [uploadedFiles, setUploadedFiles] =
-    useState<UploadedFile[]>(dummyFiles);
-  const [filterClass, setFilterClass] = useState("all-classes");
-  const [filterSubject, setFilterSubject] = useState("all-subjects");
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const handleFileUpload = () => {
-    if (!selectedClass || !selectedSubject || !chapterTitle) {
-      alert("Please fill in all fields before uploading.");
+  const sendToAPI = async () => {
+    if (!selectedFile || !subjectName.trim() || !standard.trim()) {
+      setError('Please fill in all fields and select a PDF file.');
       return;
     }
 
-    // Dummy upload behavior
-    const newFile: UploadedFile = {
-      id: Date.now().toString(),
-      fileName: `${selectedSubject.toLowerCase()}_${chapterTitle.replace(/\s+/g, "_").toLowerCase()}.pdf`,
-      subject: selectedSubject,
-      class: selectedClass,
-      chapterTitle: chapterTitle,
-      uploadDate: new Date().toISOString().split("T")[0],
-      fileSize: "2.1 MB",
-    };
+    setIsLoading(true);
+    setError(null);
+    setResponse(null);
+    setLoadingStatus('Testing backend connection...');
 
-    setUploadedFiles([newFile, ...uploadedFiles]);
+    try {
+      // First, test if the backend is reachable
+      const testController = new AbortController();
+      const testTimeoutId = setTimeout(() => testController.abort(), 10000); // 10 second test
+      
+      try {
+        const testResponse = await fetch('/api/', {
+          method: 'GET',
+          headers: { 'ngrok-skip-browser-warning': 'true' },
+          signal: testController.signal
+        });
+        clearTimeout(testTimeoutId);
+        console.log('Backend connection test:', testResponse.status);
+      } catch (testErr) {
+        clearTimeout(testTimeoutId);
+        console.log('Backend connection test failed:', testErr);
+        throw new Error('Cannot connect to backend server. Please check if your backend is running and ngrok tunnel is active.');
+      }
 
-    // Reset form
-    setSelectedClass("");
-    setSelectedSubject("");
-    setChapterTitle("");
+      // If connection test passes, proceed with file upload
+      const API_URL = 'https://c226b90d503f.ngrok-free.app/upload_chapter_pdf/';
+      
+      const formData = new FormData();
+      formData.append('file', selectedFile, selectedFile.name);
+      formData.append('subject_name', subjectName.trim());
+      formData.append('std', standard.trim());
 
-    alert("File uploaded successfully!");
+      console.log('Sending request to:', API_URL);
+      console.log('Form data:', {
+        fileName: selectedFile.name,
+        fileSize: selectedFile.size,
+        subject: subjectName.trim(),
+        standard: standard.trim()
+      });
+
+      setLoadingStatus('Uploading PDF file... (this may take a while for large files)');
+
+      // Increase timeout to 2 minutes for large file uploads
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+      }, 120000); // 2 minutes timeout
+
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'ngrok-skip-browser-warning': 'true'
+        },
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
+      if (!response.ok) {
+        let errorText;
+        try {
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const errorData = await response.json();
+            errorText = JSON.stringify(errorData, null, 2);
+          } else {
+            errorText = await response.text();
+          }
+        } catch (e) {
+          errorText = 'Unable to read error response';
+        }
+        throw new Error(`HTTP ${response.status}: ${response.statusText}\nServer Response: ${errorText}`);
+      }
+
+      setLoadingStatus('Processing response...');
+      
+      const contentType = response.headers.get('content-type');
+      let data;
+      
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        // Handle non-JSON responses
+        const text = await response.text();
+        console.warn('Non-JSON response received:', text);
+        data = { message: text, raw_response: text };
+      }
+      
+      console.log('Success response:', data);
+      
+      setResponse(data);
+      setLoadingStatus('Upload successful!');
+      setIsLoading(false);
+
+    } catch (err) {
+      console.error('Upload error:', err);
+      
+      let errorMessage = 'Upload failed: ';
+      let troubleshooting = '';
+
+      if (err.name === 'AbortError') {
+        errorMessage += 'Request timed out (2 minutes)';
+        troubleshooting = `⏱️ Timeout Issues:\n` +
+                         `1. Your PDF file (${formatFileSize(selectedFile.size)}) might be too large\n` +
+                         `2. Backend processing is taking too long\n` +
+                         `3. Network connection is slow or unstable\n` +
+                         `4. Try with a smaller PDF file (< 10MB recommended)\n` +
+                         `5. Check your backend server logs for errors\n` +
+                         `6. Ensure your backend has enough memory/CPU resources`;
+      } else if (err.message.includes('Cannot connect to backend')) {
+        errorMessage += err.message;
+        troubleshooting = `🔌 Backend Connection Issues:\n` +
+                         `1. Your backend server is not running\n` +
+                         `2. Ngrok tunnel expired - restart ngrok\n` +
+                         `3. Wrong ngrok URL in vite.config.js\n` +
+                         `4. Firewall blocking the connection\n` +
+                         `5. Backend crashed - check server logs`;
+      } else if (err.message === 'Failed to fetch') {
+        errorMessage += 'Network connection failed';
+        troubleshooting = `🌐 Network Issues:\n` +
+                         `1. Internet connection lost\n` +
+                         `2. Vite dev server needs restart\n` +
+                         `3. Proxy configuration error\n` +
+                         `4. DNS resolution issues`;
+      } else if (err.message.includes('HTTP')) {
+        errorMessage += err.message;
+        troubleshooting = `🚨 Server Error:\n` +
+                         `1. Check backend server logs\n` +
+                         `2. Verify the upload endpoint exists\n` +
+                         `3. Check file permissions on server\n` +
+                         `4. Ensure backend has disk space`;
+      } else {
+        errorMessage += err.message;
+      }
+
+      setError(errorMessage + (troubleshooting ? '\n\n' + troubleshooting : ''));
+      setLoadingStatus('Upload failed');
+      setIsLoading(false);
+    }
   };
 
-  const handleDeleteFile = (fileId: string) => {
-    setUploadedFiles(uploadedFiles.filter((file) => file.id !== fileId));
-    alert("File deleted successfully!");
+  const reset = () => {
+    setSelectedFile(null);
+    setSubjectName('');
+    setStandard('');
+    setResponse(null);
+    setError(null);
+    setLoadingStatus('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
-  const handlePreviewFile = (fileName: string) => {
-    alert(`Preview functionality for ${fileName} will be implemented soon.`);
-  };
-
-  const filteredFiles = uploadedFiles.filter((file) => {
-    const matchesClass =
-      !filterClass ||
-      filterClass === "all-classes" ||
-      file.class === filterClass;
-    const matchesSubject =
-      !filterSubject ||
-      filterSubject === "all-subjects" ||
-      file.subject === filterSubject;
-    const matchesSearch =
-      !searchTerm ||
-      file.fileName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      file.chapterTitle.toLowerCase().includes(searchTerm.toLowerCase());
-
-    return matchesClass && matchesSubject && matchesSearch;
-  });
-
-  const getSubjectColor = (subject: string) => {
-    const colors: { [key: string]: string } = {
-      Marathi: "bg-material-blue-100 text-material-blue-800",
-      English: "bg-material-green-100 text-material-green-800",
-      Math: "bg-material-orange-100 text-material-orange-800",
-      Science: "bg-purple-100 text-purple-800",
-      EVS: "bg-material-yellow-100 text-material-yellow-800",
-      History: "bg-red-100 text-red-800",
-      Geography: "bg-blue-100 text-blue-800",
-    };
-    return colors[subject] || "bg-material-gray-100 text-material-gray-800";
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   return (
-    <div className="min-h-screen bg-material-gray-50">
-      {/* Page Header */}
-      <div className="w-full bg-gradient-to-r from-material-blue-50 to-material-green-50 border-b border-material-gray-200">
-        <div className="px-8 lg:px-12 py-8">
-          <h1 className="text-4xl font-bold text-material-gray-900 mb-3">
-            Knowledge Base
-          </h1>
-          <p className="text-lg text-material-gray-600">
-            Upload, organize and manage curriculum documents
-          </p>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 p-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6">
+            <h1 className="text-3xl font-bold flex items-center gap-3">
+              <Book className="w-8 h-8" />
+              Knowledge Base Upload System
+            </h1>
+            <p className="mt-2 text-purple-100">Upload chapter PDFs to build your knowledge base</p>
+          </div>
 
-      <div className="px-8 lg:px-12 py-8">
-        <div className="max-w-7xl mx-auto space-y-8">
-          {/* Upload Section */}
-          <Card className="bg-white shadow-lg">
-            <CardContent className="p-8">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-material-blue-100 rounded-lg">
-                  <CloudUpload className="h-6 w-6 text-material-blue" />
-                </div>
-                <h2 className="text-2xl font-bold text-material-gray-900">
-                  Upload Curriculum
-                </h2>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                {/* Upload Zone */}
-                <div className="lg:col-span-5">
-                  <motion.div
-                    variants={uploadVariants}
-                    initial="idle"
-                    whileHover="hover"
-                    whileTap="tap"
-                    className="border-2 border-dashed border-material-gray-300 rounded-xl p-8 text-center hover:border-material-blue-400 transition-colors cursor-pointer"
-                  >
-                    <div className="flex flex-col items-center gap-4">
-                      <motion.div
-                        className="p-4 bg-material-blue-100 rounded-full"
-                        animate={{
-                          y: [0, -10, 0],
-                        }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }}
-                      >
-                        <Upload className="h-8 w-8 text-material-blue" />
-                      </motion.div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-material-gray-900 mb-2">
-                          Select PDF File
-                        </h3>
-                        <p className="text-material-gray-600 mb-4">
-                          Drag and drop or click to upload curriculum PDF
-                        </p>
-                        <motion.div
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          <Button className="bg-material-blue hover:bg-material-blue-600 text-white">
-                            <Upload className="h-4 w-4 mr-2" />
-                            Browse Files
-                          </Button>
-                        </motion.div>
-                      </div>
-                    </div>
-                  </motion.div>
-                </div>
-
-                {/* Form Fields */}
-                <div className="lg:col-span-7 space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Class Selection */}
-                    <div>
-                      <Label className="text-sm font-medium text-material-gray-700 mb-2 block">
-                        Select Class
-                      </Label>
-                      <Select
-                        value={selectedClass}
-                        onValueChange={setSelectedClass}
-                      >
-                        <SelectTrigger className="w-full h-12 border-2 border-material-gray-300 rounded-lg hover:border-material-blue-400 focus:border-material-blue-500">
-                          <SelectValue placeholder="Choose class..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {classes.map((cls) => (
-                            <SelectItem key={cls} value={cls}>
-                              <div className="flex items-center gap-2">
-                                <GraduationCap className="h-4 w-4" />
-                                {cls}
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Subject Selection */}
-                    <div>
-                      <Label className="text-sm font-medium text-material-gray-700 mb-2 block">
-                        Select Subject
-                      </Label>
-                      <Select
-                        value={selectedSubject}
-                        onValueChange={setSelectedSubject}
-                      >
-                        <SelectTrigger className="w-full h-12 border-2 border-material-gray-300 rounded-lg hover:border-material-blue-400 focus:border-material-blue-500">
-                          <SelectValue placeholder="Choose subject..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {subjects.map((subject) => (
-                            <SelectItem key={subject} value={subject}>
-                              <div className="flex items-center gap-2">
-                                <BookOpen className="h-4 w-4" />
-                                {subject}
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  {/* Chapter Title */}
-                  <div>
-                    <Label className="text-sm font-medium text-material-gray-700 mb-2 block">
-                      Chapter Title
-                    </Label>
-                    <Input
-                      type="text"
-                      value={chapterTitle}
-                      onChange={(e) => setChapterTitle(e.target.value)}
-                      placeholder="Enter chapter title..."
-                      className="w-full h-12 border-2 border-material-gray-300 rounded-lg hover:border-material-blue-400 focus:border-material-blue-500"
-                    />
-                  </div>
-
-                  {/* Upload Button */}
-                  <div className="pt-4">
-                    <Button
-                      onClick={handleFileUpload}
-                      className="w-full bg-material-green hover:bg-material-green-600 text-white h-12 font-semibold"
-                    >
-                      <Upload className="h-5 w-5 mr-2" />
-                      Upload Curriculum
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Uploaded Files Section */}
-          <Card className="bg-white shadow-lg">
-            <CardContent className="p-8">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-3 bg-material-green-100 rounded-lg">
-                    <FileText className="h-6 w-6 text-material-green" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-material-gray-900">
-                    Uploaded Documents
-                  </h2>
-                </div>
-                <div className="text-sm text-material-gray-600">
-                  {filteredFiles.length} files found
-                </div>
-              </div>
-
-              {/* Filters */}
-              <div className="mb-6 p-4 bg-material-gray-50 rounded-lg">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  {/* Search */}
+          <div className="p-6">
+            {/* Form Section */}
+            <div className="space-y-6">
+              {/* Subject and Standard Input */}
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Subject Name
+                  </label>
                   <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-material-gray-400" />
-                    <Input
+                    <input
                       type="text"
-                      placeholder="Search files..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 border-material-gray-300"
+                      value={subjectName}
+                      onChange={(e) => setSubjectName(e.target.value)}
+                      placeholder="e.g., Mathematics, Physics, Chemistry"
+                      className="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     />
+                    <Book className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
                   </div>
+                </div>
 
-                  {/* Filter by Class */}
-                  <Select value={filterClass} onValueChange={setFilterClass}>
-                    <SelectTrigger className="border-material-gray-300">
-                      <Filter className="h-4 w-4 mr-2" />
-                      <SelectValue placeholder="Filter by class" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all-classes">All Classes</SelectItem>
-                      {classes.map((cls) => (
-                        <SelectItem key={cls} value={cls}>
-                          {cls}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  {/* Filter by Subject */}
-                  <Select
-                    value={filterSubject}
-                    onValueChange={setFilterSubject}
-                  >
-                    <SelectTrigger className="border-material-gray-300">
-                      <Filter className="h-4 w-4 mr-2" />
-                      <SelectValue placeholder="Filter by subject" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all-subjects">All Subjects</SelectItem>
-                      {subjects.map((subject) => (
-                        <SelectItem key={subject} value={subject}>
-                          {subject}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  {/* Clear Filters */}
-                  <Button
-                    onClick={() => {
-                      setFilterClass("all-classes");
-                      setFilterSubject("all-subjects");
-                      setSearchTerm("");
-                    }}
-                    variant="outline"
-                    className="border-material-gray-300"
-                  >
-                    Clear Filters
-                  </Button>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Standard/Class
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={standard}
+                      onChange={(e) => setStandard(e.target.value)}
+                      placeholder="e.g., 10th, 12th, B.Tech 1st Year"
+                      className="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                    <GraduationCap className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                  </div>
                 </div>
               </div>
 
-              {/* Files Grid */}
-              <motion.div
-                initial="hidden"
-                animate="visible"
-                variants={containerVariants}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-              >
-                <AnimatePresence>
-                  {filteredFiles.map((file) => (
-                    <motion.div
-                      key={file.id}
-                      layout
-                      initial="hidden"
-                      animate="visible"
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      variants={cardVariants}
-                      whileHover="hover"
-                    >
-                      <Card className="bg-material-gray-50 hover:bg-white border border-material-gray-200 h-full">
-                        <CardContent className="p-6">
-                          <div className="flex items-start gap-3 mb-4">
-                            <div className="p-2 bg-material-blue-100 rounded-lg flex-shrink-0">
-                              <FileText className="h-5 w-5 text-material-blue" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h3 className="font-semibold text-material-gray-900 truncate">
-                                {file.chapterTitle}
-                              </h3>
-                              <p className="text-xs text-material-gray-500 truncate">
-                                {file.fileName}
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="space-y-2 mb-4">
-                            <div className="flex items-center gap-2">
-                              <span
-                                className={`px-2 py-1 rounded-full text-xs font-medium ${getSubjectColor(file.subject)}`}
-                              >
-                                {file.subject}
-                              </span>
-                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-material-gray-200 text-material-gray-700">
-                                {file.class}
-                              </span>
-                            </div>
-
-                            <div className="flex items-center gap-4 text-xs text-material-gray-500">
-                              <div className="flex items-center gap-1">
-                                <Calendar className="h-3 w-3" />
-                                {file.uploadDate}
-                              </div>
-                              <span>{file.fileSize}</span>
-                            </div>
-                          </div>
-
-                          <div className="flex gap-2">
-                            <Button
-                              onClick={() => handlePreviewFile(file.fileName)}
-                              size="sm"
-                              className="flex-1 bg-material-blue hover:bg-material-blue-600 text-white"
-                            >
-                              <Eye className="h-3 w-3 mr-1" />
-                              Preview
-                            </Button>
-                            <Button
-                              onClick={() => handleDeleteFile(file.id)}
-                              size="sm"
-                              variant="destructive"
-                              className="bg-red-500 hover:bg-red-600"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </motion.div>
-
-              {filteredFiles.length === 0 && (
-                <div className="text-center py-12">
-                  <div className="p-4 bg-material-gray-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                    <FileText className="h-8 w-8 text-material-gray-400" />
+              {/* File Upload Section */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Chapter PDF File
+                </label>
+                
+                {!selectedFile ? (
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-purple-400 transition-colors">
+                    <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-700 mb-2">Upload PDF File</h3>
+                    <p className="text-gray-500 text-sm mb-6">
+                      Select a PDF file containing the chapter content
+                    </p>
+                    <label className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-md hover:shadow-lg max-w-xs mx-auto">
+                      <Upload className="w-5 h-5" />
+                      Choose PDF File
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".pdf,application/pdf"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                    </label>
                   </div>
-                  <h3 className="text-lg font-semibold text-material-gray-600 mb-2">
-                    No files found
-                  </h3>
-                  <p className="text-material-gray-500">
-                    Try adjusting your filters or upload some documents to get
-                    started.
+                ) : (
+                  <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-red-100 p-3 rounded-lg">
+                        <FileText className="w-8 h-8 text-red-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-medium text-gray-800">{selectedFile.name}</h4>
+                        <p className="text-sm text-gray-500">
+                          Size: {formatFileSize(selectedFile.size)} • Type: PDF
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setSelectedFile(null);
+                          if (fileInputRef.current) {
+                            fileInputRef.current.value = '';
+                          }
+                        }}
+                        className="text-gray-500 hover:text-red-500 transition-colors"
+                      >
+                        <RotateCcw className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-center gap-4">
+                <button
+                  onClick={sendToAPI}
+                  disabled={isLoading || !selectedFile || !subjectName.trim() || !standard.trim()}
+                  className="bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white px-8 py-3 rounded-lg flex items-center gap-2 transition-colors shadow-md hover:shadow-lg"
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Upload className="w-5 h-5" />
+                  )}
+                  {isLoading ? 'Uploading...' : 'Upload to Knowledge Base'}
+                </button>
+                <button
+                  onClick={reset}
+                  className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors shadow-md hover:shadow-lg"
+                >
+                  <RotateCcw className="w-5 h-5" />
+                  Reset
+                </button>
+              </div>
+
+              {/* Loading Status */}
+              {isLoading && loadingStatus && (
+                <div className="text-center mt-4">
+                  <p className="text-purple-600 font-medium">{loadingStatus}</p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Trying multiple connection methods...
                   </p>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default KnowledgeBaseUploadApp;

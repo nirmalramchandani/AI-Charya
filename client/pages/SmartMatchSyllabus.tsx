@@ -1,527 +1,430 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  BookOpen,
-  Calendar,
-  Plus,
-  Clock,
-  Target,
-  Lightbulb,
-  Users,
-  ArrowRight,
-  CheckCircle,
-} from "lucide-react";
+import { BookOpen, Target, ArrowRight, CheckCircle2, AlertCircle, Copy } from "lucide-react";
 
-interface MatchedTopic {
-  id: string;
-  topicName: string;
-  appearsIn: string[];
-  suggestedWeek: number;
-  difficulty: "Easy" | "Medium" | "Hard";
-  teachingMethod: string;
-  activities: string[];
-}
+// You can change this to your tunnel/server/proxy as needed
+const BASE_URL = "https://c226b90d503f.ngrok-free.app";
 
-interface TimelineItem {
-  id: string;
-  week: number;
-  topics: MatchedTopic[];
-  theme: string;
+interface BackendResponse {
+  sr: number;
+  class1: string;
+  class2: string;
 }
 
 const classes = [
-  "Class 1",
-  "Class 2",
-  "Class 3",
-  "Class 4",
-  "Class 5",
-  "Class 6",
-  "Class 7",
-  "Class 8",
-  "Class 9",
-  "Class 10",
+  { value: "1", label: "Grade 1" },
+  { value: "2", label: "Grade 2" },
+  { value: "3", label: "Grade 3" },
+  { value: "4", label: "Grade 4" },
+  { value: "5", label: "Grade 5" },
+  { value: "6", label: "Grade 6" },
+  { value: "7", label: "Grade 7" },
+  { value: "8", label: "Grade 8" },
+  { value: "9", label: "Grade 9" },
+  { value: "10", label: "Grade 10" },
 ];
 
 const subjects = ["Marathi", "English", "Math", "Science", "EVS"];
-
-const dummyMatchedTopics: MatchedTopic[] = [
-  {
-    id: "1",
-    topicName: "Basic Numbers (1-10)",
-    appearsIn: ["Class 1", "Class 2"],
-    suggestedWeek: 2,
-    difficulty: "Easy",
-    teachingMethod: "Story-based learning with counting games",
-    activities: [
-      "Counting songs",
-      "Number recognition games",
-      "Finger counting",
-    ],
-  },
-  {
-    id: "2",
-    topicName: "Addition & Subtraction",
-    appearsIn: ["Class 2", "Class 3", "Class 4"],
-    suggestedWeek: 4,
-    difficulty: "Medium",
-    teachingMethod: "Visual aids and practical examples",
-    activities: ["Abacus practice", "Real-life scenarios", "Group exercises"],
-  },
-  {
-    id: "3",
-    topicName: "Shapes & Patterns",
-    appearsIn: ["Class 1", "Class 2", "Class 3"],
-    suggestedWeek: 6,
-    difficulty: "Easy",
-    teachingMethod: "Hands-on exploration with objects",
-    activities: ["Shape sorting", "Pattern making", "Art integration"],
-  },
-  {
-    id: "4",
-    topicName: "Multiplication Tables",
-    appearsIn: ["Class 3", "Class 4", "Class 5"],
-    suggestedWeek: 8,
-    difficulty: "Medium",
-    teachingMethod: "Rhythmic learning and visual patterns",
-    activities: ["Table songs", "Grid patterns", "Skip counting"],
-  },
-  {
-    id: "5",
-    topicName: "Fractions Introduction",
-    appearsIn: ["Class 4", "Class 5"],
-    suggestedWeek: 10,
-    difficulty: "Hard",
-    teachingMethod: "Concrete to abstract approach",
-    activities: ["Pizza slicing", "Fraction circles", "Real-life examples"],
-  },
-  {
-    id: "6",
-    topicName: "Time & Calendar",
-    appearsIn: ["Class 2", "Class 3", "Class 4"],
-    suggestedWeek: 12,
-    difficulty: "Medium",
-    teachingMethod: "Daily routine integration",
-    activities: ["Clock reading", "Calendar activities", "Time games"],
-  },
-];
-
-const generateTimeline = (topics: MatchedTopic[]): TimelineItem[] => {
-  const timelineMap: { [week: number]: MatchedTopic[] } = {};
-
-  topics.forEach((topic) => {
-    if (!timelineMap[topic.suggestedWeek]) {
-      timelineMap[topic.suggestedWeek] = [];
-    }
-    timelineMap[topic.suggestedWeek].push(topic);
-  });
-
-  return Object.entries(timelineMap)
-    .map(([week, weekTopics]) => ({
-      id: `week-${week}`,
-      week: parseInt(week),
-      topics: weekTopics,
-      theme: `Week ${week} - Foundation Building`,
-    }))
-    .sort((a, b) => a.week - b.week);
-};
 
 export default function SmartMatchSyllabus() {
   const [selectedClass1, setSelectedClass1] = useState("");
   const [selectedClass2, setSelectedClass2] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
-  const [matchedTopics, setMatchedTopics] = useState<MatchedTopic[]>([]);
-  const [timeline, setTimeline] = useState<TimelineItem[]>([]);
-  const [showTimeline, setShowTimeline] = useState(false);
+  const [results, setResults] = useState<BackendResponse[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const handleMatchTopics = () => {
+  const getGradeLabel = (value: string) => {
+    const grade = classes.find(cls => cls.value === value);
+    return grade ? grade.label : `Grade ${value}`;
+  };
+
+  // Extract chapter name from full string
+  const extractChapterInfo = (fullText: string) => {
+    const match = fullText.match(/Chapter (\d+): (.+)/);
+    if (match) {
+      return {
+        number: match[1],
+        title: match[2],
+        full: fullText
+      };
+    }
+    return {
+      number: "",
+      title: fullText,
+      full: fullText
+    };
+  };
+
+  // Check if chapters are similar/same
+  const areChaptersSimilar = (class1: string, class2: string) => {
+    const chapter1 = extractChapterInfo(class1);
+    const chapter2 = extractChapterInfo(class2);
+    return chapter1.title.toLowerCase() === chapter2.title.toLowerCase();
+  };
+
+  const handleMatchTopics = async () => {
+    setErrorMsg(null);
     if (!selectedClass1 || !selectedSubject) {
-      alert("Please select at least one class and subject to match topics.");
+      alert("Please select primary class and subject");
       return;
     }
 
-    // Filter topics that appear in the selected classes
-    const filteredTopics = dummyMatchedTopics.filter((topic) => {
-      if (selectedClass2 && selectedClass2 !== "no-comparison") {
-        return (
-          topic.appearsIn.includes(selectedClass1) ||
-          topic.appearsIn.includes(selectedClass2)
+    setLoading(true);
+    try {
+      let apiUrl = `${BASE_URL}/match_chapters/?standard1=${selectedClass1}&standard2=${selectedClass2}&subject=${selectedSubject}`;
+
+      const response = await fetch(apiUrl, {
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+        }
+      });
+
+      const contentType = response.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        const data = await response.json();
+        console.log("Backend response:", data);
+        setResults(data || []);
+      } else {
+        const text = await response.text();
+        setErrorMsg(
+          `API did not return JSON!\nStatus: ${response.status}\nPreview: ${text.slice(0, 180)}\nCheck the endpoint URL and backend server.`
         );
+        setResults([]);
       }
-      return topic.appearsIn.includes(selectedClass1);
-    });
-
-    setMatchedTopics(filteredTopics);
-    setTimeline(generateTimeline(filteredTopics));
-  };
-
-  const addToTimeline = (topicId: string) => {
-    const topic = matchedTopics.find((t) => t.id === topicId);
-    if (topic) {
-      alert(
-        `"${topic.topicName}" added to teaching timeline for Week ${topic.suggestedWeek}!`,
-      );
+    } catch (error: any) {
+      if (
+        error?.name === "TypeError" &&
+        (error.message?.includes("Failed to fetch") || error.message?.includes("NetworkError"))
+      ) {
+        setErrorMsg(
+          `Network or CORS error.\n\nMake sure your backend (${BASE_URL}) allows your browser's origin (CORS).`
+        );
+      } else {
+        setErrorMsg(error?.message || "Unknown error");
+      }
+      setResults([]);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case "Easy":
-        return "bg-material-green text-white";
-      case "Medium":
-        return "bg-material-yellow text-material-gray-900";
-      case "Hard":
-        return "bg-material-orange text-white";
-      default:
-        return "bg-material-gray-500 text-white";
-    }
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
   };
 
   return (
-    <div className="min-h-screen bg-material-gray-50">
-      {/* Page Header */}
-      <div className="w-full bg-gradient-to-r from-material-blue-50 to-material-green-50 border-b border-material-gray-200">
-        <div className="px-8 lg:px-12 py-8">
-          <h1 className="text-4xl font-bold text-material-gray-900 mb-3">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4 md:p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-4">
+            <BookOpen className="h-8 w-8 text-white" />
+          </div>
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
             Smart Match Syllabus
           </h1>
-          <p className="text-lg text-material-gray-600">
-            Find common topics across classes and create intelligent teaching
-            timelines
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Compare and analyze chapters across different grades with intelligent matching
           </p>
         </div>
-      </div>
 
-      <div className="px-8 lg:px-12 py-8">
-        <div className="max-w-7xl mx-auto space-y-8">
-          {/* Class and Subject Picker */}
-          <Card className="bg-white shadow-lg">
-            <CardContent className="p-8">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-material-blue-100 rounded-lg">
-                  <Target className="h-6 w-6 text-material-blue" />
-                </div>
-                <h2 className="text-2xl font-bold text-material-gray-900">
-                  Class and Subject Selection
-                </h2>
-              </div>
+        {/* Selection Form */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+            {/* Primary Class */}
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-700">
+                Primary Class
+              </label>
+              <select
+                value={selectedClass1}
+                onChange={e => setSelectedClass1(e.target.value)}
+                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-all duration-200 bg-white/80"
+              >
+                <option value="">Select class...</option>
+                {classes.map(cls => (
+                  <option key={cls.value} value={cls.value}>
+                    {cls.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
-                {/* Primary Class */}
-                <div>
-                  <label className="block text-sm font-medium text-material-gray-700 mb-2">
-                    Primary Class
-                  </label>
-                  <Select
-                    value={selectedClass1}
-                    onValueChange={setSelectedClass1}
-                  >
-                    <SelectTrigger className="w-full h-12 border-2 border-material-gray-300 rounded-lg hover:border-material-blue-400 focus:border-material-blue-500">
-                      <SelectValue placeholder="Select primary class..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {classes.map((cls) => (
-                        <SelectItem key={cls} value={cls}>
-                          {cls}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Secondary Class (Optional) */}
-                <div>
-                  <label className="block text-sm font-medium text-material-gray-700 mb-2">
-                    Compare with (Optional)
-                  </label>
-                  <Select
-                    value={selectedClass2}
-                    onValueChange={setSelectedClass2}
-                  >
-                    <SelectTrigger className="w-full h-12 border-2 border-material-gray-300 rounded-lg hover:border-material-blue-400 focus:border-material-blue-500">
-                      <SelectValue placeholder="Select second class..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="no-comparison">
-                        No comparison
-                      </SelectItem>
-                      {classes.map((cls) => (
-                        <SelectItem key={cls} value={cls}>
-                          {cls}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Subject */}
-                <div>
-                  <label className="block text-sm font-medium text-material-gray-700 mb-2">
-                    Subject
-                  </label>
-                  <Select
-                    value={selectedSubject}
-                    onValueChange={setSelectedSubject}
-                  >
-                    <SelectTrigger className="w-full h-12 border-2 border-material-gray-300 rounded-lg hover:border-material-blue-400 focus:border-material-blue-500">
-                      <SelectValue placeholder="Select subject..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {subjects.map((subject) => (
-                        <SelectItem key={subject} value={subject}>
-                          {subject}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Match Button */}
-                <Button
-                  onClick={handleMatchTopics}
-                  className="h-12 bg-material-green hover:bg-material-green-600 text-white font-semibold"
-                >
-                  <Target className="h-4 w-4 mr-2" />
-                  Match Topics
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Matched Topics Display */}
-          {matchedTopics.length > 0 && (
-            <Card className="bg-white shadow-lg">
-              <CardContent className="p-8">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 bg-material-green-100 rounded-lg">
-                      <BookOpen className="h-6 w-6 text-material-green" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-material-gray-900">
-                      Matched Topics
-                    </h2>
-                  </div>
-                  <div className="flex gap-3">
-                    <Badge variant="outline" className="text-material-gray-600">
-                      {matchedTopics.length} topics found
-                    </Badge>
-                    <Button
-                      onClick={() => setShowTimeline(!showTimeline)}
-                      variant="outline"
-                      className="border-material-blue-300 text-material-blue hover:bg-material-blue-50"
-                    >
-                      <Calendar className="h-4 w-4 mr-2" />
-                      {showTimeline ? "Hide Timeline" : "View Timeline"}
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {matchedTopics.map((topic) => (
-                    <Card
-                      key={topic.id}
-                      className="bg-material-gray-50 hover:bg-white hover:shadow-md transition-all duration-200 border border-material-gray-200"
-                    >
-                      <CardContent className="p-6">
-                        <div className="flex items-start justify-between mb-4">
-                          <h3 className="text-lg font-semibold text-material-gray-900 flex-1">
-                            {topic.topicName}
-                          </h3>
-                          <Badge
-                            className={`ml-2 ${getDifficultyColor(topic.difficulty)}`}
-                          >
-                            {topic.difficulty}
-                          </Badge>
-                        </div>
-
-                        <div className="space-y-3 mb-4">
-                          <div className="flex items-center gap-2 text-sm text-material-gray-600">
-                            <Users className="h-4 w-4" />
-                            <span className="font-medium">Appears in:</span>
-                            <div className="flex gap-1">
-                              {topic.appearsIn.map((cls, index) => (
-                                <Badge
-                                  key={index}
-                                  variant="outline"
-                                  className="text-xs bg-material-blue-50 text-material-blue-700"
-                                >
-                                  {cls}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-2 text-sm text-material-gray-600">
-                            <Clock className="h-4 w-4" />
-                            <span className="font-medium">Suggested Week:</span>
-                            <Badge
-                              variant="outline"
-                              className="text-material-orange-700 bg-material-orange-50"
-                            >
-                              Week {topic.suggestedWeek}
-                            </Badge>
-                          </div>
-
-                          <div className="flex items-start gap-2 text-sm text-material-gray-600">
-                            <Lightbulb className="h-4 w-4 mt-0.5" />
-                            <div>
-                              <span className="font-medium">
-                                Teaching Method:
-                              </span>
-                              <p className="text-material-gray-600 mt-1">
-                                {topic.teachingMethod}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="mb-4">
-                          <h4 className="text-sm font-medium text-material-gray-700 mb-2">
-                            Suggested Activities:
-                          </h4>
-                          <div className="flex flex-wrap gap-2">
-                            {topic.activities.map((activity, index) => (
-                              <Badge
-                                key={index}
-                                variant="outline"
-                                className="text-xs bg-material-green-50 text-material-green-700"
-                              >
-                                {activity}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-
-                        <Button
-                          onClick={() => addToTimeline(topic.id)}
-                          className="w-full bg-material-blue hover:bg-material-blue-600 text-white"
-                        >
-                          <Plus className="h-4 w-4 mr-2" />
-                          Add to Timeline
-                        </Button>
-                      </CardContent>
-                    </Card>
+            {/* Secondary Class */}
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-700">
+                Compare with (Optional)
+              </label>
+              <select
+                value={selectedClass2}
+                onChange={e => setSelectedClass2(e.target.value)}
+                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-all duration-200 bg-white/80"
+              >
+                <option value="">Select class...</option>
+                <option value="no-comparison">No comparison</option>
+                {classes
+                  .filter(cls => cls.value !== selectedClass1)
+                  .map(cls => (
+                    <option key={cls.value} value={cls.value}>
+                      {cls.label}
+                    </option>
                   ))}
-                </div>
-              </CardContent>
-            </Card>
+              </select>
+            </div>
+
+            {/* Subject */}
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-700">
+                Subject
+              </label>
+              <select
+                value={selectedSubject}
+                onChange={e => setSelectedSubject(e.target.value)}
+                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-all duration-200 bg-white/80"
+              >
+                <option value="">Select subject...</option>
+                {subjects.map(subject => (
+                  <option key={subject} value={subject}>
+                    {subject}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Search Button */}
+            <button
+              onClick={handleMatchTopics}
+              disabled={loading}
+              className="p-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl disabled:opacity-50 flex items-center justify-center gap-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+            >
+              <Target className="h-5 w-5" />
+              {loading ? "Searching..." : "Search"}
+            </button>
+          </div>
+
+          {/* Selected Info */}
+          {(selectedClass1 || selectedClass2 || selectedSubject) && (
+            <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200">
+              <p className="font-semibold text-gray-800 mb-2">Selection Summary:</p>
+              <div className="flex flex-wrap gap-3">
+                {selectedClass1 && (
+                  <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                    Primary: {getGradeLabel(selectedClass1)}
+                  </span>
+                )}
+                {selectedClass2 && selectedClass2 !== "no-comparison" && (
+                  <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                    Secondary: {getGradeLabel(selectedClass2)}
+                  </span>
+                )}
+                {selectedSubject && (
+                  <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                    Subject: {selectedSubject}
+                  </span>
+                )}
+              </div>
+            </div>
           )}
 
-          {/* Timeline View */}
-          {showTimeline && timeline.length > 0 && (
-            <Card className="bg-white shadow-lg">
-              <CardContent className="p-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-3 bg-material-orange-100 rounded-lg">
-                    <Calendar className="h-6 w-6 text-material-orange" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-material-gray-900">
-                    Teaching Timeline
-                  </h2>
+          {errorMsg && (
+            <div className="mt-6 p-4 bg-red-50 text-red-700 rounded-xl border border-red-200">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
+                <div>
+                  <strong className="block mb-1">Error occurred:</strong>
+                  <pre className="text-sm whitespace-pre-wrap">{errorMsg}</pre>
                 </div>
+              </div>
+            </div>
+          )}
+        </div>
 
-                <div className="space-y-6">
-                  {timeline.map((item, index) => (
-                    <div key={item.id} className="relative">
-                      {/* Timeline Connector */}
-                      {index < timeline.length - 1 && (
-                        <div className="absolute left-6 top-16 w-px h-16 bg-material-gray-300"></div>
+        {/* Results */}
+        {results.length > 0 && (
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
+            {/* Results Header */}
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl">
+                  <BookOpen className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-3xl font-bold text-gray-900">
+                    Chapter Comparison Results
+                  </h2>
+                  <p className="text-gray-600">Side-by-side chapter analysis</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="px-4 py-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 rounded-full text-sm font-semibold">
+                  {results.length} chapters found
+                </span>
+              </div>
+            </div>
+
+            {/* Comparison Grid */}
+            <div className="space-y-4">
+              {results.map((item, index) => {
+                const chapter1Info = extractChapterInfo(item.class1);
+                const chapter2Info = extractChapterInfo(item.class2);
+                const isSimilar = areChaptersSimilar(item.class1, item.class2);
+
+                return (
+                  <div
+                    key={item.sr}
+                    className={`relative rounded-2xl border-2 p-6 transition-all duration-300 hover:shadow-lg ${
+                      isSimilar
+                        ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200'
+                        : 'bg-gradient-to-r from-blue-50 to-purple-50 border-gray-200'
+                    }`}
+                  >
+                    {/* Chapter Number Badge */}
+                    <div className="absolute -top-3 left-6">
+                      <span className="px-3 py-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-bold rounded-full shadow-lg">
+                        Chapter {item.sr}
+                      </span>
+                    </div>
+
+                    {/* Similarity Badge */}
+                    <div className="absolute -top-3 right-6">
+                      {isSimilar ? (
+                        <span className="px-3 py-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-semibold rounded-full shadow-lg flex items-center gap-1">
+                          <CheckCircle2 className="h-3 w-3" />
+                          Same Chapter
+                        </span>
+                      ) : (
+                        <span className="px-3 py-1 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-semibold rounded-full shadow-lg flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          Different
+                        </span>
                       )}
+                    </div>
 
-                      <div className="flex gap-6">
-                        {/* Week Indicator */}
-                        <div className="flex-shrink-0">
-                          <div className="w-12 h-12 bg-material-orange rounded-full flex items-center justify-center">
-                            <span className="text-white font-bold text-sm">
-                              {item.week}
-                            </span>
-                          </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
+                      {/* Class 1 */}
+                      <div className="bg-white/80 rounded-xl p-5 border border-blue-200">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="font-bold text-blue-800 text-lg">
+                            {getGradeLabel(selectedClass1)}
+                          </h4>
+                          <button
+                            onClick={() => copyToClipboard(item.class1)}
+                            className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
+                            title="Copy chapter info"
+                          >
+                            <Copy className="h-4 w-4 text-blue-600" />
+                          </button>
                         </div>
+                        <div className="space-y-2">
+                          {chapter1Info.number && (
+                            <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded">
+                              Ch. {chapter1Info.number}
+                            </span>
+                          )}
+                          <h5 className="font-semibold text-gray-900 text-lg leading-tight">
+                            {chapter1Info.title}
+                          </h5>
+                          <p className="text-sm text-gray-600 leading-relaxed">
+                            {chapter1Info.full}
+                          </p>
+                        </div>
+                      </div>
 
-                        {/* Week Content */}
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-material-gray-900 mb-2">
-                            {item.theme}
-                          </h3>
+                      {/* Arrow */}
+                      <div className="hidden lg:flex items-center justify-center">
+                        <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full">
+                          <ArrowRight className="h-6 w-6 text-white" />
+                        </div>
+                      </div>
 
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {item.topics.map((topic) => (
-                              <Card
-                                key={topic.id}
-                                className="bg-material-gray-50 border border-material-gray-200"
-                              >
-                                <CardContent className="p-4">
-                                  <div className="flex items-center justify-between mb-2">
-                                    <h4 className="font-medium text-material-gray-900">
-                                      {topic.topicName}
-                                    </h4>
-                                    <CheckCircle className="h-4 w-4 text-material-green" />
-                                  </div>
-                                  <p className="text-xs text-material-gray-600 mb-2">
-                                    {topic.teachingMethod}
-                                  </p>
-                                  <div className="flex items-center gap-2">
-                                    <Badge
-                                      className={`text-xs ${getDifficultyColor(topic.difficulty)}`}
-                                    >
-                                      {topic.difficulty}
-                                    </Badge>
-                                    <ArrowRight className="h-3 w-3 text-material-gray-400" />
-                                    <span className="text-xs text-material-gray-500">
-                                      {topic.appearsIn.join(", ")}
-                                    </span>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            ))}
-                          </div>
+                      {/* Class 2 */}
+                      <div className="bg-white/80 rounded-xl p-5 border border-purple-200">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="font-bold text-purple-800 text-lg">
+                            {selectedClass2 && selectedClass2 !== "no-comparison" 
+                              ? getGradeLabel(selectedClass2) 
+                              : "Comparison Grade"}
+                          </h4>
+                          <button
+                            onClick={() => copyToClipboard(item.class2)}
+                            className="p-2 hover:bg-purple-100 rounded-lg transition-colors"
+                            title="Copy chapter info"
+                          >
+                            <Copy className="h-4 w-4 text-purple-600" />
+                          </button>
+                        </div>
+                        <div className="space-y-2">
+                          {chapter2Info.number && (
+                            <span className="inline-block px-2 py-1 bg-purple-100 text-purple-800 text-xs font-semibold rounded">
+                              Ch. {chapter2Info.number}
+                            </span>
+                          )}
+                          <h5 className="font-semibold text-gray-900 text-lg leading-tight">
+                            {chapter2Info.title}
+                          </h5>
+                          <p className="text-sm text-gray-600 leading-relaxed">
+                            {chapter2Info.full}
+                          </p>
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                );
+              })}
+            </div>
 
-                <div className="mt-8 p-4 bg-material-blue-50 rounded-lg border border-material-blue-200">
-                  <h4 className="font-semibold text-material-blue-800 mb-2">
-                    📚 Teaching Timeline Summary
-                  </h4>
-                  <p className="text-sm text-material-blue-700">
-                    This timeline shows the optimal sequence for teaching
-                    matched topics across classes. Each week builds upon
-                    previous concepts while maintaining appropriate difficulty
-                    progression.
-                  </p>
+            {/* Summary Stats */}
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white p-4 rounded-xl text-center">
+                <div className="text-2xl font-bold">
+                  {results.filter(item => areChaptersSimilar(item.class1, item.class2)).length}
                 </div>
-              </CardContent>
-            </Card>
-          )}
+                <div className="text-sm opacity-90">Similar Chapters</div>
+              </div>
+              <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white p-4 rounded-xl text-center">
+                <div className="text-2xl font-bold">{results.length}</div>
+                <div className="text-sm opacity-90">Total Chapters</div>
+              </div>
+              <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 rounded-xl text-center">
+                <div className="text-2xl font-bold">
+                  {results.filter(item => !areChaptersSimilar(item.class1, item.class2)).length}
+                </div>
+                <div className="text-sm opacity-90">Different Chapters</div>
+              </div>
+            </div>
+          </div>
+        )}
 
-          {/* No Results State */}
-          {selectedClass1 && selectedSubject && matchedTopics.length === 0 && (
-            <Card className="bg-white shadow-lg">
-              <CardContent className="p-8 text-center">
-                <div className="p-4 bg-material-gray-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                  <BookOpen className="h-8 w-8 text-material-gray-400" />
-                </div>
-                <h3 className="text-lg font-semibold text-material-gray-600 mb-2">
-                  No matching topics found
-                </h3>
-                <p className="text-material-gray-500">
-                  Try selecting different classes or subjects to find common
-                  curriculum topics.
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+        {/* No Results */}
+        {selectedClass1 && selectedSubject && results.length === 0 && !loading && (
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-12 text-center">
+            <div className="p-4 bg-gray-100 rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+              <BookOpen className="h-12 w-12 text-gray-400" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-700 mb-3">
+              No chapters found
+            </h3>
+            <p className="text-gray-500 text-lg">
+              Try different class or subject combinations to find matching chapters.
+            </p>
+          </div>
+        )}
+
+        {/* Loading */}
+        {loading && (
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-12 text-center">
+            <div className="relative w-16 h-16 mx-auto mb-6">
+              <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200"></div>
+              <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-600 border-t-transparent absolute top-0"></div>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-700 mb-2">
+              Searching chapters...
+            </h3>
+            <p className="text-gray-500">
+              Please wait while we analyze the syllabus
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
